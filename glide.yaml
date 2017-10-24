@@ -1,0 +1,8 @@
+package: telegraph
+license: MIT
+import:
+- package: github.com/parnurzeal/gorequest
+- package: github.com/cenkalti/backoff
+testImport:
+- package: gopkg.in/h2non/gock.v1
+- package: github.com/stretchr/testify

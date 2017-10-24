@@ -1,2 +1,2 @@
-# telegraph
-Telegram bot API Go SDK
+# Telegraph
+Telegram bot API SDK for Go(Golang)
