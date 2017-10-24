@@ -1,2 +1,2 @@
 # Telegraph
-Telegram bot API SDK for Go(Golang)
+Telegram bot API SDK for Go(Golang), Can use back off retry request to Telegram bot API

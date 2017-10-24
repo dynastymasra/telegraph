@@ -5,11 +5,14 @@ const (
 	UserAgentHeader = "User-Agent"
 	BaseURL         = "https://api.telegram.org"
 
-	UserAgent = "Telegraph Go SDK"
+	UserAgent = "Telegram Go SDK(Telegraph)"
 
-	EndpointGetMe          = "/bot%v/getMe"
-	EndpointSetWebHook     = "/bot%v/setWebhook"
-	EndpointGetUpdate      = "/bot%v/getUpdates"
-	EndpointDeleteWebHook  = "/bot%v/deleteWebhook"
-	EndpointGetWebHookInfo = "/bot%v/getWebhookInfo"
+	EndpointGetMe               = "/bot%v/getMe"
+	EndpointSetWebHook          = "/bot%v/setWebhook"
+	EndpointGetUpdate           = "/bot%v/getUpdates"
+	EndpointDeleteWebHook       = "/bot%v/deleteWebhook"
+	EndpointGetWebHookInfo      = "/bot%v/getWebhookInfo"
+	EndpointGetFile             = "/bot%v/getFile"
+	EndpointGetContent          = "/file/bot%v/%v"
+	EndpointGetUserProfilePhoto = "/bot%v/getUserProfilePhotos"
 )
