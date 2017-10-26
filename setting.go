@@ -153,7 +153,7 @@ func (client *Client) GetWebHookInfo() *PrepareRequest {
 
 // GetMe prepare request get information about telegram bot
 func (client *Client) GetMe() *PrepareRequest {
-	url := BaseURL + fmt.Sprintf(EndpointGetMe, client.accessToken)
+	url := client.baseURL + fmt.Sprintf(EndpointGetMe, client.accessToken)
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &PrepareRequest{

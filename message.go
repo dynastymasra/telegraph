@@ -1,5 +1,11 @@
 package telegraph
 
+import (
+	"fmt"
+
+	"github.com/parnurzeal/gorequest"
+)
+
 type ChatType string
 
 const (
@@ -46,4 +52,58 @@ type (
 		Username     string `json:"username,omitempty"`
 		LanguageCode string `json:"language_code,omitempty"`
 	}
+
+	SendMessage struct {
+		ChatID          string `json:"chat_id"`
+		Text            string `json:"text,omitempty"`
+		Mode            string `json:"parse_mode,omitempty"`
+		DisablePreview  bool   `json:"disable_web_page_preview,omitempty"`
+		DisNotification bool   `json:"disable_notification,omitempty"`
+		ReplyMessageID  int64  `json:"reply_to_message_id,omitempty"`
+		Endpoint        string `json:"-"`
+	}
 )
+
+// ReplyMessageToID add id message reply
+func (message *SendMessage) ReplyMessageToID(id int64) *SendMessage {
+	message.ReplyMessageID = id
+	return message
+}
+
+// DisableNotification add status disable notification
+func (message *SendMessage) DisableNotification(disable bool) *SendMessage {
+	message.DisNotification = disable
+	return message
+}
+
+// DisableWebPreview add status disable web preview
+func (message *SendMessage) DisableWebPreview(disable bool) *SendMessage {
+	message.DisablePreview = disable
+	return message
+}
+
+// ParseMode add message with parse mode
+func (message *SendMessage) ParseMode(mode string) *SendMessage {
+	message.Mode = mode
+	return message
+}
+
+// NewSendTextMessage build new text message
+func NewSendTextMessage(chatID, text string) *SendMessage {
+	return &SendMessage{
+		ChatID:   chatID,
+		Text:     text,
+		Endpoint: EndpointSendMessage,
+	}
+}
+
+// SendMessage request send message to telegram
+func (client *Client) SendMessage(message SendMessage) *PrepareRequest {
+	url := client.baseURL + fmt.Sprintf(message.Endpoint, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version)
+
+	return &PrepareRequest{
+		client:  client,
+		request: request,
+	}
+}
