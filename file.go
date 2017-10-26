@@ -102,7 +102,8 @@ func (call *GetFileCall) Commit() (*http.Response, []byte, error) {
 // GetUserProfilePhoto prepare get user profile photo
 func (client *Client) GetUserProfilePhoto(userID string) *GetUserProfilePhotoCall {
 	url := client.baseURL + fmt.Sprintf(EndpointGetUserProfilePhoto, client.accessToken)
-	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
+	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("user_id=%v", userID))
 
 	return &GetUserProfilePhotoCall{
 		client:client,
