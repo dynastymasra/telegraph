@@ -113,14 +113,14 @@ func (call *GetUserProfilePhotoCall) Offset(offset int) *GetUserProfilePhotoCall
 func (call *GetUserProfilePhotoCall) Download() *PrepareRequest {
 	res, body, err := call.Commit()
 	if err != nil {
-		return nil, nil, err
+		return nil
 	}
 	result := &getUserProfilePhotoResponse{}
 	if err := json.Unmarshal(body, result); err != nil {
-		return nil, nil, err
+		return nil
 	}
 	if res.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf(string(body))
+		return nil
 	}
 
 	var path string
