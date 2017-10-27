@@ -14,17 +14,15 @@ type (
 	GetFileCall struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
-		Err     error
 	}
 
 	GetUserProfilePhotoCall struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
-		Err     error
 	}
 
 	getUserProfilePhotoResponse struct {
-		Result photos `json:"photos,omitempty"`
+		Result      photos `json:"photos,omitempty"`
 		Description string `json:"description,omitempty"`
 	}
 
@@ -54,44 +52,28 @@ func (client *Client) GetFile(fileId string) *GetFileCall {
 	return &GetFileCall{
 		Client:  client,
 		Request: request,
-		Err:     nil,
 	}
 }
 
 // Download used for direct download file after call GetFile
-func (call *GetFileCall) Download() *GetFileCall {
+func (call *GetFileCall) Download() (*http.Response, []byte, error) {
 	res, body, err := call.Commit()
 	if err != nil {
-		return &GetFileCall{
-			Err: err,
-		}
+		return nil, nil, err
 	}
 	result := &getFileResponse{}
 	if err := json.Unmarshal(body, result); err != nil {
-		return &GetFileCall{
-			Err: err,
-		}
+		return nil, nil, err
 	}
 	if res.StatusCode != http.StatusOK {
-		return &GetFileCall{
-			Err: fmt.Errorf(result.Description),
-		}
+		return nil, nil, fmt.Errorf(string(body))
 	}
 
-	prepareRequest := call.Client.GetContent(result.Result.FilePath)
-	return &GetFileCall{
-		Client:  prepareRequest.client,
-		Request: prepareRequest.request,
-		Err:     nil,
-	}
+	return call.Client.GetContent(result.Result.FilePath).Commit()
 }
 
 // Commit make request get file to telegram
 func (call *GetFileCall) Commit() (*http.Response, []byte, error) {
-	if call.Err != nil {
-		return nil, nil, call.Err
-	}
-
 	prepareRequest := PrepareRequest{
 		client:  call.Client,
 		request: call.Request,
@@ -106,61 +88,46 @@ func (client *Client) GetUserProfilePhoto(userID string) *GetUserProfilePhotoCal
 		Query(fmt.Sprintf("user_id=%v", userID))
 
 	return &GetUserProfilePhotoCall{
-		Client:client,
-		Request:request,
-		Err:nil,
+		Client:  client,
+		Request: request,
 	}
 }
 
 // Download download random user profile photo
-func (call *GetUserProfilePhotoCall) Download() *GetUserProfilePhotoCall {
+func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) {
 	res, body, err := call.Commit()
 	if err != nil {
-		return &GetUserProfilePhotoCall{
-			Err: err,
-		}
+		return nil, nil, err
 	}
 	result := &getUserProfilePhotoResponse{}
 	if err := json.Unmarshal(body, result); err != nil {
-		return &GetUserProfilePhotoCall{
-			Err: err,
-		}
+		return nil, nil, err
 	}
 	if res.StatusCode != http.StatusOK {
-		return &GetUserProfilePhotoCall{
-			Err: fmt.Errorf(result.Description),
-		}
+		return nil, nil, fmt.Errorf(string(body))
 	}
 
-	var path string
+	var fileID string
 	for _, first := range result.Result.Photos {
 		for _, second := range first {
 			if len(second.FilePath) > 0 {
-				path = second.FilePath
+				fileID = second.FileID
 				break
 			}
-			if len(path) > 0 {
+			if len(fileID) > 0 {
 				break
 			}
 		}
-		if len(path) > 0 {
+		if len(fileID) > 0 {
 			break
 		}
 	}
-	prepareRequest := call.Client.GetContent(path)
-	return &GetUserProfilePhotoCall{
-		Client:  prepareRequest.client,
-		Request: prepareRequest.request,
-		Err:     nil,
-	}
+
+	return call.Client.GetFile(fileID).Download()
 }
 
 // Commit get user profile photo
 func (call *GetUserProfilePhotoCall) Commit() (*http.Response, []byte, error) {
-	if call.Err != nil {
-		return nil, nil, call.Err
-	}
-
 	prepareRequest := PrepareRequest{
 		client:  call.Client,
 		request: call.Request,
