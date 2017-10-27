@@ -123,6 +123,11 @@ func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) 
 		return nil, nil, fmt.Errorf(string(body))
 	}
 
+	aa, _ := json.Marshal(result)
+	fmt.Println("======================> 0")
+	fmt.Println(string(aa))
+	fmt.Println("======================> 0")
+
 	var path string
 	for _, first := range result.Result.Photos {
 		fmt.Println("======================> 1")
