@@ -110,36 +110,49 @@ func (call *GetUserProfilePhotoCall) Offset(offset int) *GetUserProfilePhotoCall
 }
 
 // Download download random user profile photo
-func (call *GetUserProfilePhotoCall) Download() *PrepareRequest {
+func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) {
 	res, body, err := call.Commit()
 	if err != nil {
-		return nil
+		return nil, nil, err
 	}
 	result := &getUserProfilePhotoResponse{}
 	if err := json.Unmarshal(body, result); err != nil {
-		return nil
+		return nil, nil, err
 	}
 	if res.StatusCode != http.StatusOK {
-		return nil
+		return nil, nil, fmt.Errorf(string(body))
 	}
 
 	var path string
 	for _, first := range result.Result.Photos {
+		fmt.Println("======================> 1")
+		fmt.Println(first)
+		fmt.Println("======================> 1")
 		for _, second := range first {
+			fmt.Println("======================> 2")
+			fmt.Println(second)
+			fmt.Println("======================> 2")
 			if len(second.FilePath) > 0 {
+				fmt.Println("======================> 3")
 				path = second.FilePath
 				break
 			}
 			if len(path) > 0 {
+				fmt.Println("======================> 4")
 				break
 			}
 		}
 		if len(path) > 0 {
+			fmt.Println("======================> 5")
 			break
 		}
 	}
 
-	return call.Client.GetContent(path)
+	fmt.Println("======================>")
+	fmt.Println(path)
+	fmt.Println("======================>")
+
+	return call.Client.GetContent(path).Commit()
 }
 
 // Commit get user profile photo
