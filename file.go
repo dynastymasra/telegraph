@@ -22,7 +22,7 @@ type (
 	}
 
 	getUserProfilePhotoResponse struct {
-		Result      photos `json:"photos,omitempty"`
+		Result      photos `json:"result,omitempty"`
 		Description string `json:"description,omitempty"`
 	}
 
