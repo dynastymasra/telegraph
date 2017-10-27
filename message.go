@@ -100,7 +100,8 @@ func NewSendTextMessage(chatID, text string) *SendMessage {
 // SendMessage request send message to telegram
 func (client *Client) SendMessage(message SendMessage) *PrepareRequest {
 	url := client.baseURL + fmt.Sprintf(message.Endpoint, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message)
 
 	return &PrepareRequest{
 		Client:  client,
