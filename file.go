@@ -75,8 +75,8 @@ func (call *GetFileCall) Download() (*http.Response, []byte, error) {
 // Commit make request get file to telegram
 func (call *GetFileCall) Commit() (*http.Response, []byte, error) {
 	prepareRequest := PrepareRequest{
-		client:  call.Client,
-		request: call.Request,
+		Client:  call.Client,
+		Request: call.Request,
 	}
 	return prepareRequest.Commit()
 }
@@ -145,8 +145,8 @@ func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) 
 // Commit get user profile photo
 func (call *GetUserProfilePhotoCall) Commit() (*http.Response, []byte, error) {
 	prepareRequest := PrepareRequest{
-		client:  call.Client,
-		request: call.Request,
+		Client:  call.Client,
+		Request: call.Request,
 	}
 	return prepareRequest.Commit()
 }
@@ -157,7 +157,7 @@ func (client *Client) GetContent(path string) *PrepareRequest {
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &PrepareRequest{
-		client:  client,
-		request: request,
+		Client:  client,
+		Request: request,
 	}
 }

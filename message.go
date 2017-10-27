@@ -103,7 +103,7 @@ func (client *Client) SendMessage(message SendMessage) *PrepareRequest {
 	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &PrepareRequest{
-		client:  client,
-		request: request,
+		Client:  client,
+		Request: request,
 	}
 }

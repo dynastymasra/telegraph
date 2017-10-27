@@ -10,13 +10,13 @@ import (
 
 type (
 	GetUpdateCall struct {
-		client  *Client
-		request *gorequest.SuperAgent
+		Client  *Client
+		Request *gorequest.SuperAgent
 	}
 
 	SetWebHookCall struct {
-		client  *Client
-		request *gorequest.SuperAgent
+		Client  *Client
+		Request *gorequest.SuperAgent
 	}
 )
 
@@ -26,48 +26,48 @@ func (client *Client) GetUpdate() *GetUpdateCall {
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &GetUpdateCall{
-		client:  client,
-		request: request,
+		Client:  client,
+		Request: request,
 	}
 }
 
 // QueryOffset add request with query params offset
 func (call *GetUpdateCall) QueryOffset(offset int) *GetUpdateCall {
 	return &GetUpdateCall{
-		client:  call.client,
-		request: call.request.Query(fmt.Sprintf("offset=%v", offset)),
+		Client:  call.Client,
+		Request: call.Request.Query(fmt.Sprintf("offset=%v", offset)),
 	}
 }
 
 // QueryLimit add request with query params limit
 func (call *GetUpdateCall) QueryLimit(limit int) *GetUpdateCall {
 	return &GetUpdateCall{
-		client:  call.client,
-		request: call.request.Query(fmt.Sprintf("limit=%v", limit)),
+		Client:  call.Client,
+		Request: call.Request.Query(fmt.Sprintf("limit=%v", limit)),
 	}
 }
 
 // QueryTimeout add request with query params timeout
 func (call *GetUpdateCall) QueryTimeout(timeout int) *GetUpdateCall {
 	return &GetUpdateCall{
-		client:  call.client,
-		request: call.request.Query(fmt.Sprintf("timeout=%v", timeout)),
+		Client:  call.Client,
+		Request: call.Request.Query(fmt.Sprintf("timeout=%v", timeout)),
 	}
 }
 
 // QueryAllowedUpdate add request with query params allowed updates
 func (call *GetUpdateCall) QueryAllowedUpdate(updates ...string) *GetUpdateCall {
 	return &GetUpdateCall{
-		client:  call.client,
-		request: call.request.Query(fmt.Sprintf("allowed_updates=%v", updates)),
+		Client:  call.Client,
+		Request: call.Request.Query(fmt.Sprintf("allowed_updates=%v", updates)),
 	}
 }
 
 // Commit make request get update telegram
 func (call *GetUpdateCall) Commit() (*http.Response, []byte, error) {
 	prepareRequest := PrepareRequest{
-		client:  call.client,
-		request: call.request,
+		Client:  call.Client,
+		Request: call.Request,
 	}
 	return prepareRequest.Commit()
 }
@@ -82,16 +82,16 @@ func (client *Client) SetWebHook(webHook string) *SetWebHookCall {
 	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &SetWebHookCall{
-		client:  client,
-		request: request,
+		Client:  client,
+		Request: request,
 	}
 }
 
 // Certificate set telegram web hook with certificate
 func (call *SetWebHookCall) Certificate(path string) *SetWebHookCall {
 	return &SetWebHookCall{
-		client:  call.client,
-		request: call.request.Type(gorequest.TypeMultipart).SendFile(path, "", "certificate"),
+		Client:  call.Client,
+		Request: call.Request.Type(gorequest.TypeMultipart).SendFile(path, "", "certificate"),
 	}
 }
 
@@ -102,8 +102,8 @@ func (call *SetWebHookCall) MaxConnection(conn int) *SetWebHookCall {
 	}
 
 	return &SetWebHookCall{
-		client:  call.client,
-		request: call.request.Send(body),
+		Client:  call.Client,
+		Request: call.Request.Send(body),
 	}
 }
 
@@ -114,16 +114,16 @@ func (call *SetWebHookCall) AllowedUpdate(allowed ...string) *SetWebHookCall {
 	}
 
 	return &SetWebHookCall{
-		client:  call.client,
-		request: call.request.Send(body),
+		Client:  call.Client,
+		Request: call.Request.Send(body),
 	}
 }
 
 // Commit make request set web hook telegram
 func (call *SetWebHookCall) Commit() (*http.Response, []byte, error) {
 	prepareRequest := PrepareRequest{
-		client:  call.client,
-		request: call.request,
+		Client:  call.Client,
+		Request: call.Request,
 	}
 
 	return prepareRequest.Commit()
@@ -135,8 +135,8 @@ func (client *Client) DeleteWebHook() *PrepareRequest {
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &PrepareRequest{
-		client:  client,
-		request: request,
+		Client:  client,
+		Request: request,
 	}
 }
 
@@ -146,8 +146,8 @@ func (client *Client) GetWebHookInfo() *PrepareRequest {
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &PrepareRequest{
-		client:  client,
-		request: request,
+		Client:  client,
+		Request: request,
 	}
 }
 
@@ -157,7 +157,7 @@ func (client *Client) GetMe() *PrepareRequest {
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &PrepareRequest{
-		client:  client,
-		request: request,
+		Client:  client,
+		Request: request,
 	}
 }

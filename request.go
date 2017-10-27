@@ -11,8 +11,8 @@ type (
 	JSON map[string]interface{}
 
 	PrepareRequest struct {
-		client  *Client
-		request *gorequest.SuperAgent
+		Client  *Client
+		Request *gorequest.SuperAgent
 	}
 )
 
@@ -23,14 +23,14 @@ func (call *PrepareRequest) Commit() (*http.Response, []byte, error) {
 	res := &http.Response{}
 
 	operation := func() error {
-		res, body, errs = call.request.EndBytes()
+		res, body, errs = call.Request.EndBytes()
 		if len(errs) > 0 {
 			return errs[0]
 		}
 		return nil
 	}
 
-	if err := backoff.Retry(operation, call.client.expBackOff); err != nil {
+	if err := backoff.Retry(operation, call.Client.expBackOff); err != nil {
 		return nil, nil, err
 	}
 	return res, body, nil
