@@ -93,6 +93,22 @@ func (client *Client) GetUserProfilePhoto(userID string) *GetUserProfilePhotoCal
 	}
 }
 
+// Limit set limit response returned
+func (call *GetUserProfilePhotoCall) Limit(limit int) *GetUserProfilePhotoCall {
+	return &GetUserProfilePhotoCall{
+		Client:  call.Client,
+		Request: call.Request.Query(fmt.Sprintf("limit=%v", limit)),
+	}
+}
+
+// Offset set offset response returned
+func (call *GetUserProfilePhotoCall) Offset(offset int) *GetUserProfilePhotoCall {
+	return &GetUserProfilePhotoCall{
+		Client:  call.Client,
+		Request: call.Request.Query(fmt.Sprintf("offset=%v", offset)),
+	}
+}
+
 // Download download random user profile photo
 func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) {
 	res, body, err := call.Commit()
