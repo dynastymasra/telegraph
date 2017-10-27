@@ -110,7 +110,7 @@ func (call *GetUserProfilePhotoCall) Offset(offset int) *GetUserProfilePhotoCall
 }
 
 // Download download random user profile photo
-func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) {
+func (call *GetUserProfilePhotoCall) Download() *PrepareRequest {
 	res, body, err := call.Commit()
 	if err != nil {
 		return nil, nil, err
@@ -123,23 +123,23 @@ func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) 
 		return nil, nil, fmt.Errorf(string(body))
 	}
 
-	var fileID string
+	var path string
 	for _, first := range result.Result.Photos {
 		for _, second := range first {
 			if len(second.FilePath) > 0 {
-				fileID = second.FileID
+				path = second.FilePath
 				break
 			}
-			if len(fileID) > 0 {
+			if len(path) > 0 {
 				break
 			}
 		}
-		if len(fileID) > 0 {
+		if len(path) > 0 {
 			break
 		}
 	}
 
-	return call.Client.GetFile(fileID).Download()
+	return call.Client.GetContent(path)
 }
 
 // Commit get user profile photo
