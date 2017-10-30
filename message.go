@@ -25,11 +25,38 @@ type (
 	}
 
 	Message struct {
-		MessageID int64  `json:"message_id"`
-		Date      int64  `json:"date"`
-		Chat      Chat   `json:"chat"`
-		From      *From  `json:"from,omitempty"`
-		Text      string `json:"text,omitempty"`
+		MessageID int64       `json:"message_id"`
+		Date      int64       `json:"date"`
+		Chat      Chat        `json:"chat"`
+		From      *From       `json:"from,omitempty"`
+		Text      string      `json:"text,omitempty"`
+		Photos    []PhotoSize `json:"photo,omitempty"`
+		Sticker   *Sticker    `json:"sticker,omitempty"`
+	}
+
+	PhotoSize struct {
+		FileID   string `json:"file_id"`
+		Width    int64  `json:"width"`
+		Height   int64  `json:"height"`
+		FileSize int64  `json:"file_size"`
+	}
+
+	Sticker struct {
+		FileID       string        `json:"file_id"`
+		Width        int64         `json:"width"`
+		Height       int64         `json:"height"`
+		Thumb        *PhotoSize    `json:"thumb,omitempty"`
+		Emoji        string        `json:"emoji,omitempty"`
+		SetName      string        `json:"set_name,omitempty"`
+		FileSize     int64         `json:"file_size,omitempty"`
+		MaskPosition *MaskPosition `json:"mask_position,omitempty"`
+	}
+
+	MaskPosition struct {
+		Point  string  `json:"point"`
+		XShift float64 `json:"x_shift"`
+		YShift float64 `json:"y_shift"`
+		Scale  float64 `json:"scale"`
 	}
 
 	Chat struct {
