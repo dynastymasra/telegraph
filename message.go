@@ -87,6 +87,8 @@ type (
 		DisablePreview  bool   `json:"disable_web_page_preview,omitempty"`
 		DisNotification bool   `json:"disable_notification,omitempty"`
 		ReplyMessageID  int64  `json:"reply_to_message_id,omitempty"`
+		Photo           string `json:"photo,omitempty"`
+		Caption         string `json:"caption,omitempty"`
 		Endpoint        string `json:"-"`
 	}
 )
@@ -115,12 +117,27 @@ func (message *SendMessage) ParseMode(mode string) *SendMessage {
 	return message
 }
 
-// NewSendTextMessage build new text message
-func NewSendTextMessage(chatID, text string) *SendMessage {
+// SetCaption image caption
+func (message *SendMessage) SetCaption(caption string) *SendMessage {
+	message.Caption = caption
+	return message
+}
+
+// NewTextMessage build new text message
+func NewTextMessage(chatID, text string) *SendMessage {
 	return &SendMessage{
 		ChatID:   chatID,
 		Text:     text,
 		Endpoint: EndpointSendMessage,
+	}
+}
+
+// NewPhotoMessage build new photo message
+func NewPhotoMessage(chatID, photoURL string) *SendMessage {
+	return &SendMessage{
+		ChatID:   chatID,
+		Photo:    photoURL,
+		Endpoint: EndpointSendPhoto,
 	}
 }
 
