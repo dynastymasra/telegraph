@@ -123,23 +123,18 @@ func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) 
 		return nil, nil, fmt.Errorf(string(body))
 	}
 
-	var path string
+	var id string
+	var size int64
 	for _, first := range result.Result.Photos {
 		for _, second := range first {
-			if len(second.FilePath) > 0 {
-				path = second.FilePath
-				break
+			if second.FileSize >= size {
+				id = second.FileID
+				size = second.FileSize
 			}
-			if len(path) > 0 {
-				break
-			}
-		}
-		if len(path) > 0 {
-			break
 		}
 	}
 
-	return call.Client.GetContent(path).Commit()
+	return call.Client.GetFile(id).Download()
 }
 
 // Commit get user profile photo
