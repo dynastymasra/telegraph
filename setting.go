@@ -151,7 +151,8 @@ func (client *Client) GetWebHookInfo() *PrepareRequest {
 	}
 }
 
-// GetMe prepare request get information about telegram bot
+// GetMe A simple method for testing your bot's auth token. Requires no parameters.
+// Returns basic information about the bot in form of a User object.
 func (client *Client) GetMe() *PrepareRequest {
 	url := client.baseURL + fmt.Sprintf(EndpointGetMe, client.accessToken)
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
