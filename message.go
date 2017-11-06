@@ -96,6 +96,8 @@ type (
 		Photo           string       `json:"photo,omitempty"`
 		Caption         string       `json:"caption,omitempty"`
 		ReplyMarkup     *interface{} `json:"reply_markup,omitempty"`
+		FromChatID      string       `json:"from_chat_id,omitempty"`
+		MessageID       string       `json:"message_id,omitempty"`
 		endpoint        string       `json:"-"`
 	}
 
@@ -106,7 +108,7 @@ type (
 )
 
 /*
-Shows reply interface to the user, as if they manually selected the bot‘s message and tapped ’Reply'
+NewForceReply Shows reply interface to the user, as if they manually selected the bot‘s message and tapped ’Reply'
 
 Optional. Use this parameter if you want to force reply from specific users only. Targets:
 1) users that are @mentioned in the text of the Message object;
@@ -173,6 +175,20 @@ func NewPhotoMessage(chatID, photoURL string) *SendMessage {
 		ChatID:   chatID,
 		Photo:    photoURL,
 		endpoint: EndpointSendPhoto,
+	}
+}
+
+/*
+NewForwardMessage Use this method to forward messages of any kind. On success, the sent Message is returned.
+Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
+Message identifier in the chat specified in from_chat_id
+*/
+func NewForwardMessage(chatID, fromChatID, messageID string) *SendMessage {
+	return &SendMessage{
+		ChatID:     chatID,
+		FromChatID: fromChatID,
+		MessageID:  messageID,
 	}
 }
 
