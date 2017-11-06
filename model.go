@@ -22,7 +22,7 @@ type (
 		ChosenInlineResult *ChosenInlineResult `json:"chosen_inline_result,omitempty"`
 		CallbackQuery      *CallbackQuery      `json:"callback_query,omitempty"`
 		ShippingQuery      *ShippingQuery      `json:"shipping_query,omitempty"`
-		pre
+		PreCheckoutQuery   *PreCheckoutQuery   `json:"pre_checkout_query,omitempty"`
 	}
 
 	// InlineQuery This object represents an incoming inline query. When the user sends an empty query,
@@ -80,5 +80,16 @@ type (
 		StreetLine1 string `json:"street_line1"`
 		StreetLine2 string `json:"street_line2"`
 		PostCode    string `json:"post_code"`
+	}
+
+	// PreCheckoutQuery This object contains information about an incoming pre-checkout query.
+	PreCheckoutQuery struct {
+		ID               string `json:"id"`
+		From             User   `json:"from"`
+		Currency         string `json:"currency"`
+		TotalAmount      int64  `json:"total_amount"`
+		InvoicePayload   string `json:"invoice_payload"`
+		ShippingOptionID string `json:"shipping_option_id,omitempty"`
+		OrderInfo        string `json:"order_info,omitempty"`
 	}
 )
