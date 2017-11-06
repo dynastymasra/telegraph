@@ -3,10 +3,6 @@ package telegraph
 import (
 	"fmt"
 
-	"net/http"
-
-	"encoding/json"
-
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -56,30 +52,30 @@ func (client *Client) GetFile(fileId string) *GetFileCall {
 }
 
 // Download used for direct download file after call GetFile
-func (call *GetFileCall) Download() (*http.Response, []byte, error) {
-	res, body, err := call.Commit()
-	if err != nil {
-		return nil, nil, err
-	}
-	result := &getFileResponse{}
-	if err := json.Unmarshal(body, result); err != nil {
-		return nil, nil, err
-	}
-	if res.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf(string(body))
-	}
-
-	return call.Client.GetContent(result.Result.FilePath).Commit()
-}
+//func (call *GetFileCall) Download() (*http.Response, []byte, error) {
+//	res, body, err := call.Commit()
+//	if err != nil {
+//		return nil, nil, err
+//	}
+//	result := &getFileResponse{}
+//	if err := json.Unmarshal(body, result); err != nil {
+//		return nil, nil, err
+//	}
+//	if res.StatusCode != http.StatusOK {
+//		return nil, nil, fmt.Errorf(string(body))
+//	}
+//
+//	return call.Client.GetContent(result.Result.FilePath).Commit()
+//}
 
 // Commit make request get file to telegram
-func (call *GetFileCall) Commit() (*http.Response, []byte, error) {
-	prepareRequest := PrepareRequest{
-		Client:  call.Client,
-		Request: call.Request,
-	}
-	return prepareRequest.Commit()
-}
+//func (call *GetFileCall) Commit() (*http.Response, []byte, error) {
+//	prepareRequest := PrepareRequest{
+//		Client:  call.Client,
+//		Request: call.Request,
+//	}
+//	return prepareRequest.Commit()
+//}
 
 // GetUserProfilePhoto prepare get user profile photo
 func (client *Client) GetUserProfilePhoto(userID string) *GetUserProfilePhotoCall {
@@ -110,41 +106,41 @@ func (call *GetUserProfilePhotoCall) Offset(offset int) *GetUserProfilePhotoCall
 }
 
 // Download download random user profile photo
-func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) {
-	res, body, err := call.Commit()
-	if err != nil {
-		return nil, nil, err
-	}
-	result := &getUserProfilePhotoResponse{}
-	if err := json.Unmarshal(body, result); err != nil {
-		return nil, nil, err
-	}
-	if res.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf(string(body))
-	}
-
-	var id string
-	var size int64
-	for _, first := range result.Result.Photos {
-		for _, second := range first {
-			if second.FileSize >= size {
-				id = second.FileID
-				size = second.FileSize
-			}
-		}
-	}
-
-	return call.Client.GetFile(id).Download()
-}
+//func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) {
+//	res, body, err := call.Commit()
+//	if err != nil {
+//		return nil, nil, err
+//	}
+//	result := &getUserProfilePhotoResponse{}
+//	if err := json.Unmarshal(body, result); err != nil {
+//		return nil, nil, err
+//	}
+//	if res.StatusCode != http.StatusOK {
+//		return nil, nil, fmt.Errorf(string(body))
+//	}
+//
+//	var id string
+//	var size int64
+//	for _, first := range result.Result.Photos {
+//		for _, second := range first {
+//			if second.FileSize >= size {
+//				id = second.FileID
+//				size = second.FileSize
+//			}
+//		}
+//	}
+//
+//	return call.Client.GetFile(id).Download()
+//}
 
 // Commit get user profile photo
-func (call *GetUserProfilePhotoCall) Commit() (*http.Response, []byte, error) {
-	prepareRequest := PrepareRequest{
-		Client:  call.Client,
-		Request: call.Request,
-	}
-	return prepareRequest.Commit()
-}
+//func (call *GetUserProfilePhotoCall) Commit() (*http.Response, []byte, error) {
+//	prepareRequest := PrepareRequest{
+//		Client:  call.Client,
+//		Request: call.Request,
+//	}
+//	return prepareRequest.Commit()
+//}
 
 // GetContent used after call function GetFile, this download file from telegram
 func (client *Client) GetContent(path string) *PrepareRequest {

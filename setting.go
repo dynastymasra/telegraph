@@ -3,8 +3,6 @@ package telegraph
 import (
 	"fmt"
 
-	"net/http"
-
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -64,13 +62,13 @@ func (call *GetUpdateCall) QueryAllowedUpdate(updates ...string) *GetUpdateCall 
 }
 
 // Commit make request get update telegram
-func (call *GetUpdateCall) Commit() (*http.Response, []byte, error) {
-	prepareRequest := PrepareRequest{
-		Client:  call.Client,
-		Request: call.Request,
-	}
-	return prepareRequest.Commit()
-}
+//func (call *GetUpdateCall) Commit() (*http.Response, []byte, error) {
+//	prepareRequest := PrepareRequest{
+//		Client:  call.Client,
+//		Request: call.Request,
+//	}
+//	return prepareRequest.Commit()
+//}
 
 // SetWebHook prepare request telegram api set web hook
 func (client *Client) SetWebHook(webHook string) *SetWebHookCall {
@@ -120,14 +118,14 @@ func (call *SetWebHookCall) AllowedUpdate(allowed ...string) *SetWebHookCall {
 }
 
 // Commit make request set web hook telegram
-func (call *SetWebHookCall) Commit() (*http.Response, []byte, error) {
-	prepareRequest := PrepareRequest{
-		Client:  call.Client,
-		Request: call.Request,
-	}
-
-	return prepareRequest.Commit()
-}
+//func (call *SetWebHookCall) Commit() (*http.Response, []byte, error) {
+//	prepareRequest := PrepareRequest{
+//		Client:  call.Client,
+//		Request: call.Request,
+//	}
+//
+//	return prepareRequest.Commit()
+//}
 
 // DeleteWebHook request to delete telegram web hook
 func (client *Client) DeleteWebHook() *PrepareRequest {
@@ -143,18 +141,6 @@ func (client *Client) DeleteWebHook() *PrepareRequest {
 // GetWebHookInfo request get info web hook telegram
 func (client *Client) GetWebHookInfo() *PrepareRequest {
 	url := client.baseURL + fmt.Sprintf(EndpointGetWebHookInfo, client.accessToken)
-	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
-
-	return &PrepareRequest{
-		Client:  client,
-		Request: request,
-	}
-}
-
-// GetMe A simple method for testing your bot's auth token. Requires no parameters.
-// Returns basic information about the bot in form of a User object.
-func (client *Client) GetMe() *PrepareRequest {
-	url := client.baseURL + fmt.Sprintf(EndpointGetMe, client.accessToken)
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &PrepareRequest{

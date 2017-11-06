@@ -17,7 +17,7 @@ type (
 )
 
 // Commit request to telegram api
-func (call *PrepareRequest) Commit() (*http.Response, []byte, error) {
+func (call *PrepareRequest) Commit() *Response {
 	var errs []error
 	var body []byte
 	res := &http.Response{}
@@ -31,7 +31,15 @@ func (call *PrepareRequest) Commit() (*http.Response, []byte, error) {
 	}
 
 	if err := backoff.Retry(operation, call.Client.expBackOff); err != nil {
-		return nil, nil, err
+		return &Response{
+			Response: nil,
+			Body:     nil,
+			Err:      err,
+		}
 	}
-	return res, body, nil
+	return &Response{
+		Response: res,
+		Body:     body,
+		Err:      nil,
+	}
 }
