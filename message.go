@@ -169,7 +169,7 @@ func NewTextMessage(chatID, text string) *SendMessage {
 	}
 }
 
-// NewPhotoMessage build new photo message
+// NewPhotoMessage Use this method to send photos. On success, the sent Message is returned.
 func NewPhotoMessage(chatID, photoURL string) *SendMessage {
 	return &SendMessage{
 		ChatID:   chatID,
@@ -192,7 +192,7 @@ func NewForwardMessage(chatID, fromChatID, messageID string) *SendMessage {
 	}
 }
 
-// SendMessage Use this method to send text messages. On success, the sent Message is returned.
+// SendMessage Use this method to send telegram messages. On success, the sent Message is returned.
 func (client *Client) SendMessage(message SendMessage) *PrepareRequest {
 	url := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
 	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
