@@ -177,3 +177,59 @@ func TestGetWebHookInfoFailed(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestDeleteWebHookSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointDeleteWebHook, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true,
+		"description": "Webhook was deleted"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	status, err := client.DeleteWebHook().Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestDeleteWebHookError(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointDeleteWebHook, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	status, err := client.DeleteWebHook().Commit()
+
+	assert.Equal(t, http.StatusInternalServerError, status)
+	assert.Error(t, err)
+}
+
+func TestDeleteWebHookFailedUnmarshal(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointDeleteWebHook, "token")).Reply(http.StatusBadRequest).XML("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	status, err := client.DeleteWebHook().Commit()
+
+	assert.Equal(t, http.StatusBadRequest, status)
+	assert.Error(t, err)
+}
+
+func TestDeleteWebHookFailed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointDeleteWebHook, "token")).Reply(http.StatusUnauthorized).JSON(`{
+		"ok": false,
+		"error_code": 401,
+		"description": "Unauthorized"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	status, err := client.DeleteWebHook().Commit()
+
+	assert.Equal(t, http.StatusUnauthorized, status)
+	assert.Error(t, err)
+}

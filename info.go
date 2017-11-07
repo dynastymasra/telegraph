@@ -78,6 +78,18 @@ func (call *VoidResponse) SetAllowedUpdates(allowed ...string) *VoidResponse {
 	}
 }
 
+// DeleteWebHook Use this method to remove webhook integration if you decide to switch back to getUpdates.
+// Returns True on success. Requires no parameters.
+func (client *Client) DeleteWebHook() *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointDeleteWebHook, client.accessToken)
+	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // GetWebHookInfo Use this method to get current webhook status. Requires no parameters.
 // On success, returns a WebhookInfo object. If the bot is using getUpdates,
 // will return an object with the url field empty.
