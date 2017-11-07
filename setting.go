@@ -7,59 +7,11 @@ import (
 )
 
 type (
-	GetUpdateCall struct {
-		Client  *Client
-		Request *gorequest.SuperAgent
-	}
-
 	SetWebHookCall struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
 )
-
-// GetUpdate prepare request telegram get update
-func (client *Client) GetUpdate() *GetUpdateCall {
-	url := client.baseURL + fmt.Sprintf(EndpointGetUpdate, client.accessToken)
-	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
-
-	return &GetUpdateCall{
-		Client:  client,
-		Request: request,
-	}
-}
-
-// QueryOffset add request with query params offset
-func (call *GetUpdateCall) QueryOffset(offset int) *GetUpdateCall {
-	return &GetUpdateCall{
-		Client:  call.Client,
-		Request: call.Request.Query(fmt.Sprintf("offset=%v", offset)),
-	}
-}
-
-// QueryLimit add request with query params limit
-func (call *GetUpdateCall) QueryLimit(limit int) *GetUpdateCall {
-	return &GetUpdateCall{
-		Client:  call.Client,
-		Request: call.Request.Query(fmt.Sprintf("limit=%v", limit)),
-	}
-}
-
-// QueryTimeout add request with query params timeout
-func (call *GetUpdateCall) QueryTimeout(timeout int) *GetUpdateCall {
-	return &GetUpdateCall{
-		Client:  call.Client,
-		Request: call.Request.Query(fmt.Sprintf("timeout=%v", timeout)),
-	}
-}
-
-// QueryAllowedUpdate add request with query params allowed updates
-func (call *GetUpdateCall) QueryAllowedUpdate(updates ...string) *GetUpdateCall {
-	return &GetUpdateCall{
-		Client:  call.Client,
-		Request: call.Request.Query(fmt.Sprintf("allowed_updates=%v", updates)),
-	}
-}
 
 // Commit make request get update telegram
 //func (call *GetUpdateCall) Commit() (*http.Response, []byte, error) {
