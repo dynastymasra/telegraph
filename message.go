@@ -1,11 +1,5 @@
 package telegraph
 
-import (
-	"fmt"
-
-	"github.com/parnurzeal/gorequest"
-)
-
 type (
 	ChatType  string
 	ParseMode string
@@ -22,7 +16,6 @@ const (
 )
 
 type (
-
 	Message struct {
 		MessageID int64       `json:"message_id"`
 		Date      int64       `json:"date"`
@@ -80,18 +73,14 @@ type (
 	}
 
 	SendMessage struct {
-		ChatID          string       `json:"chat_id"`
-		Text            string       `json:"text,omitempty"`
-		Mode            ParseMode    `json:"parse_mode,omitempty"`
-		DisablePreview  bool         `json:"disable_web_page_preview,omitempty"`
-		DisNotification bool         `json:"disable_notification,omitempty"`
-		ReplyMessageID  int64        `json:"reply_to_message_id,omitempty"`
-		Photo           string       `json:"photo,omitempty"`
-		Caption         string       `json:"caption,omitempty"`
-		ReplyMarkup     *interface{} `json:"reply_markup,omitempty"`
-		FromChatID      string       `json:"from_chat_id,omitempty"`
-		MessageID       string       `json:"message_id,omitempty"`
-		endpoint        string       `json:"-"`
+		ChatID                string       `json:"chat_id"`
+		Text                  string       `json:"text,omitempty"`
+		ParseMode             ParseMode    `json:"parse_mode,omitempty"`
+		DisableWebPagePreview bool         `json:"disable_web_page_preview,omitempty"`
+		DisableNotification   bool         `json:"disable_notification,omitempty"`
+		ReplyMessageID        int64        `json:"reply_to_message_id,omitempty"`
+		ReplyMarkup           *interface{} `json:"reply_markup,omitempty"`
+		endpoint              string       `json:"-"`
 	}
 
 	ForceReply struct {
@@ -107,92 +96,92 @@ Optional. Use this parameter if you want to force reply from specific users only
 1) users that are @mentioned in the text of the Message object;
 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
 */
-func NewForceReply(selective bool) *ForceReply {
-	return &ForceReply{
-		ForceReply: true,
-		Selective:  selective,
-	}
-}
-
-// ReplyMessageToID If the message is a reply, ID of the original message
-func (message *SendMessage) ReplyMessageToID(id int64) *SendMessage {
-	message.ReplyMessageID = id
-	return message
-}
-
-// DisableNotification Sends the message silently. Users will receive a notification with no sound.
-func (message *SendMessage) DisableNotification(disable bool) *SendMessage {
-	message.DisNotification = disable
-	return message
-}
-
-// DisableWebPreview Disables link previews for links in this message
-func (message *SendMessage) DisableWebPreview(disable bool) *SendMessage {
-	message.DisablePreview = disable
-	return message
-}
-
-// ParseMode Send Markdown or HTML, if you want Telegram apps to show bold, italic,
-// fixed-width text or inline URLs in your bot's message.
-func (message *SendMessage) ParseMode(mode ParseMode) *SendMessage {
-	message.Mode = mode
-	return message
-}
-
-// SetCaption image caption
-func (message *SendMessage) SetCaption(caption string) *SendMessage {
-	message.Caption = caption
-	return message
-}
-
-// SetReplyMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
-// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
-func (message *SendMessage) SetReplyMarkup(reply *interface{}) *SendMessage {
-	message.ReplyMarkup = reply
-	return message
-}
-
-// NewTextMessage Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-// Text of the message to be sent
-func NewTextMessage(chatID, text string) *SendMessage {
-	return &SendMessage{
-		ChatID:   chatID,
-		Text:     text,
-		endpoint: EndpointSendMessage,
-	}
-}
-
-// NewPhotoMessage Use this method to send photos. On success, the sent Message is returned.
-func NewPhotoMessage(chatID, photoURL string) *SendMessage {
-	return &SendMessage{
-		ChatID:   chatID,
-		Photo:    photoURL,
-		endpoint: EndpointSendPhoto,
-	}
-}
-
-/*
-NewForwardMessage Use this method to forward messages of any kind. On success, the sent Message is returned.
-Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
-Message identifier in the chat specified in from_chat_id
-*/
-func NewForwardMessage(chatID, fromChatID, messageID string) *SendMessage {
-	return &SendMessage{
-		ChatID:     chatID,
-		FromChatID: fromChatID,
-		MessageID:  messageID,
-	}
-}
-
-// SendMessage Use this method to send telegram messages. On success, the sent Message is returned.
-func (client *Client) SendMessage(message SendMessage) *PrepareRequest {
-	url := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(message)
-
-	return &PrepareRequest{
-		Client:  client,
-		Request: request,
-	}
-}
+//func NewForceReply(selective bool) *ForceReply {
+//	return &ForceReply{
+//		ForceReply: true,
+//		Selective:  selective,
+//	}
+//}
+//
+//// ReplyMessageToID If the message is a reply, ID of the original message
+//func (message *SendMessage) ReplyMessageToID(id int64) *SendMessage {
+//	message.ReplyMessageID = id
+//	return message
+//}
+//
+//// DisableNotification Sends the message silently. Users will receive a notification with no sound.
+//func (message *SendMessage) DisableNotification(disable bool) *SendMessage {
+//	message.DisNotification = disable
+//	return message
+//}
+//
+//// DisableWebPreview Disables link previews for links in this message
+//func (message *SendMessage) DisableWebPreview(disable bool) *SendMessage {
+//	message.DisablePreview = disable
+//	return message
+//}
+//
+//// ParseMode Send Markdown or HTML, if you want Telegram apps to show bold, italic,
+//// fixed-width text or inline URLs in your bot's message.
+//func (message *SendMessage) ParseMode(mode ParseMode) *SendMessage {
+//	message.Mode = mode
+//	return message
+//}
+//
+//// SetCaption image caption
+//func (message *SendMessage) SetCaption(caption string) *SendMessage {
+//	message.Caption = caption
+//	return message
+//}
+//
+//// SetReplyMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+//// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+//func (message *SendMessage) SetReplyMarkup(reply *interface{}) *SendMessage {
+//	message.ReplyMarkup = reply
+//	return message
+//}
+//
+//// NewTextMessage Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+//// Text of the message to be sent
+//func NewTextMessage(chatID, text string) *SendMessage {
+//	return &SendMessage{
+//		ChatID:   chatID,
+//		Text:     text,
+//		endpoint: EndpointSendMessage,
+//	}
+//}
+//
+//// NewPhotoMessage Use this method to send photos. On success, the sent Message is returned.
+//func NewPhotoMessage(chatID, photoURL string) *SendMessage {
+//	return &SendMessage{
+//		ChatID:   chatID,
+//		Photo:    photoURL,
+//		endpoint: EndpointSendPhoto,
+//	}
+//}
+//
+///*
+//NewForwardMessage Use this method to forward messages of any kind. On success, the sent Message is returned.
+//Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+//Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
+//Message identifier in the chat specified in from_chat_id
+//*/
+//func NewForwardMessage(chatID, fromChatID, messageID string) *SendMessage {
+//	return &SendMessage{
+//		ChatID:     chatID,
+//		FromChatID: fromChatID,
+//		MessageID:  messageID,
+//	}
+//}
+//
+//// SendMessage Use this method to send telegram messages. On success, the sent Message is returned.
+//func (client *Client) SendMessage(message SendMessage) *PrepareRequest {
+//	url := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+//	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+//		Send(message)
+//
+//	return &PrepareRequest{
+//		Client:  client,
+//		Request: request,
+//	}
+//}
