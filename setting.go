@@ -38,14 +38,3 @@ func (client *Client) DeleteWebHook() *PrepareRequest {
 		Request: request,
 	}
 }
-
-// GetWebHookInfo request get info web hook telegram
-func (client *Client) GetWebHookInfo() *PrepareRequest {
-	url := client.baseURL + fmt.Sprintf(EndpointGetWebHookInfo, client.accessToken)
-	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
-
-	return &PrepareRequest{
-		Client:  client,
-		Request: request,
-	}
-}

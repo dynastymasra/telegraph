@@ -113,3 +113,67 @@ func TestSetWebHookFailed(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, status)
 	assert.Error(t, err)
 }
+
+func TestGetWebHookInfoSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetWebHookInfo, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"url": "https://www.cube.com/webhook",
+			"has_custom_certificate": false,
+			"pending_update_count": 0,
+			"max_connections": 100
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	info, res, err := client.GetWebHookInfo().Commit()
+
+	assert.NotNil(t, info)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestGetWebHookInfoError(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointGetWebHookInfo, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	info, res, err := client.GetWebHookInfo().Commit()
+
+	assert.Nil(t, info)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestGetWebHookInfoFailedUnmarshal(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetWebHookInfo, "token")).Reply(http.StatusBadRequest).XML("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	info, res, err := client.GetWebHookInfo().Commit()
+
+	assert.Nil(t, info)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestGetWebHookInfoFailed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetWebHookInfo, "token")).Reply(http.StatusNotFound).JSON(`{
+		"ok": false,
+		"error_code": 404,
+		"description": "Not Found: method not found"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	info, res, err := client.GetWebHookInfo().Commit()
+
+	assert.Nil(t, info)
+	assert.Equal(t, http.StatusNotFound, res.StatusCode)
+	assert.Error(t, err)
+}

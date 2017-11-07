@@ -3,7 +3,18 @@ package telegraph
 import (
 	"fmt"
 
+	"encoding/json"
+	"net/http"
+
+	"github.com/cenkalti/backoff"
 	"github.com/parnurzeal/gorequest"
+)
+
+type (
+	InfoResponse struct {
+		Client  *Client
+		Request *gorequest.SuperAgent
+	}
 )
 
 /*
@@ -65,4 +76,51 @@ func (call *VoidResponse) SetAllowedUpdates(allowed ...string) *VoidResponse {
 		Client:  call.Client,
 		Request: call.Request.Send(body),
 	}
+}
+
+// GetWebHookInfo Use this method to get current webhook status. Requires no parameters.
+// On success, returns a WebhookInfo object. If the bot is using getUpdates,
+// will return an object with the url field empty.
+func (client *Client) GetWebHookInfo() *InfoResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointGetWebHookInfo, client.accessToken)
+	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
+
+	return &InfoResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// Commit execute request to telegram
+func (info *InfoResponse) Commit() (*WebhookInfo, *http.Response, error) {
+	var errs []error
+	var body []byte
+	res := &http.Response{}
+
+	operation := func() error {
+		res, body, errs = info.Request.EndBytes()
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, info.Client.expBackOff); err != nil {
+		return nil, &http.Response{StatusCode: http.StatusInternalServerError}, err
+	}
+	return parseWebHookInfo(res, body)
+}
+
+func parseWebHookInfo(res *http.Response, body []byte) (*WebhookInfo, *http.Response, error) {
+	model := struct {
+		ErrorResponse
+		Result *WebhookInfo `json:"result,omitempty"`
+	}{}
+	if err := json.Unmarshal(body, &model); err != nil {
+		return nil, res, err
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, res, fmt.Errorf(model.Description)
+	}
+	return model.Result, res, nil
 }
