@@ -11,6 +11,16 @@ import (
 )
 
 type (
+	// User This object represents a Telegram user or bot.
+	User struct {
+		ID           int64  `json:"id"`
+		IsBot        bool   `json:"is_bot"`
+		FirstName    string `json:"first_name"`
+		LastName     string `json:"last_name,omitempty"`
+		Username     string `json:"username,omitempty"`
+		LanguageCode string `json:"language_code,omitempty"`
+	}
+
 	UserResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent

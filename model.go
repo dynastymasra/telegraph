@@ -1,29 +1,6 @@
 package telegraph
 
 type (
-	User struct {
-		ID           int64  `json:"id"`
-		IsBot        bool   `json:"is_bot"`
-		FirstName    string `json:"first_name"`
-		LastName     string `json:"last_name,omitempty"`
-		Username     string `json:"username,omitempty"`
-		LanguageCode string `json:"language_code,omitempty"`
-	}
-
-	// Update This object represents an incoming update.
-	// At most one of the optional parameters can be present in any given update.
-	Update struct {
-		UpdateID           int64               `json:"update_id"`
-		Message            *Message            `json:"message,omitempty"`
-		EditedMessage      *Message            `json:"edited_message,omitempty"`
-		ChannelPost        *Message            `json:"channel_post,omitempty"`
-		EditedChannelPost  *Message            `json:"edited_channel_post,omitempty"`
-		InlineQuery        *InlineQuery        `json:"inline_query,omitempty"`
-		ChosenInlineResult *ChosenInlineResult `json:"chosen_inline_result,omitempty"`
-		CallbackQuery      *CallbackQuery      `json:"callback_query,omitempty"`
-		ShippingQuery      *ShippingQuery      `json:"shipping_query,omitempty"`
-		PreCheckoutQuery   *PreCheckoutQuery   `json:"pre_checkout_query,omitempty"`
-	}
 
 	// InlineQuery This object represents an incoming inline query. When the user sends an empty query,
 	// your bot could return some default or trending results.
@@ -91,16 +68,5 @@ type (
 		InvoicePayload   string `json:"invoice_payload"`
 		ShippingOptionID string `json:"shipping_option_id,omitempty"`
 		OrderInfo        string `json:"order_info,omitempty"`
-	}
-
-	// WebhookInfo Contains information about the current status of a webhook.
-	WebhookInfo struct {
-		URL                  string   `json:"url"`
-		HasCustomCertificate bool     `json:"has_custom_certificate"`
-		PendingUpdateCount   int      `json:"pending_update_count"`
-		LastErrorDate        int64    `json:"last_error_date,omitempty"`
-		LastErrorMessage     string   `json:"last_error_message,omitempty"`
-		MaxConnections       int      `json:"max_connections,omitempty"`
-		AllowedUpdates       []string `json:"allowed_updates,omitempty"`
 	}
 )
