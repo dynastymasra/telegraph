@@ -12,11 +12,8 @@ import (
 
 type (
 	UpdateArrayResponse struct {
-		Client   *Client
-		Request  *gorequest.SuperAgent
-		err      error
-		Response *http.Response
-		Body     []byte
+		Client  *Client
+		Request *gorequest.SuperAgent
 	}
 )
 
@@ -84,7 +81,7 @@ func (update *UpdateArrayResponse) SetAllowedUpdates(updates ...string) *UpdateA
 }
 
 // Commit request to telegram api
-func (update *UpdateArrayResponse) Commit() *UpdateArrayResponse {
+func (update *UpdateArrayResponse) Commit() ([]Update, *http.Response, error) {
 	var errs []error
 	var body []byte
 	res := &http.Response{}
@@ -98,33 +95,22 @@ func (update *UpdateArrayResponse) Commit() *UpdateArrayResponse {
 	}
 
 	if err := backoff.Retry(operation, update.Client.expBackOff); err != nil {
-		update.Response = nil
-		update.Body = nil
-		update.err = err
-		return update
+		return nil, &http.Response{StatusCode: http.StatusInternalServerError}, err
 	}
 
-	update.Response = res
-	update.Body = body
-	update.err = nil
-	return update
+	return parseArrayUpdate(res, body)
 }
 
-// Parse response get update to struct
-func (update *UpdateArrayResponse) Parse() ([]Update, int, error) {
-	if update.err != nil {
-		return nil, http.StatusInternalServerError, update.err
-	}
-
+func parseArrayUpdate(res *http.Response, body []byte) ([]Update, *http.Response, error) {
 	model := struct {
 		ErrorResponse
 		Result []Update `json:"result,omitempty"`
 	}{}
-	if err := json.Unmarshal(update.Body, &model); err != nil {
-		return nil, http.StatusInternalServerError, err
+	if err := json.Unmarshal(body, &model); err != nil {
+		return nil, res, err
 	}
-	if update.Response.StatusCode != http.StatusOK {
-		return nil, model.ErrorCode, fmt.Errorf(model.Description)
+	if res.StatusCode != http.StatusOK {
+		return nil, res, fmt.Errorf(model.Description)
 	}
-	return model.Result, update.Response.StatusCode, nil
+	return model.Result, res, nil
 }

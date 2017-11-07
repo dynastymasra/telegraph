@@ -41,10 +41,10 @@ func TestGetUpdateSuccess(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetUpdate().Commit().Parse()
+	model, res, err := client.GetUpdate().Commit()
 
 	assert.NotNil(t, model)
-	assert.Equal(t, http.StatusOK, status)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.NoError(t, err)
 }
 
@@ -79,10 +79,10 @@ func TestGetUpdateSetOffset(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetUpdate().SetOffset(5).Commit().Parse()
+	model, res, err := client.GetUpdate().SetOffset(5).Commit()
 
 	assert.NotNil(t, model)
-	assert.Equal(t, http.StatusOK, status)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.NoError(t, err)
 }
 
@@ -117,10 +117,10 @@ func TestGetUpdateSetLimit(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetUpdate().SetLimit(5).Commit().Parse()
+	model, res, err := client.GetUpdate().SetLimit(5).Commit()
 
 	assert.NotNil(t, model)
-	assert.Equal(t, http.StatusOK, status)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.NoError(t, err)
 }
 
@@ -155,10 +155,10 @@ func TestGetUpdateSetTimeout(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetUpdate().SetTimeout(5).Commit().Parse()
+	model, res, err := client.GetUpdate().SetTimeout(5).Commit()
 
 	assert.NotNil(t, model)
-	assert.Equal(t, http.StatusOK, status)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.NoError(t, err)
 }
 
@@ -193,10 +193,10 @@ func TestGetUpdateSetAllowUpdate(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetUpdate().SetAllowedUpdates("1", "2", "3").Commit().Parse()
+	model, res, err := client.GetUpdate().SetAllowedUpdates("1", "2", "3").Commit()
 
 	assert.NotNil(t, model)
-	assert.Equal(t, http.StatusOK, status)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.NoError(t, err)
 }
 
@@ -206,10 +206,10 @@ func TestGetUpdateError(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetUpdate().Commit().Parse()
+	model, res, err := client.GetUpdate().Commit()
 
 	assert.Nil(t, model)
-	assert.Equal(t, http.StatusInternalServerError, status)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
 	assert.Error(t, err)
 }
 
@@ -219,10 +219,10 @@ func TestGetUpdateFailedUnmarshal(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetUpdate().Commit().Parse()
+	model, res, err := client.GetUpdate().Commit()
 
 	assert.Nil(t, model)
-	assert.Equal(t, http.StatusInternalServerError, status)
+	assert.Equal(t, http.StatusBadGateway, res.StatusCode)
 	assert.Error(t, err)
 }
 
@@ -236,9 +236,9 @@ func TestGetUpdateFailed(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetUpdate().Commit().Parse()
+	model, res, err := client.GetUpdate().Commit()
 
 	assert.Nil(t, model)
-	assert.Equal(t, http.StatusUnauthorized, status)
+	assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
 	assert.Error(t, err)
 }
