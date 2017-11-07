@@ -24,9 +24,9 @@ func TestGetMeSuccess(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetMe().Commit().Parse()
+	model, res, err := client.GetMe().Commit()
 	assert.NotNil(t, model)
-	assert.Equal(t, http.StatusOK, status)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.NoError(t, err)
 }
 
@@ -36,9 +36,9 @@ func TestGetMeError(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetMe().Commit().Parse()
+	model, res, err := client.GetMe().Commit()
 	assert.Nil(t, model)
-	assert.Equal(t, http.StatusInternalServerError, status)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
 	assert.Error(t, err)
 }
 
@@ -48,9 +48,9 @@ func TestGetMeFailedUnmarshal(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetMe().Commit().Parse()
+	model, res, err := client.GetMe().Commit()
 	assert.Nil(t, model)
-	assert.Equal(t, http.StatusInternalServerError, status)
+	assert.Equal(t, http.StatusBadGateway, res.StatusCode)
 	assert.Error(t, err)
 }
 
@@ -64,8 +64,8 @@ func TestGetMeFailed(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	model, status, err := client.GetMe().Commit().Parse()
+	model, res, err := client.GetMe().Commit()
 	assert.Nil(t, model)
-	assert.Equal(t, http.StatusUnauthorized, status)
+	assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
 	assert.Error(t, err)
 }
