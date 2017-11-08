@@ -110,7 +110,7 @@ func (update *UpdateArrayResponse) Commit() ([]Update, *http.Response, error) {
 	}
 
 	if err := backoff.Retry(operation, update.Client.expBackOff); err != nil {
-		return nil, &http.Response{StatusCode: http.StatusInternalServerError}, err
+		return nil, makeHTTPResponse(update.Request), err
 	}
 
 	return parseArrayUpdate(res, body)

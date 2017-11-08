@@ -26,6 +26,19 @@ type (
 	}
 )
 
+func makeHTTPResponse(agent *gorequest.SuperAgent) *http.Response {
+	request, err := agent.MakeRequest()
+	if err != nil {
+		return &http.Response{StatusCode: http.StatusInternalServerError}
+	}
+
+	return &http.Response{
+		StatusCode: http.StatusInternalServerError,
+		Header:     request.Header,
+		Request:    request,
+	}
+}
+
 // Commit request to telegram api
 func (call *VoidResponse) Commit() (int, error) {
 	var errs []error

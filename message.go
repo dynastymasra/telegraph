@@ -33,11 +33,6 @@ type (
 		url     string
 	}
 
-	PushMessage struct {
-		message  interface{}
-		endpoint string
-	}
-
 	PhotoSize struct {
 		FileID   string `json:"file_id"`
 		Width    int64  `json:"width"`
@@ -84,49 +79,6 @@ type (
 		LanguageCode string `json:"language_code,omitempty"`
 	}
 )
-
-/*
-NewForceReply Shows reply interface to the user, as if they manually selected the bot‘s message and tapped ’Reply'
-
-Optional. Use this parameter if you want to force reply from specific users only. Targets:
-1) users that are @mentioned in the text of the Message object;
-2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
-*/
-//func NewForceReply(selective bool) *ForceReply {
-//	return &ForceReply{
-//		ForceReply: true,
-//		Selective:  selective,
-//	}
-//}
-
-//// SetCaption image caption
-//func (message *SendMessage) SetCaption(caption string) *SendMessage {
-//	message.Caption = caption
-//	return message
-//}
-
-//// NewPhotoMessage Use this method to send photos. On success, the sent Message is returned.
-//func NewPhotoMessage(chatID, photoURL string) *SendMessage {
-//	return &SendMessage{
-//		ChatID:   chatID,
-//		Photo:    photoURL,
-//		endpoint: EndpointSendPhoto,
-//	}
-//}
-//
-///*
-//NewForwardMessage Use this method to forward messages of any kind. On success, the sent Message is returned.
-//Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-//Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
-//Message identifier in the chat specified in from_chat_id
-//*/
-//func NewForwardMessage(chatID, fromChatID, messageID string) *SendMessage {
-//	return &SendMessage{
-//		ChatID:     chatID,
-//		FromChatID: fromChatID,
-//		MessageID:  messageID,
-//	}
-//}
 
 // SendMessage Use this method to send text messages. On success, the sent Message is returned.
 func (client *Client) SendMessage(message SendMessage) *MessageResponse {
@@ -184,7 +136,7 @@ func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
 	}
 
 	if err := backoff.Retry(operation, message.Client.expBackOff); err != nil {
-		return nil, &http.Response{StatusCode: http.StatusInternalServerError}, err
+		return nil, makeHTTPResponse(message.Request), err
 	}
 	return parseMessage(res, body)
 }
