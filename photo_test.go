@@ -48,8 +48,8 @@ func TestSendPhotoSuccess(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message := telegraph.NewPhotoMessage("1233456", "./LICENSE").SetCaption("test")
-	model, res, err := client.SendPhoto(*message).Commit()
+	message := telegraph.NewPhotoMessage("1233456", "http://www.cubesoft.com/image/test.jpg").SetCaption("test")
+	model, res, err := client.SendPhoto(*message, false).Commit()
 
 	assert.NotNil(t, model)
 	assert.Equal(t, http.StatusOK, res.StatusCode)
@@ -95,7 +95,7 @@ func TestSendPhotoDisableNotification(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 	message := telegraph.NewPhotoMessage("1233456", "./LICENSE").SetDisableNotification(true)
-	model, res, err := client.SendPhoto(*message).Commit()
+	model, res, err := client.SendPhoto(*message, true).Commit()
 
 	assert.NotNil(t, model)
 	assert.Equal(t, http.StatusOK, res.StatusCode)
@@ -141,7 +141,7 @@ func TestSendPhotoSetReplyToMessageId(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 	message := telegraph.NewPhotoMessage("1233456", "./LICENSE").SetReplyToMessageId(342412342)
-	model, res, err := client.SendPhoto(*message).Commit()
+	model, res, err := client.SendPhoto(*message, true).Commit()
 
 	assert.NotNil(t, model)
 	assert.Equal(t, http.StatusOK, res.StatusCode)
@@ -193,7 +193,7 @@ func TestSendPhotoReplyMarkup(t *testing.T) {
 	message := telegraph.NewPhotoMessage("1233456", "./LICENSE").SetForceReply(reply).
 		SetInlineKeyboardMarkup(inline).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{})
-	model, res, err := client.SendPhoto(*message).Commit()
+	model, res, err := client.SendPhoto(*message, true).Commit()
 
 	assert.NotNil(t, model)
 	assert.Equal(t, http.StatusOK, res.StatusCode)

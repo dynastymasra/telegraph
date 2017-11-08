@@ -153,10 +153,14 @@ func (client *Client) ForwardMessage(message ForwardMessage) *MessageResponse {
 }
 
 // SendPhoto Use this method to send photos. On success, the sent Message is returned.
-func (client *Client) SendPhoto(message SendPhoto) *MessageResponse {
+func (client *Client) SendPhoto(message SendPhoto, upload bool) *MessageResponse {
 	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
-	request := gorequest.New().Post(endpoint).Type(gorequest.TypeMultipart).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(message).SendFile(message.Photo, "", "photo")
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(message.Photo, "", "photo")
+	}
 
 	return &MessageResponse{
 		Client:  client,
