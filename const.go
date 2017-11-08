@@ -16,5 +16,6 @@ const (
 	EndpointGetContent          = "/file/bot%v/%v"
 	EndpointGetUserProfilePhoto = "/bot%v/getUserProfilePhotos"
 	EndpointSendMessage         = "/bot%v/sendMessage"
+	EndpointForwardMessage      = "/bot%v/forwardMessage"
 	EndpointSendPhoto           = "/bot%v/sendPhoto"
 )

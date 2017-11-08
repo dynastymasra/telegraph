@@ -69,8 +69,4 @@ type (
 		ShippingOptionID string `json:"shipping_option_id,omitempty"`
 		OrderInfo        string `json:"order_info,omitempty"`
 	}
-
-	ReplyMarkup struct {
-
-	}
 )
