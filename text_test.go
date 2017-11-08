@@ -236,7 +236,10 @@ func TestSendMessageTextReplyMarkup(t *testing.T) {
 	reply := telegraph.ForceReply{
 		ForceReply: true,
 	}
-	message := telegraph.NewTextMessage("1233456", "test").SetForceReply(reply)
+	inline := [][]telegraph.InlineKeyboardButton{}
+	message := telegraph.NewTextMessage("1233456", "test").SetForceReply(reply).
+		SetInlineKeyboardMarkup(inline).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{})
 	model, res, err := client.SendMessage(*message).Commit()
 
 	assert.NotNil(t, model)

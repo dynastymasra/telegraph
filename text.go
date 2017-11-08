@@ -11,15 +11,6 @@ const (
 )
 
 type (
-	// ForceReply Upon receiving a message with this object,
-	// Telegram clients will display a reply interface to the user
-	// (act as if the user has selected the bot‘s message and tapped ’Reply').
-	// This can be extremely useful if you want to create user-friendly step-by-step interfaces without having to sacrifice privacy mode.
-	ForceReply struct {
-		ForceReply bool `json:"force_reply"`
-		Selective  bool `json:"selective,omitempty"`
-	}
-
 	SendMessage struct {
 		ChatID                string       `json:"chat_id"`
 		Text                  string       `json:"text,omitempty"`
@@ -29,13 +20,6 @@ type (
 		ReplyMessageID        int64        `json:"reply_to_message_id,omitempty"`
 		ReplyMarkup           *ReplyMarkup `json:"reply_markup,omitempty"`
 		endpoint              string       `json:"-"`
-	}
-
-	ReplyMarkup struct {
-		*InlineKeyboardMarkup
-		*ReplyKeyboardMarkup
-		*ReplyKeyboardRemove
-		*ForceReply
 	}
 )
 
@@ -81,6 +65,41 @@ func (message *SendMessage) SetForceReply(reply ForceReply) *SendMessage {
 		nil,
 		nil,
 		&reply,
+	}
+	return message
+}
+
+// SetInlineKeyboardMarkup
+func (message *SendMessage) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendMessage {
+	message.ReplyMarkup = &ReplyMarkup{
+		&InlineKeyboardMarkup{
+			InlineKeyboard: inline,
+		},
+		nil,
+		nil,
+		nil,
+	}
+	return message
+}
+
+// SetReplyKeyboardMarkup
+func (message *SendMessage) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendMessage {
+	message.ReplyMarkup = &ReplyMarkup{
+		nil,
+		&reply,
+		nil,
+		nil,
+	}
+	return message
+}
+
+// SetReplyKeyboardRemove
+func (message *SendMessage) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendMessage {
+	message.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		&remove,
+		nil,
 	}
 	return message
 }

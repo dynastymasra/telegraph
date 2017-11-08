@@ -45,38 +45,3 @@ type (
 		Selective      bool `json:"selective,omitempty"`
 	}
 )
-
-// SetInlineKeyboardMarkup
-func (message *SendMessage) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendMessage {
-	message.ReplyMarkup = &ReplyMarkup{
-		&InlineKeyboardMarkup{
-			InlineKeyboard: inline,
-		},
-		nil,
-		nil,
-		nil,
-	}
-	return message
-}
-
-// SetReplyKeyboardMarkup
-func (message *SendMessage) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendMessage {
-	message.ReplyMarkup = &ReplyMarkup{
-		nil,
-		&reply,
-		nil,
-		nil,
-	}
-	return message
-}
-
-// SetReplyKeyboardRemove
-func (message *SendMessage) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendMessage {
-	message.ReplyMarkup = &ReplyMarkup{
-		nil,
-		nil,
-		&remove,
-		nil,
-	}
-	return message
-}

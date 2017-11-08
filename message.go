@@ -30,6 +30,7 @@ type (
 	MessageResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
+		url     string
 	}
 
 	PushMessage struct {
@@ -148,6 +149,19 @@ func (client *Client) ForwardMessage(message ForwardMessage) *MessageResponse {
 	return &MessageResponse{
 		Client:  client,
 		Request: request,
+	}
+}
+
+// SendPhoto Use this method to send photos. On success, the sent Message is returned.
+func (client *Client) SendPhoto(message SendPhoto) *MessageResponse {
+	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeMultipart).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message).SendFile(message.Photo, "", "photo")
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+		url:     message.Photo,
 	}
 }
 
