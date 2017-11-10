@@ -314,6 +314,17 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 		endpoint            string       `json:"-"`
 	}
+
+	SendVideoNote struct {
+		ChatID              string       `json:"chat_id"`
+		VideoNote           string       `json:"video_note"`
+		Duration            int          `json:"duration,omitempty"`
+		Length              int          `json:"length,omitempty"`
+		DisableNotification bool         `json:"disable_notification,omitempty"`
+		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
+		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
+		endpoint            string       `json:"-"`
+	}
 )
 
 /*
@@ -964,6 +975,107 @@ func (client *Client) SendVoice(message SendVoice, upload bool) *MessageResponse
 
 	if upload {
 		request.Type(gorequest.TypeMultipart).SendFile(message.Voice, "", "voice")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+NewVideoNoteMessage As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long.
+Use this method to send video messages. On success, the sent Message is returned.
+*/
+func NewVideoNoteMessage(chatId, video string) *SendVideoNote {
+	return &SendVideoNote{
+		ChatID:    chatId,
+		VideoNote: video,
+		endpoint:  EndpointSendVideoNote,
+	}
+}
+
+// SetLength Video width and height
+func (video *SendVideoNote) SetLength(length int) *SendVideoNote {
+	video.Length = length
+	return video
+}
+
+// SetDuration Duration of the audio in seconds
+func (video *SendVideoNote) SetDuration(duration int) *SendVideoNote {
+	video.Duration = duration
+	return video
+}
+
+// SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
+func (video *SendVideoNote) SetDisableNotification(disable bool) *SendVideoNote {
+	video.DisableNotification = disable
+	return video
+}
+
+// SetReplyToMessageId If the message is a reply, ID of the original message
+func (video *SendVideoNote) SetReplyToMessageId(messageId int64) *SendVideoNote {
+	video.ReplyToMessageID = messageId
+	return video
+}
+
+// SetForceReply
+func (video *SendVideoNote) SetForceReply(reply ForceReply) *SendVideoNote {
+	video.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		nil,
+		&reply,
+	}
+	return video
+}
+
+// SetInlineKeyboardMarkup
+func (video *SendVideoNote) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendVideoNote {
+	video.ReplyMarkup = &ReplyMarkup{
+		&InlineKeyboardMarkup{
+			InlineKeyboard: inline,
+		},
+		nil,
+		nil,
+		nil,
+	}
+	return video
+}
+
+// SetReplyKeyboardMarkup
+func (video *SendVideoNote) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendVideoNote {
+	video.ReplyMarkup = &ReplyMarkup{
+		nil,
+		&reply,
+		nil,
+		nil,
+	}
+	return video
+}
+
+// SetReplyKeyboardRemove
+func (video *SendVideoNote) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendVideoNote {
+	video.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		&remove,
+		nil,
+	}
+	return video
+}
+
+/*
+SendVideoNote As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long.
+Use this method to send video messages. On success, the sent Message is returned.
+*/
+func (client *Client) SendVideoNote(message SendVideoNote, upload bool) *MessageResponse {
+	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(message.VideoNote, "", "video_note")
 	}
 
 	return &MessageResponse{

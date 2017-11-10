@@ -942,3 +942,98 @@ func TestSendVoiceReplyMarkup(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.NoError(t, err)
 }
+
+func TestSendVideoNoteSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendVideoNote, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 323,
+			"from": {
+				"id": 23423423,
+				"is_bot": true,
+				"first_name": "cube",
+				"username": "soft"
+			},
+			"chat": {
+				"id": 75092216,
+				"first_name": "Cube",
+				"last_name": "soft",
+				"username": "cubesoft",
+				"type": "private"
+			},
+			"date": 1510304972,
+			"video_note": {
+				"duration": 56,
+				"length": 123213,
+				"file_id": "BAADBQADbAAJDDKD68EpVM5CtxU_7nK9Ag",
+				"file_size": 4214667,
+				"thumb": {
+					"file_id": "AAQFAJDSFDSFN2drMyAAR1OUFoDZdeqdcuAAIC",
+					"file_size": 320,
+					"width": 90,
+					"height": 51
+				}
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message := telegraph.NewVideoNoteMessage("1233456", "http://www.cubesoft.com/file/test.pdf").SetLength(123123).
+		SetDisableNotification(true).SetReplyToMessageId(123332).SetDuration(1000)
+	model, res, err := client.SendVideoNote(*message, false).Commit()
+
+	assert.NotNil(t, model)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSendVideoNoteReplyMarkup(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendVideoNote, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 323,
+			"from": {
+				"id": 23423423,
+				"is_bot": true,
+				"first_name": "cube",
+				"username": "soft"
+			},
+			"chat": {
+				"id": 75092216,
+				"first_name": "Cube",
+				"last_name": "soft",
+				"username": "cubesoft",
+				"type": "private"
+			},
+			"date": 1510304972,
+			"video_note": {
+				"duration": 56,
+				"length": 123213,
+				"file_id": "BAADBQADbAAJDDKD68EpVM5CtxU_7nK9Ag",
+				"file_size": 4214667,
+				"thumb": {
+					"file_id": "AAQFAJDSFDSFN2drMyAAR1OUFoDZdeqdcuAAIC",
+					"file_size": 320,
+					"width": 90,
+					"height": 51
+				}
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	reply := telegraph.ForceReply{
+		ForceReply: true,
+	}
+	inline := [][]telegraph.InlineKeyboardButton{}
+	message := telegraph.NewVideoNoteMessage("1233456", "./LICENSE").SetForceReply(reply).
+		SetInlineKeyboardMarkup(inline).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{})
+	model, res, err := client.SendVideoNote(*message, true).Commit()
+
+	assert.NotNil(t, model)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
