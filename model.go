@@ -12,12 +12,6 @@ type (
 		Offset   string    `json:"offset"`
 	}
 
-	// Location This object represents a point on the map.
-	Location struct {
-		Longitude float64 `json:"longitude"`
-		Latitude  float64 `json:"latitude"`
-	}
-
 	// ChosenInlineResult Represents a result of an inline query that was chosen by the user and sent to their chat partner.
 	ChosenInlineResult struct {
 		ResultID        string    `json:"result_id"`
@@ -47,16 +41,6 @@ type (
 		From            User            `json:"from"`
 		InvoicePayload  string          `json:"invoice_payload"`
 		ShippingAddress ShippingAddress `json:"shipping_address"`
-	}
-
-	// ShippingAddress This object represents a shipping address.
-	ShippingAddress struct {
-		CountryCode string `json:"country_code"`
-		State       string `json:"state"`
-		City        string `json:"city"`
-		StreetLine1 string `json:"street_line1"`
-		StreetLine2 string `json:"street_line2"`
-		PostCode    string `json:"post_code"`
 	}
 
 	// PreCheckoutQuery This object contains information about an incoming pre-checkout query.

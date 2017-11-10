@@ -588,3 +588,91 @@ func TestSendPhotoReplyMarkup(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.NoError(t, err)
 }
+
+func TestSendAudioSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendAudio, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 322343,
+			"from": {
+				"id": 234234324,
+				"is_bot": true,
+				"first_name": "cube",
+				"username": "cubesoft"
+			},
+			"chat": {
+				"id": 34234234,
+				"first_name": "cube",
+				"last_name": "soft",
+				"username": "cubesoft",
+				"type": "private"
+			},
+			"date": 1510279759,
+			"audio": {
+				"duration": 162,
+				"mime_type": "audio/mpeg",
+				"title": "test",
+				"performer": "cube",
+				"file_id": "NDNDJF949388JF30",
+				"file_size": 2668544
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message := telegraph.NewAudioMessage("1233456", "http://www.cubesoft.com/audio/test.mp3").SetCaption("ok").
+		SetDuration(1000).SetPerformer("Cube").SetTitle("soft").SetDisableNotification(true).
+		SetReplyToMessageId(123332)
+	model, res, err := client.SendAudio(*message, false).Commit()
+
+	assert.NotNil(t, model)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSendAudioReplyMarkup(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendAudio, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 322343,
+			"from": {
+				"id": 234234324,
+				"is_bot": true,
+				"first_name": "cube",
+				"username": "cubesoft"
+			},
+			"chat": {
+				"id": 34234234,
+				"first_name": "cube",
+				"last_name": "soft",
+				"username": "cubesoft",
+				"type": "private"
+			},
+			"date": 1510279759,
+			"audio": {
+				"duration": 162,
+				"mime_type": "audio/mpeg",
+				"title": "test",
+				"performer": "cube",
+				"file_id": "NDNDJF949388JF30",
+				"file_size": 2668544
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	reply := telegraph.ForceReply{
+		ForceReply: true,
+	}
+	inline := [][]telegraph.InlineKeyboardButton{}
+	message := telegraph.NewAudioMessage("1233456", "./LICENSE").SetForceReply(reply).
+		SetInlineKeyboardMarkup(inline).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{})
+	model, res, err := client.SendAudio(*message, true).Commit()
+
+	assert.NotNil(t, model)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}

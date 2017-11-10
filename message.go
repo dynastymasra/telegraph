@@ -26,19 +26,196 @@ const (
 
 type (
 	Message struct {
-		MessageID int64       `json:"message_id"`
-		Date      int64       `json:"date"`
-		Chat      Chat        `json:"chat"`
-		From      *From       `json:"from,omitempty"`
-		Text      string      `json:"text,omitempty"`
-		Photos    []PhotoSize `json:"photo,omitempty"`
-		Sticker   *Sticker    `json:"sticker,omitempty"`
+		MessageID             int64              `json:"message_id"`
+		From                  *From              `json:"from,omitempty"`
+		Date                  int64              `json:"date"`
+		Chat                  Chat               `json:"chat"`
+		ForwardFrom           *User              `json:"forward_from,omitempty"`
+		ForwardFromChat       *Chat              `json:"forward_from_chat,omitempty"`
+		ForwardFromMessageID  int64              `json:"forward_from_message_id,omitempty"`
+		ForwardSignature      string             `json:"forward_signature,omitempty"`
+		ForwardDate           int64              `json:"forward_date,omitempty"`
+		ReplyToMessage        string             `json:"reply_to_message,omitempty"`
+		EditDate              int64              `json:"edit_date,omitempty"`
+		AuthorSignature       string             `json:"author_signature,omitempty"`
+		Text                  string             `json:"text,omitempty"`
+		Entities              []MessageEntity    `json:"entities,omitempty"`
+		CaptionEntities       []MessageEntity    `json:"caption_entities,omitempty"`
+		Audio                 *Audio             `json:"audio,omitempty"`
+		Document              *Document          `json:"document,omitempty"`
+		Game                  *Game              `json:"game,omitempty"`
+		Photos                []PhotoSize        `json:"photo,omitempty"`
+		Sticker               *Sticker           `json:"sticker,omitempty"`
+		Video                 *Video             `json:"video,omitempty"`
+		Voice                 *Voice             `json:"voice,omitempty"`
+		VideoNote             *VideoNote         `json:"video_note,omitempty"`
+		Caption               string             `json:"caption,omitempty"`
+		Contact               *Contact           `json:"contact,omitempty"`
+		Location              *Location          `json:"location,omitempty"`
+		Venue                 *Venue             `json:"venue,omitempty"`
+		NewChatMembers        []User             `json:"new_chat_members,omitempty"`
+		LeftChatMember        *User              `json:"left_chat_member,omitempty"`
+		NewChatTitle          string             `json:"new_chat_title,omitempty"`
+		NewChatPhoto          []PhotoSize        `json:"new_chat_photo,omitempty"`
+		DeleteChatPhoto       bool               `json:"delete_chat_photo,omitempty"`
+		GroupChatCreated      bool               `json:"group_chat_created,omitempty"`
+		SuperGroupChatCreated bool               `json:"supergroup_chat_created,omitempty"`
+		ChannelChatCreated    bool               `json:"channel_chat_created,omitempty"`
+		MigrateToChatID       int64              `json:"migrate_to_chat_id,omitempty"`
+		MigrateFromChatID     int64              `json:"migrate_from_chat_id,omitempty"`
+		PinnedMessage         *Message           `json:"pinned_message,omitempty"`
+		Invoice               *Invoice           `json:"invoice,omitempty"`
+		SuccessfulPayment     *SuccessfulPayment `json:"successful_payment,omitempty"`
+	}
+
+	MessageEntity struct {
+		Type   string `json:"type"`
+		Offset int    `json:"offset"`
+		Length int    `json:"length"`
+		URL    string `json:"url,omitempty"`
+		User   *User  `json:"user,omitempty"`
+	}
+
+	Audio struct {
+		FileID    string `json:"file_id"`
+		Duration  int    `json:"duration"`
+		Performer string `json:"performer,omitempty"`
+		Title     string `json:"title,omitempty"`
+		MimeType  string `json:"mime_type,omitempty"`
+		FileSize  int    `json:"file_size,omitempty"`
+	}
+
+	Document struct {
+		FileID   string     `json:"file_id"`
+		Thumb    *PhotoSize `json:"thumb,omitempty"`
+		FileName string     `json:"file_name,omitempty"`
+		MimeType string     `json:"mime_type,omitempty"`
+		FileSize int        `json:"file_size,omitempty"`
+	}
+
+	Game struct {
+		Title        string          `json:"title"`
+		Description  string          `json:"description"`
+		Photo        []PhotoSize     `json:"photo"`
+		Text         string          `json:"text,omitempty"`
+		TextEntities []MessageEntity `json:"text_entities,animation"`
+		Animation    *Animation      `json:"animation,animation"`
+	}
+
+	PhotoSize struct {
+		FileID   string `json:"file_id"`
+		Width    int    `json:"width"`
+		Height   int    `json:"height"`
+		FileSize int    `json:"file_size"`
+	}
+
+	Sticker struct {
+		FileID       string        `json:"file_id"`
+		Width        int           `json:"width"`
+		Height       int           `json:"height"`
+		Thumb        *PhotoSize    `json:"thumb,omitempty"`
+		Emoji        string        `json:"emoji,omitempty"`
+		SetName      string        `json:"set_name,omitempty"`
+		FileSize     int           `json:"file_size,omitempty"`
+		MaskPosition *MaskPosition `json:"mask_position,omitempty"`
+	}
+
+	Video struct {
+		FileID   string     `json:"file_id"`
+		Width    int64      `json:"width"`
+		Height   int64      `json:"height"`
+		Duration int        `json:"duration"`
+		Thumb    *PhotoSize `json:"thumb,omitempty"`
+		MimeType string     `json:"mime_type,omitempty"`
+		FileSize int        `json:"file_size,omitempty"`
+	}
+
+	Voice struct {
+		FileID   string `json:"file_id"`
+		Duration int    `json:"duration"`
+		MimeType string `json:"mime_type,omitempty"`
+		FileSize int    `json:"file_size,omitempty"`
+	}
+
+	VideoNote struct {
+		FileID   string     `json:"file_id"`
+		Length   int        `json:"length"`
+		Duration int        `json:"duration"`
+		Thumb    *PhotoSize `json:"thumb,omitempty"`
+		FileSize int        `json:"file_size,omitempty"`
+	}
+
+	Contact struct {
+		PhoneNumber string `json:"phone_number"`
+		FirstName   string `json:"first_name"`
+		LastName    string `json:"last_name,omitempty"`
+		UserID      int64  `json:"user_id,omitempty"`
+	}
+
+	Location struct {
+		Longitude float64 `json:"longitude"`
+		Latitude  float64 `json:"latitude"`
+	}
+
+	Venue struct {
+		Location     Location `json:"location"`
+		Title        string   `json:"title"`
+		Address      string   `json:"address"`
+		FoursquareID string   `json:"foursquare_id,omitempty"`
+	}
+
+	Invoice struct {
+		Title          string `json:"title"`
+		Description    string `json:"description"`
+		StartParameter string `json:"start_parameter"`
+		Currency       string `json:"currency"`
+		TotalAmount    int64  `json:"total_amount"`
+	}
+
+	SuccessfulPayment struct {
+		Currency                string     `json:"currency"`
+		TotalAmount             int64      `json:"total_amount"`
+		InvoicePayload          string     `json:"invoice_payload"`
+		ShippingOptionID        string     `json:"shipping_option_id,omitempty"`
+		OrderInfo               *OrderInfo `json:"order_info,omitempty"`
+		TelegramPaymentChargeID string     `json:"telegram_payment_charge_id"`
+		ProviderPaymentChargeID string     `json:"provider_payment_charge_id"`
+	}
+
+	Animation struct {
+		FileID   string     `json:"file_id"`
+		Thumb    *PhotoSize `json:"thumb,omitempty"`
+		FileName string     `json:"file_name,omitempty"`
+		MimeType string     `json:"mime_type,omitempty"`
+		FileSize int        `json:"file_size,omitempty"`
+	}
+
+	MaskPosition struct {
+		Point  string  `json:"point"`
+		XShift float64 `json:"x_shift"`
+		YShift float64 `json:"y_shift"`
+		Scale  float64 `json:"scale"`
+	}
+
+	OrderInfo struct {
+		Name            string           `json:"name,omitempty"`
+		PhoneNumber     string           `json:"phone_number,omitempty"`
+		Email           string           `json:"email,omitempty"`
+		ShippingAddress *ShippingAddress `json:"shipping_address,omitempty"`
+	}
+
+	ShippingAddress struct {
+		CountryCode string `json:"country_code"`
+		State       string `json:"state"`
+		City        string `json:"city"`
+		StreetLine1 string `json:"street_line1"`
+		StreetLine2 string `json:"street_line2"`
+		PostCode    string `json:"post_code"`
 	}
 
 	MessageResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
-		url     string
 	}
 
 	SendMessage struct {
@@ -70,29 +247,17 @@ type (
 		endpoint            string       `json:"-"`
 	}
 
-	PhotoSize struct {
-		FileID   string `json:"file_id"`
-		Width    int64  `json:"width"`
-		Height   int64  `json:"height"`
-		FileSize int64  `json:"file_size"`
-	}
-
-	Sticker struct {
-		FileID       string        `json:"file_id"`
-		Width        int64         `json:"width"`
-		Height       int64         `json:"height"`
-		Thumb        *PhotoSize    `json:"thumb,omitempty"`
-		Emoji        string        `json:"emoji,omitempty"`
-		SetName      string        `json:"set_name,omitempty"`
-		FileSize     int64         `json:"file_size,omitempty"`
-		MaskPosition *MaskPosition `json:"mask_position,omitempty"`
-	}
-
-	MaskPosition struct {
-		Point  string  `json:"point"`
-		XShift float64 `json:"x_shift"`
-		YShift float64 `json:"y_shift"`
-		Scale  float64 `json:"scale"`
+	SendAudio struct {
+		ChatID              string       `json:"chat_id"`
+		Audio               string       `json:"audio"`
+		Caption             string       `json:"caption,omitempty"`
+		Duration            int          `json:"duration:omitempty"`
+		Performer           string       `json:"performer,omitempty"`
+		Title               string       `json:"title,omitempty"`
+		DisableNotification bool         `json:"disable_notification,omitempty"`
+		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
+		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
+		endpoint            string       `json:"-"`
 	}
 
 	Chat struct {
@@ -117,8 +282,10 @@ type (
 	}
 )
 
-// NewTextMessage Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-// Text of the message to be sent
+/*
+NewTextMessage Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+Text of the message to be sent
+*/
 func NewTextMessage(chatID, text string) *SendMessage {
 	return &SendMessage{
 		ChatID:   chatID,
@@ -210,7 +377,9 @@ func (client *Client) SendMessage(message SendMessage) *MessageResponse {
 	}
 }
 
-// NewForwardMessage Use this method to forward messages of any kind. On success, the sent Message is returned.
+/*
+NewForwardMessage Use this method to forward messages of any kind. On success, the sent Message is returned.
+*/
 func NewForwardMessage(chatID, fromChatID string, messageID int64) *ForwardMessage {
 	return &ForwardMessage{
 		ChatID:     chatID,
@@ -238,10 +407,12 @@ func (client *Client) ForwardMessage(message ForwardMessage) *MessageResponse {
 	}
 }
 
-// NewPhotoMessage Use this method to send photos. On success, the sent Message is returned.
-// Photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended),
-// pass an HTTP URL as a String for Telegram to get a photo from the Internet,
-// or upload a new photo using multipart/form-data.
+/*
+NewPhotoMessage Use this method to send photos. On success, the sent Message is returned.
+Photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended),
+pass an HTTP URL as a String for Telegram to get a photo from the Internet,
+or upload a new photo using multipart/form-data.
+*/
 func NewPhotoMessage(chatId, photo string) *SendPhoto {
 	return &SendPhoto{
 		ChatID:   chatId,
@@ -327,7 +498,123 @@ func (client *Client) SendPhoto(message SendPhoto, upload bool) *MessageResponse
 	return &MessageResponse{
 		Client:  client,
 		Request: request,
-		url:     message.Photo,
+	}
+}
+
+/*
+NewAudioMessage Use this method to send audio files, if you want Telegram clients to display them in the music player.
+Your audio must be in the .mp3 format. On success, the sent Message is returned.
+Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
+*/
+func NewAudioMessage(chatId, audio string) *SendAudio {
+	return &SendAudio{
+		ChatID:   chatId,
+		Audio:    audio,
+		endpoint: EndpointSendAudio,
+	}
+}
+
+// SetCaption Audio caption, 0-200 characters
+func (audio *SendAudio) SetCaption(caption string) *SendAudio {
+	audio.Caption = caption
+	return audio
+}
+
+// SetDuration Duration of the audio in seconds
+func (audio *SendAudio) SetDuration(duration int) *SendAudio {
+	audio.Duration = duration
+	return audio
+}
+
+// SetPerformer Performer
+func (audio *SendAudio) SetPerformer(performer string) *SendAudio {
+	audio.Performer = performer
+	return audio
+}
+
+// SetTitle Track name
+func (audio *SendAudio) SetTitle(title string) *SendAudio {
+	audio.Title = title
+	return audio
+}
+
+// SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
+func (audio *SendAudio) SetDisableNotification(disable bool) *SendAudio {
+	audio.DisableNotification = disable
+	return audio
+}
+
+// SetReplyToMessageId If the message is a reply, ID of the original message
+func (audio *SendAudio) SetReplyToMessageId(messageId int64) *SendAudio {
+	audio.ReplyToMessageID = messageId
+	return audio
+}
+
+// SetForceReply
+func (audio *SendAudio) SetForceReply(reply ForceReply) *SendAudio {
+	audio.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		nil,
+		&reply,
+	}
+	return audio
+}
+
+// SetInlineKeyboardMarkup
+func (audio *SendAudio) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendAudio {
+	audio.ReplyMarkup = &ReplyMarkup{
+		&InlineKeyboardMarkup{
+			InlineKeyboard: inline,
+		},
+		nil,
+		nil,
+		nil,
+	}
+	return audio
+}
+
+// SetReplyKeyboardMarkup
+func (audio *SendAudio) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendAudio {
+	audio.ReplyMarkup = &ReplyMarkup{
+		nil,
+		&reply,
+		nil,
+		nil,
+	}
+	return audio
+}
+
+// SetReplyKeyboardRemove
+func (audio *SendAudio) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendAudio {
+	audio.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		&remove,
+		nil,
+	}
+	return audio
+}
+
+/*
+SendAudio Use this method to send audio files, if you want Telegram clients to display them in the music player.
+Your audio must be in the .mp3 format. On success, the sent Message is returned.
+Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
+
+For sending voice messages, use the sendVoice method instead.
+*/
+func (client *Client) SendAudio(message SendAudio, upload bool) *MessageResponse {
+	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(message.Audio, "", "audio")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
 	}
 }
 
