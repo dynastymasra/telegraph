@@ -182,6 +182,27 @@ type (
 		ProviderPaymentChargeID string     `json:"provider_payment_charge_id"`
 	}
 
+	Chat struct {
+		ID                     int64    `json:"id"`
+		Type                   ChatType `json:"type"`
+		Title                  string   `json:"title,omitempty"`
+		Username               string   `json:"username,omitempty"`
+		FirstName              string   `json:"first_name,omitempty"`
+		LastName               string   `json:"last_name,omitempty"`
+		AllMemberAdministrator bool     `json:"all_members_are_administrators,omitempty"`
+		Description            string   `json:"description,omitempty"`
+		InviteLink             string   `json:"invite_link,omitempty"`
+	}
+
+	From struct {
+		ID           int64  `json:"id"`
+		IsBot        bool   `json:"is_bot"`
+		FirstName    string `json:"first_name"`
+		LastName     string `json:"last_name,omitempty"`
+		Username     string `json:"username,omitempty"`
+		LanguageCode string `json:"language_code,omitempty"`
+	}
+
 	Animation struct {
 		FileID   string     `json:"file_id"`
 		Thumb    *PhotoSize `json:"thumb,omitempty"`
@@ -251,7 +272,7 @@ type (
 		ChatID              string       `json:"chat_id"`
 		Audio               string       `json:"audio"`
 		Caption             string       `json:"caption,omitempty"`
-		Duration            int          `json:"duration:omitempty"`
+		Duration            int          `json:"duration,omitempty"`
 		Performer           string       `json:"performer,omitempty"`
 		Title               string       `json:"title,omitempty"`
 		DisableNotification bool         `json:"disable_notification,omitempty"`
@@ -270,25 +291,28 @@ type (
 		endpoint            string       `json:"-"`
 	}
 
-	Chat struct {
-		ID                     int64    `json:"id"`
-		Type                   ChatType `json:"type"`
-		Title                  string   `json:"title,omitempty"`
-		Username               string   `json:"username,omitempty"`
-		FirstName              string   `json:"first_name,omitempty"`
-		LastName               string   `json:"last_name,omitempty"`
-		AllMemberAdministrator bool     `json:"all_members_are_administrators,omitempty"`
-		Description            string   `json:"description,omitempty"`
-		InviteLink             string   `json:"invite_link,omitempty"`
+	SendVideo struct {
+		ChatID              string       `json:"chat_id"`
+		Video               string       `json:"video"`
+		Duration            int          `json:"duration,omitempty"`
+		Width               int          `json:"width,omitempty"`
+		Height              int          `json:"height,omitempty"`
+		Caption             string       `json:"caption,omitempty"`
+		DisableNotification bool         `json:"disable_notification,omitempty"`
+		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
+		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
+		endpoint            string       `json:"-"`
 	}
 
-	From struct {
-		ID           int64  `json:"id"`
-		IsBot        bool   `json:"is_bot"`
-		FirstName    string `json:"first_name"`
-		LastName     string `json:"last_name,omitempty"`
-		Username     string `json:"username,omitempty"`
-		LanguageCode string `json:"language_code,omitempty"`
+	SendVoice struct {
+		ChatID              string       `json:"chat_id"`
+		Voice               string       `json:"voice"`
+		Caption             string       `json:"caption,omitempty"`
+		Duration            int          `json:"duration,omitempty"`
+		DisableNotification bool         `json:"disable_notification,omitempty"`
+		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
+		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
+		endpoint            string       `json:"-"`
 	}
 )
 
@@ -606,6 +630,13 @@ func (client *Client) SendDocument(message SendDocument, upload bool) *MessageRe
 	}
 }
 
+/*
+NewAudioMessage Use this method to send audio files, if you want Telegram clients to display them in the music player.
+Your audio must be in the .mp3 format. On success, the sent Message is returned.
+Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
+
+For sending voice messages, use the sendVoice method instead.
+*/
 func NewAudioMessage(chatId, audio string) *SendAudio {
 	return &SendAudio{
 		ChatID:   chatId,
@@ -710,6 +741,229 @@ func (client *Client) SendAudio(message SendAudio, upload bool) *MessageResponse
 
 	if upload {
 		request.Type(gorequest.TypeMultipart).SendFile(message.Audio, "", "audio")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+NewVideoMessage Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
+On success, the sent Message is returned.
+Bots can currently send video files of up to 50 MB in size, this limit may be changed in the future.
+*/
+func NewVideoMessage(chatId, video string) *SendVideo {
+	return &SendVideo{
+		ChatID:   chatId,
+		Video:    video,
+		endpoint: EndpointSendVideo,
+	}
+}
+
+// SetCaption caption, 0-200 characters
+func (video *SendVideo) SetCaption(caption string) *SendVideo {
+	video.Caption = caption
+	return video
+}
+
+// SetDuration Duration of the audio in seconds
+func (video *SendVideo) SetDuration(duration int) *SendVideo {
+	video.Duration = duration
+	return video
+}
+
+// SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
+func (video *SendVideo) SetDisableNotification(disable bool) *SendVideo {
+	video.DisableNotification = disable
+	return video
+}
+
+// SetReplyToMessageId If the message is a reply, ID of the original message
+func (video *SendVideo) SetReplyToMessageId(messageId int64) *SendVideo {
+	video.ReplyToMessageID = messageId
+	return video
+}
+
+// SetWidth Video width
+func (video *SendVideo) SetWidth(width int) *SendVideo {
+	video.Width = width
+	return video
+}
+
+// SetHeight Video height
+func (video *SendVideo) SetHeight(height int) *SendVideo {
+	video.Height = height
+	return video
+}
+
+// SetForceReply
+func (video *SendVideo) SetForceReply(reply ForceReply) *SendVideo {
+	video.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		nil,
+		&reply,
+	}
+	return video
+}
+
+// SetInlineKeyboardMarkup
+func (video *SendVideo) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendVideo {
+	video.ReplyMarkup = &ReplyMarkup{
+		&InlineKeyboardMarkup{
+			InlineKeyboard: inline,
+		},
+		nil,
+		nil,
+		nil,
+	}
+	return video
+}
+
+// SetReplyKeyboardMarkup
+func (video *SendVideo) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendVideo {
+	video.ReplyMarkup = &ReplyMarkup{
+		nil,
+		&reply,
+		nil,
+		nil,
+	}
+	return video
+}
+
+// SetReplyKeyboardRemove
+func (video *SendVideo) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendVideo {
+	video.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		&remove,
+		nil,
+	}
+	return video
+}
+
+/*
+SendAudio Use this method to send audio files, if you want Telegram clients to display them in the music player.
+Your audio must be in the .mp3 format. On success, the sent Message is returned.
+Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
+
+For sending voice messages, use the sendVoice method instead.
+*/
+func (client *Client) SendVideo(message SendVideo, upload bool) *MessageResponse {
+	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(message.Video, "", "video")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+NewVoiceMessage Use this method to send audio files,
+if you want Telegram clients to display the file as a playable voice message.
+For this to work, your audio must be in an .ogg file encoded with OPUS (other formats may be sent as Audio or Document).
+On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size,
+this limit may be changed in the future.
+*/
+func NewVoiceMessage(chatId, voice string) *SendVoice {
+	return &SendVoice{
+		ChatID:   chatId,
+		Voice:    voice,
+		endpoint: EndpointSendVoice,
+	}
+}
+
+// SetCaption caption, 0-200 characters
+func (voice *SendVoice) SetCaption(caption string) *SendVoice {
+	voice.Caption = caption
+	return voice
+}
+
+// SetDuration Duration of the audio in seconds
+func (voice *SendVoice) SetDuration(duration int) *SendVoice {
+	voice.Duration = duration
+	return voice
+}
+
+// SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
+func (voice *SendVoice) SetDisableNotification(disable bool) *SendVoice {
+	voice.DisableNotification = disable
+	return voice
+}
+
+// SetReplyToMessageId If the message is a reply, ID of the original message
+func (voice *SendVoice) SetReplyToMessageId(messageId int64) *SendVoice {
+	voice.ReplyToMessageID = messageId
+	return voice
+}
+
+// SetForceReply
+func (voice *SendVoice) SetForceReply(reply ForceReply) *SendVoice {
+	voice.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		nil,
+		&reply,
+	}
+	return voice
+}
+
+// SetInlineKeyboardMarkup
+func (voice *SendVoice) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendVoice {
+	voice.ReplyMarkup = &ReplyMarkup{
+		&InlineKeyboardMarkup{
+			InlineKeyboard: inline,
+		},
+		nil,
+		nil,
+		nil,
+	}
+	return voice
+}
+
+// SetReplyKeyboardMarkup
+func (voice *SendVoice) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendVoice {
+	voice.ReplyMarkup = &ReplyMarkup{
+		nil,
+		&reply,
+		nil,
+		nil,
+	}
+	return voice
+}
+
+// SetReplyKeyboardRemove
+func (voice *SendVoice) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendVoice {
+	voice.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		&remove,
+		nil,
+	}
+	return voice
+}
+
+/*
+SendVoice Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
+For this to work, your audio must be in an .ogg file encoded with OPUS (other formats may be sent as Audio or Document).
+On success, the sent Message is returned.
+Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
+*/
+func (client *Client) SendVoice(message SendVoice, upload bool) *MessageResponse {
+	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(message.Voice, "", "voice")
 	}
 
 	return &MessageResponse{

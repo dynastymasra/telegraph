@@ -20,4 +20,6 @@ const (
 	EndpointSendPhoto           = "/bot%v/sendPhoto"
 	EndpointSendAudio           = "/bot%v/sendAudio"
 	EndpointSendDocument        = "/bot%v/sendDocument"
+	EndpointSendVideo           = "/bot%v/sendVideo"
+	EndpointSendVoice           = "/bot%v/sendVoice"
 )
