@@ -325,6 +325,17 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 		endpoint            string       `json:"-"`
 	}
+
+	SendLocation struct {
+		ChatID              string       `json:"chat_id"`
+		Latitude            float64      `json:"latitude"`
+		Longitude           float64      `json:"longitude"`
+		LivePeriod          int          `json:"live_period,omitempty"`
+		DisableNotification bool         `json:"disable_notification,omitempty"`
+		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
+		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
+		endpoint            string       `json:"-"`
+	}
 )
 
 /*
@@ -1077,6 +1088,96 @@ func (client *Client) SendVideoNote(message SendVideoNote, upload bool) *Message
 	if upload {
 		request.Type(gorequest.TypeMultipart).SendFile(message.VideoNote, "", "video_note")
 	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+NewLocationMessage Use this method to send point on the map. On success, the sent Message is returned.
+*/
+func NewLocationMessage(chatId string, latitude, longitude float64) *SendLocation {
+	return &SendLocation{
+		ChatID:    chatId,
+		Latitude:  latitude,
+		Longitude: longitude,
+		endpoint:  EndpointSendLocation,
+	}
+}
+
+// SetLivePeriod Period in seconds for which the location will be updated (see Live Locations, should be between 60 and 86400.
+func (location *SendLocation) SetLivePeriod(period int) *SendLocation {
+	location.LivePeriod = period
+	return location
+}
+
+// SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
+func (location *SendLocation) SetDisableNotification(disable bool) *SendLocation {
+	location.DisableNotification = disable
+	return location
+}
+
+// SetReplyToMessageId If the message is a reply, ID of the original message
+func (location *SendLocation) SetReplyToMessageId(messageId int64) *SendLocation {
+	location.ReplyToMessageID = messageId
+	return location
+}
+
+// SetForceReply
+func (location *SendLocation) SetForceReply(reply ForceReply) *SendLocation {
+	location.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		nil,
+		&reply,
+	}
+	return location
+}
+
+// SetInlineKeyboardMarkup
+func (location *SendLocation) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendLocation {
+	location.ReplyMarkup = &ReplyMarkup{
+		&InlineKeyboardMarkup{
+			InlineKeyboard: inline,
+		},
+		nil,
+		nil,
+		nil,
+	}
+	return location
+}
+
+// SetReplyKeyboardMarkup
+func (location *SendLocation) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendLocation {
+	location.ReplyMarkup = &ReplyMarkup{
+		nil,
+		&reply,
+		nil,
+		nil,
+	}
+	return location
+}
+
+// SetReplyKeyboardRemove
+func (location *SendLocation) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendLocation {
+	location.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		&remove,
+		nil,
+	}
+	return location
+}
+
+/*
+SendLocation Use this method to send point on the map. On success, the sent Message is returned.
+*/
+func (client *Client) SendLocation(message SendLocation) *MessageResponse {
+	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message)
 
 	return &MessageResponse{
 		Client:  client,

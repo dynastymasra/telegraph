@@ -1037,3 +1037,82 @@ func TestSendVideoNoteReplyMarkup(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.NoError(t, err)
 }
+
+func TestSendLocationSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendLocation, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 323,
+			"from": {
+				"id": 23423423,
+				"is_bot": true,
+				"first_name": "cube",
+				"username": "soft"
+			},
+			"chat": {
+				"id": 75092216,
+				"first_name": "Cube",
+				"last_name": "soft",
+				"username": "cubesoft",
+				"type": "private"
+			},
+			"date": 1510304972,
+			"location": {
+				"longitude": 123123213.99,
+				"latitude": 123213.544
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message := telegraph.NewLocationMessage("1233456", 12312312.98, 324234324.67).SetLivePeriod(123123).
+		SetDisableNotification(true).SetReplyToMessageId(123332)
+	model, res, err := client.SendLocation(*message).Commit()
+
+	assert.NotNil(t, model)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSendLocationReplyMarkup(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendLocation, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 323,
+			"from": {
+				"id": 23423423,
+				"is_bot": true,
+				"first_name": "cube",
+				"username": "soft"
+			},
+			"chat": {
+				"id": 75092216,
+				"first_name": "Cube",
+				"last_name": "soft",
+				"username": "cubesoft",
+				"type": "private"
+			},
+			"date": 1510304972,
+			"location": {
+				"longitude": 123123213.99,
+				"latitude": 123213.544
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	reply := telegraph.ForceReply{
+		ForceReply: true,
+	}
+	inline := [][]telegraph.InlineKeyboardButton{}
+	message := telegraph.NewLocationMessage("1233456", 324234.98, 23423423.56).SetForceReply(reply).
+		SetInlineKeyboardMarkup(inline).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{})
+	model, res, err := client.SendLocation(*message).Commit()
+
+	assert.NotNil(t, model)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
