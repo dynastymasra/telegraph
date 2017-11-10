@@ -260,6 +260,16 @@ type (
 		endpoint            string       `json:"-"`
 	}
 
+	SendDocument struct {
+		ChatID              string       `json:"chat_id"`
+		Document            string       `json:"document"`
+		Caption             string       `json:"caption,omitempty"`
+		DisableNotification bool         `json:"disable_notification,omitempty"`
+		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
+		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
+		endpoint            string       `json:"-"`
+	}
+
 	Chat struct {
 		ID                     int64    `json:"id"`
 		Type                   ChatType `json:"type"`
@@ -502,10 +512,100 @@ func (client *Client) SendPhoto(message SendPhoto, upload bool) *MessageResponse
 }
 
 /*
-NewAudioMessage Use this method to send audio files, if you want Telegram clients to display them in the music player.
-Your audio must be in the .mp3 format. On success, the sent Message is returned.
-Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
+NewDocumentMessage Use this method to send general files. On success, the sent Message is returned.
+Bots can currently send files of any type of up to 50 MB in size, this limit may be changed in the future.
 */
+func NewDocumentMessage(chatId, document string) *SendDocument {
+	return &SendDocument{
+		ChatID:   chatId,
+		Document: document,
+		endpoint: EndpointSendDocument,
+	}
+}
+
+// SetCaption Audio caption, 0-200 characters
+func (document *SendDocument) SetCaption(caption string) *SendDocument {
+	document.Caption = caption
+	return document
+}
+
+// SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
+func (document *SendDocument) SetDisableNotification(disable bool) *SendDocument {
+	document.DisableNotification = disable
+	return document
+}
+
+// SetReplyToMessageId If the message is a reply, ID of the original message
+func (document *SendDocument) SetReplyToMessageId(messageId int64) *SendDocument {
+	document.ReplyToMessageID = messageId
+	return document
+}
+
+// SetForceReply
+func (document *SendDocument) SetForceReply(reply ForceReply) *SendDocument {
+	document.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		nil,
+		&reply,
+	}
+	return document
+}
+
+// SetInlineKeyboardMarkup
+func (document *SendDocument) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendDocument {
+	document.ReplyMarkup = &ReplyMarkup{
+		&InlineKeyboardMarkup{
+			InlineKeyboard: inline,
+		},
+		nil,
+		nil,
+		nil,
+	}
+	return document
+}
+
+// SetReplyKeyboardMarkup
+func (document *SendDocument) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendDocument {
+	document.ReplyMarkup = &ReplyMarkup{
+		nil,
+		&reply,
+		nil,
+		nil,
+	}
+	return document
+}
+
+// SetReplyKeyboardRemove
+func (document *SendDocument) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendDocument {
+	document.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		&remove,
+		nil,
+	}
+	return document
+}
+
+/*
+SendDocument Use this method to send general files. On success, the sent Message is returned.
+Bots can currently send files of any type of up to 50 MB in size, this limit may be changed in the future.
+*/
+func (client *Client) SendDocument(message SendDocument, upload bool) *MessageResponse {
+	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(message.Document, "", "document")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 func NewAudioMessage(chatId, audio string) *SendAudio {
 	return &SendAudio{
 		ChatID:   chatId,

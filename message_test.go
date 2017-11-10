@@ -676,3 +676,86 @@ func TestSendAudioReplyMarkup(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.NoError(t, err)
 }
+
+func TestSendDocumentSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendDocument, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 3423,
+			"from": {
+				"id": 324234234,
+				"is_bot": true,
+				"first_name": "Cube",
+				"username": "Cubesoft"
+			},
+			"chat": {
+				"id": 343534,
+				"first_name": "Cube",
+				"last_name": "soft",
+				"username": "cubesoft",
+				"type": "private"
+			},
+			"date": 1510283812,
+			"document": {
+				"file_name": "test.pdf",
+				"mime_type": "application/pdf",
+				"file_id": "3FVD44FRDF44-29lVE_cAg",
+				"file_size": 239004
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message := telegraph.NewDocumentMessage("1233456", "http://www.cubesoft.com/file/test.pdf").SetCaption("ok").
+		SetDisableNotification(true).SetReplyToMessageId(123332)
+	model, res, err := client.SendDocument(*message, false).Commit()
+
+	assert.NotNil(t, model)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSendDocumentReplyMarkup(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendDocument, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 3423,
+			"from": {
+				"id": 324234234,
+				"is_bot": true,
+				"first_name": "Cube",
+				"username": "Cubesoft"
+			},
+			"chat": {
+				"id": 343534,
+				"first_name": "Cube",
+				"last_name": "soft",
+				"username": "cubesoft",
+				"type": "private"
+			},
+			"date": 1510283812,
+			"document": {
+				"file_name": "test.pdf",
+				"mime_type": "application/pdf",
+				"file_id": "3FVD44FRDF44-29lVE_cAg",
+				"file_size": 239004
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	reply := telegraph.ForceReply{
+		ForceReply: true,
+	}
+	inline := [][]telegraph.InlineKeyboardButton{}
+	message := telegraph.NewDocumentMessage("1233456", "./LICENSE").SetForceReply(reply).
+		SetInlineKeyboardMarkup(inline).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{})
+	model, res, err := client.SendDocument(*message, true).Commit()
+
+	assert.NotNil(t, model)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}

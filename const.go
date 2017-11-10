@@ -19,4 +19,5 @@ const (
 	EndpointForwardMessage      = "/bot%v/forwardMessage"
 	EndpointSendPhoto           = "/bot%v/sendPhoto"
 	EndpointSendAudio           = "/bot%v/sendAudio"
+	EndpointSendDocument        = "/bot%v/sendDocument"
 )
