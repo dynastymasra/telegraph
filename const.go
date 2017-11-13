@@ -42,4 +42,5 @@ const (
 	EndpointUnpinChatMessage        = "/bot%v/unpinChatMessage"
 	EndpointLeaveChat               = "/bot%v/leaveChat"
 	EndpointGetChat                 = "/bot%v/getChat"
+	EndpointGetChatAdministrators   = "/bot%v/getChatAdministrators"
 )

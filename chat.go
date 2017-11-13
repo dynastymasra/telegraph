@@ -10,13 +10,23 @@ import (
 	"github.com/parnurzeal/gorequest"
 )
 
-type ChatType string
+type (
+	ChatType   string
+	StatusType string
+)
 
 const (
 	ChatTypePrivate    ChatType = "private"
 	ChatTypeGroup               = "group"
 	ChatTypeSuperGroup          = "supergroup"
 	ChatTypeChannel             = "channel"
+
+	StatusTypeCreator       StatusType = "creator"
+	StatusTypeAdministrator            = "administrator"
+	StatusTypeMember                   = "member"
+	StatusTypeRestricted               = "restricted"
+	StatusTypeLeft                     = "left"
+	StatusTypeKicked                   = "kicked"
 )
 
 type (
@@ -42,6 +52,30 @@ type (
 	}
 
 	ChatResponse struct {
+		Client  *Client
+		Request *gorequest.SuperAgent
+	}
+
+	ChatMember struct {
+		User                 *User      `json:"user"`
+		Status               StatusType `json:"status"`
+		UntilDate            int64      `json:"until_date,omitempty"`
+		CanBeEdited          bool       `json:"can_be_edited,omitempty"`
+		CanChangeInfo        bool       `json:"can_change_info,omitempty"`
+		CanPostMessage       bool       `json:"can_post_messages,omitempty"`
+		CanEditMessage       bool       `json:"can_edit_messages,omitempty"`
+		CanDeleteMessage     bool       `json:"can_delete_messages,omitempty"`
+		CanInviteUser        bool       `json:"can_invite_users,omitempty"`
+		CanRestrictMember    bool       `json:"can_restrict_members,omitempty"`
+		CanPinMessage        bool       `json:"can_pin_messages,omitempty"`
+		CanPromoteMember     bool       `json:"can_promote_members,omitempty"`
+		CanSendMessage       bool       `json:"can_send_messages,omitempty"`
+		CanSendMediaMessage  bool       `json:"can_send_media_messages,omitempty"`
+		CanSendOtherMessage  bool       `json:"can_send_other_messages,omitempty"`
+		CanAddWebPagePreview bool       `json:"can_add_web_page_previews,omitempty"`
+	}
+
+	ChatMemberArrayResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
@@ -87,6 +121,59 @@ func parseChat(res *http.Response, body []byte) (*Chat, *http.Response, error) {
 	model := struct {
 		ErrorResponse
 		Result *Chat `json:"result,omitempty"`
+	}{}
+	if err := json.Unmarshal(body, &model); err != nil {
+		return nil, res, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, res, fmt.Errorf(model.Description)
+	}
+
+	return model.Result, res, nil
+}
+
+/*
+GetChatAdministrators Use this method to get a list of administrators in a chat.
+On success, returns an Array of ChatMember objects that contains information about all chat administrators except other bots.
+If the chat is a group or a supergroup and no administrators were appointed, only the creator will be returned.
+*/
+func (client *Client) GetChatAdministrators(chatID interface{}) *ChatMemberArrayResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointGetChatAdministrators, client.accessToken)
+	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v", chatID))
+
+	return &ChatMemberArrayResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// Commit request to telegram api
+func (chat *ChatMemberArrayResponse) Commit() ([]ChatMember, *http.Response, error) {
+	var errs []error
+	var body []byte
+	res := &http.Response{}
+
+	operation := func() error {
+		res, body, errs = chat.Request.EndBytes()
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, chat.Client.expBackOff); err != nil {
+		return nil, MakeHTTPResponse(chat.Request), err
+	}
+
+	return parseArrayChatMember(res, body)
+}
+
+func parseArrayChatMember(res *http.Response, body []byte) ([]ChatMember, *http.Response, error) {
+	model := struct {
+		ErrorResponse
+		Result []ChatMember `json:"result,omitempty"`
 	}{}
 	if err := json.Unmarshal(body, &model); err != nil {
 		return nil, res, err
