@@ -25,4 +25,5 @@ const (
 	EndpointSendVideoNote           = "/bot%v/sendVideoNote"
 	EndpointSendLocation            = "/bot%v/sendLocation"
 	EndpointEditMessageLiveLocation = "/bot%v/editMessageLiveLocation"
+	EndpointStopMessageLiveLocation = "/bot%v/stopMessageLiveLocation"
 )

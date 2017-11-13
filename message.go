@@ -346,6 +346,14 @@ type (
 		ReplyMarkup     *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
 		endpoint        string                `json:"-"`
 	}
+
+	StopMessageLiveLocation struct {
+		ChatID          string                `json:"chat_id,omitempty"`
+		MessageID       int64                 `json:"message_id,omitempty"`
+		InlineMessageID string                `json:"inline_message_id,omitempty"`
+		ReplyMarkup     *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
+		endpoint        string                `json:"-"`
+	}
 )
 
 /*
@@ -1239,6 +1247,71 @@ func (location *EditMessageLiveLocation) SetReplyMarkup(inlineKeyboard [][]Inlin
 // A location can be edited until its live_period expires or editing is explicitly disabled by a call to stopMessageLiveLocation.
 // On success, if the edited message was sent by the bot, the edited Message is returned, otherwise True is returned.
 func (client *Client) EditMessageLiveLocation(message EditMessageLiveLocation) (*http.Response, error) {
+	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message)
+
+	var errs []error
+	var body []byte
+	res := &http.Response{}
+
+	operation := func() error {
+		res, body, errs = request.EndBytes()
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, client.expBackOff); err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+/*
+NewStopMessageLiveLocation Use this method to stop updating a live location message sent by the bot or via the bot (for inline bots) before live_period expires.
+On success, if the message was sent by the bot, the sent Message is returned, otherwise True is returned.
+*/
+func NewStopMessageLiveLocation() *StopMessageLiveLocation {
+	return &StopMessageLiveLocation{
+		endpoint: EndpointStopMessageLiveLocation,
+	}
+}
+
+// SetChatId Required if inline_message_id is not specified.
+// Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+func (location *StopMessageLiveLocation) SetChatId(chatId string) *StopMessageLiveLocation {
+	location.ChatID = chatId
+	return location
+}
+
+// SetMessageId Required if inline_message_id is not specified. Identifier of the sent message
+func (location *StopMessageLiveLocation) SetMessageId(messageId int64) *StopMessageLiveLocation {
+	location.MessageID = messageId
+	return location
+}
+
+// SetInlineMessageId Required if chat_id and message_id are not specified. Identifier of the inline message
+func (location *StopMessageLiveLocation) SetInlineMessageId(messageId string) *StopMessageLiveLocation {
+	location.InlineMessageID = messageId
+	return location
+}
+
+// SetReplyMarkup A JSON-serialized object for a new inline keyboard.
+func (location *StopMessageLiveLocation) SetReplyMarkup(inlineKeyboard [][]InlineKeyboardButton) *StopMessageLiveLocation {
+	location.ReplyMarkup = &InlineKeyboardMarkup{
+		InlineKeyboard: inlineKeyboard,
+	}
+	return location
+}
+
+/*
+StopMessageLiveLocation Use this method to stop updating a live location message sent by the bot or via the bot
+(for inline bots) before live_period expires. On success, if the message was sent by the bot, the sent Message is returned,
+otherwise True is returned.
+*/
+func (client *Client) StopMessageLiveLocation(message StopMessageLiveLocation) (*http.Response, error) {
 	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
