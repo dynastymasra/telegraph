@@ -354,6 +354,19 @@ type (
 		ReplyMarkup     *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
 		endpoint        string                `json:"-"`
 	}
+
+	SendVenue struct {
+		ChatID              string       `json:"chat_id"`
+		Latitude            float64      `json:"latitude"`
+		Longitude           float64      `json:"longitude"`
+		Title               string       `json:"title"`
+		Address             string       `json:"address"`
+		FoursquareID        string       `json:"foursquare_id,omitempty"`
+		DisableNotification bool         `json:"disable_notification,omitempty"`
+		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
+		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
+		endpoint            string       `json:"-"`
+	}
 )
 
 /*
@@ -1332,6 +1345,98 @@ func (client *Client) StopMessageLiveLocation(message StopMessageLiveLocation) (
 		return nil, err
 	}
 	return res, nil
+}
+
+/*
+NewSendVenue Use this method to send information about a venue. On success, the sent Message is returned.
+*/
+func NewSendVenue(chatID, title, address string, latitude, longitude float64) *SendVenue {
+	return &SendVenue{
+		ChatID:    chatID,
+		Title:     title,
+		Address:   address,
+		Latitude:  latitude,
+		Longitude: longitude,
+		endpoint:  EndpointSendVenue,
+	}
+}
+
+// SetFoursquareId SetFoursquareId
+func (venue *SendVenue) SetFoursquareId(foursquareID string) *SendVenue {
+	venue.FoursquareID = foursquareID
+	return venue
+}
+
+// SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
+func (venue *SendVenue) SetDisableNotification(disable bool) *SendVenue {
+	venue.DisableNotification = disable
+	return venue
+}
+
+// SetReplyToMessageId If the message is a reply, ID of the original message
+func (venue *SendVenue) SetReplyToMessageId(messageId int64) *SendVenue {
+	venue.ReplyToMessageID = messageId
+	return venue
+}
+
+// SetForceReply
+func (venue *SendVenue) SetForceReply(reply ForceReply) *SendVenue {
+	venue.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		nil,
+		&reply,
+	}
+	return venue
+}
+
+// SetInlineKeyboardMarkup
+func (venue *SendVenue) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendVenue {
+	venue.ReplyMarkup = &ReplyMarkup{
+		&InlineKeyboardMarkup{
+			InlineKeyboard: inline,
+		},
+		nil,
+		nil,
+		nil,
+	}
+	return venue
+}
+
+// SetReplyKeyboardMarkup
+func (venue *SendVenue) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendVenue {
+	venue.ReplyMarkup = &ReplyMarkup{
+		nil,
+		&reply,
+		nil,
+		nil,
+	}
+	return venue
+}
+
+// SetReplyKeyboardRemove
+func (venue *SendVenue) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendVenue {
+	venue.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		&remove,
+		nil,
+	}
+	return venue
+}
+
+/*
+SendVenue Use this method to send information about a venue. On success, the sent Message is returned.
+*/
+func (client *Client) SendVenue(message SendVenue) *MessageResponse {
+	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message)
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
 }
 
 // Commit process request send message to telegram

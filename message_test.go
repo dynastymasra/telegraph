@@ -1183,3 +1183,66 @@ func TestStopMessageLiveLocationError(t *testing.T) {
 	assert.Nil(t, res)
 	assert.Error(t, err)
 }
+
+func TestSSendVenueSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendVenue, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 256,
+			"from": {
+				"id": 234234,
+				"is_bot": true,
+				"first_name": "cube",
+				"username": "byte"
+			},
+			"chat": {
+				"id": 234234324,
+				"first_name": "Dimas",
+				"last_name": "Ragil T",
+				"username": "dynastymasra",
+				"type": "private"
+			},
+			"date": 1510552858,
+			"location": {
+				"latitude": 234234.998,
+				"longitude": 23423423.09
+			},
+			"venue": {
+				"location": {
+					"latitude": 234234.099,
+					"longitude": -234234.98
+				},
+				"title": "title",
+				"address": "address"
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	inline := [][]telegraph.InlineKeyboardButton{}
+	message := telegraph.NewSendVenue("23423423", "title", "address", 32423423.09, 234234.98).
+		SetFoursquareId("23423432").SetDisableNotification(true).SetInlineKeyboardMarkup(inline).
+		SetForceReply(telegraph.ForceReply{}).SetReplyToMessageId(234324).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{})
+	model, res, err := client.SendVenue(*message).Commit()
+
+	assert.NotNil(t, model)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSSendVenueError(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointSendVenue, "token")).Reply(http.StatusOK).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message := telegraph.NewSendVenue("23423423", "title", "address", 32423423.09, 234234.98).
+		SetFoursquareId("23423432").SetDisableNotification(true).
+		SetForceReply(telegraph.ForceReply{}).SetReplyToMessageId(234324)
+	model, res, err := client.SendVenue(*message).Commit()
+
+	assert.Nil(t, model)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
