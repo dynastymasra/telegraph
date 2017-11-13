@@ -1221,7 +1221,7 @@ func TestSendVenueSuccess(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 	inline := [][]telegraph.InlineKeyboardButton{}
-	message := telegraph.NewSendVenue("23423423", "title", "address", 32423423.09, 234234.98).
+	message := telegraph.NewVenueMessage("23423423", "title", "address", 32423423.09, 234234.98).
 		SetFoursquareId("23423432").SetDisableNotification(true).SetInlineKeyboardMarkup(inline).
 		SetForceReply(telegraph.ForceReply{}).SetReplyToMessageId(234324).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{})
@@ -1237,7 +1237,7 @@ func TestSendVenueError(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message := telegraph.NewSendVenue("23423423", "title", "address", 32423423.09, 234234.98).
+	message := telegraph.NewVenueMessage("23423423", "title", "address", 32423423.09, 234234.98).
 		SetFoursquareId("23423432").SetDisableNotification(true).
 		SetForceReply(telegraph.ForceReply{}).SetReplyToMessageId(234324)
 	model, res, err := client.SendVenue(*message).Commit()
@@ -1278,7 +1278,7 @@ func TestSendContactSuccess(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 	inline := [][]telegraph.InlineKeyboardButton{}
-	message := telegraph.NewSendContact("23423423", "34234234234234234", "Cube").
+	message := telegraph.NewContactMessage("23423423", "34234234234234234", "Cube").
 		SetDisableNotification(true).SetInlineKeyboardMarkup(inline).SetLastName("byte").
 		SetForceReply(telegraph.ForceReply{}).SetReplyToMessageId(234324).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{})
@@ -1295,7 +1295,7 @@ func TestSendContactError(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 	inline := [][]telegraph.InlineKeyboardButton{}
-	message := telegraph.NewSendContact("23423423", "34234234234234234", "Cube").
+	message := telegraph.NewContactMessage("23423423", "34234234234234234", "Cube").
 		SetDisableNotification(true).SetInlineKeyboardMarkup(inline).SetLastName("byte").
 		SetForceReply(telegraph.ForceReply{}).SetReplyToMessageId(234324).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{})

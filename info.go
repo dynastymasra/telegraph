@@ -129,7 +129,7 @@ func (info *InfoResponse) Commit() (*WebhookInfo, *http.Response, error) {
 	}
 
 	if err := backoff.Retry(operation, info.Client.expBackOff); err != nil {
-		return nil, makeHTTPResponse(info.Request), err
+		return nil, MakeHTTPResponse(info.Request), err
 	}
 	return parseWebHookInfo(res, body)
 }

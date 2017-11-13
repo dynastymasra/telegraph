@@ -54,7 +54,7 @@ func (user *UserResponse) Commit() (*User, *http.Response, error) {
 	}
 
 	if err := backoff.Retry(operation, user.Client.expBackOff); err != nil {
-		return nil, makeHTTPResponse(user.Request), err
+		return nil, MakeHTTPResponse(user.Request), err
 	}
 
 	return parseUser(res, body)

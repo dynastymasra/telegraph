@@ -1359,9 +1359,9 @@ func (client *Client) StopMessageLiveLocation(message StopMessageLiveLocation) (
 }
 
 /*
-NewSendVenue Use this method to send information about a venue. On success, the sent Message is returned.
+NewVenueMessage Use this method to send information about a venue. On success, the sent Message is returned.
 */
-func NewSendVenue(chatID, title, address string, latitude, longitude float64) *SendVenue {
+func NewVenueMessage(chatID, title, address string, latitude, longitude float64) *SendVenue {
 	return &SendVenue{
 		ChatID:    chatID,
 		Title:     title,
@@ -1451,9 +1451,9 @@ func (client *Client) SendVenue(message SendVenue) *MessageResponse {
 }
 
 /*
-NewSendContact Use this method to send phone contacts. On success, the sent Message is returned.
+NewContactMessage Use this method to send phone contacts. On success, the sent Message is returned.
 */
-func NewSendContact(chatID, phoneNumber, firstName string) *SendContact {
+func NewContactMessage(chatID, phoneNumber, firstName string) *SendContact {
 	return &SendContact{
 		ChatID:      chatID,
 		PhoneNumber: phoneNumber,
@@ -1555,7 +1555,7 @@ func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
 	}
 
 	if err := backoff.Retry(operation, message.Client.expBackOff); err != nil {
-		return nil, makeHTTPResponse(message.Request), err
+		return nil, MakeHTTPResponse(message.Request), err
 	}
 	return parseMessage(res, body)
 }

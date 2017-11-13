@@ -28,4 +28,5 @@ const (
 	EndpointStopMessageLiveLocation = "/bot%v/stopMessageLiveLocation"
 	EndpointSendVenue               = "/bot%v/sendVenue"
 	EndpointSendContact             = "/bot%v/sendContact"
+	EndpointSendChatAction          = "/bot%v/sendChatAction"
 )
