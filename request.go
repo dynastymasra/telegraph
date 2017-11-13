@@ -315,12 +315,9 @@ func (client *Client) SetChatPhoto(chatID interface{}, path string) *VoidRespons
 DeleteChatPhoto Use this method to delete a chat photo. Photos can't be changed for private chats. The bot must b
 */
 func (client *Client) DeleteChatPhoto(chatID interface{}) *VoidResponse {
-	body := JSON{
-		"chat_id": chatID,
-	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointDeleteChatPhoto, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	request := gorequest.New().Get(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v", chatID))
 
 	return &VoidResponse{
 		Client:  client,
@@ -438,6 +435,44 @@ func (client *Client) LeaveChat(chatID interface{}) *VoidResponse {
 
 	url := client.baseURL + fmt.Sprintf(EndpointLeaveChat, client.accessToken)
 	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+SetChatStickerSet Use this method to set a new group sticker set for a supergroup.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Use the field can_set_sticker_set optionally returned in getChat requests to check if the bot can use this method.
+Returns True on success.
+*/
+func (client *Client) SetChatStickerSet(chatID interface{}, stickerSetName string) *VoidResponse {
+	body := JSON{
+		"chat_id":          chatID,
+		"sticker_set_name": stickerSetName,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSetChatStickerSet, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+DeleteChatStickerSet Use this method to delete a group sticker set from a supergroup.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Use the field can_set_sticker_set optionally returned in getChat requests to check if the bot can use this method.
+Returns True on success.
+*/
+func (client *Client) DeleteChatStickerSet(chatID interface{}) *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointDeleteChatStickerSet, client.accessToken)
+	request := gorequest.New().Get(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v", chatID))
 
 	return &VoidResponse{
 		Client:  client,

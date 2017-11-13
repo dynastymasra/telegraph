@@ -123,7 +123,7 @@ func TestSetChatPhotoSuccess(t *testing.T) {
 }
 
 func TestDeleteChatPhotoSuccess(t *testing.T) {
-	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointDeleteChatPhoto, "token")).Reply(http.StatusOK).JSON(`{
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointDeleteChatPhoto, "token")).Reply(http.StatusOK).JSON(`{
 		"ok": true,
 		"result": true
 	}`)
@@ -201,6 +201,34 @@ func TestLeaveChatSuccess(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 	status, err := client.LeaveChat(32423423).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestSetChatStickerSetSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSetChatStickerSet, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.SetChatStickerSet(32423423, "name").Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestDeleteChatStickerSetSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointDeleteChatStickerSet, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.DeleteChatStickerSet(32423423).Commit()
 
 	assert.Equal(t, http.StatusOK, status)
 	assert.NoError(t, err)
