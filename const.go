@@ -29,4 +29,6 @@ const (
 	EndpointGetUserProfilePhoto     = "/bot%v/getUserProfilePhotos"
 	EndpointGetFile                 = "/bot%v/getFile"
 	EndpointGetContent              = "/file/bot%v/%v"
+	EndpointKickChatMember          = "/bot%v/kickChatMember"
+	EndpointUnbanChatMember         = "/bot%v/unbanChatMember"
 )

@@ -34,3 +34,31 @@ func TestSendChatActionError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, status)
 	assert.Error(t, err)
 }
+
+func TestKickChatMemberSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointKickChatMember, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.KickChatMember("234234234", 123423423).SetUntilDate(2343242342).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestUnbanChatMemberSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointUnbanChatMember, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.UnbanChatMember("32423423", 23423423).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
