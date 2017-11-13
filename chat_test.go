@@ -204,3 +204,72 @@ func TestGetChatMembersCountFailed(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestGetChatMemberSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetChatMember, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"user": {
+				"id": 123213,
+				"is_bot": false,
+				"first_name": "Dimas",
+				"last_name": "Ragil T",
+				"username": "dynastymasra",
+				"language_code": "en-ID"
+			},
+			"status": "member"
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	model, res, err := client.GetChatMember("33242342", 23432423).Commit()
+
+	assert.NotNil(t, model)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestGetChatMemberError(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointGetChatMember, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	model, res, err := client.GetChatMember("33242342", 23432423).Commit()
+
+	assert.Nil(t, model)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestGetChatMemberFailedUnmarshal(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetChatMember, "token")).Reply(http.StatusBadRequest).XML("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	model, res, err := client.GetChatMember("33242342", 23432423).Commit()
+
+	assert.Nil(t, model)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestGetChatMemberFailed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetChatMember, "token")).Reply(http.StatusNotFound).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: chat not found"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	model, res, err := client.GetChatMember("33242342", 23432423).Commit()
+
+	assert.Nil(t, model)
+	assert.Equal(t, http.StatusNotFound, res.StatusCode)
+	assert.Error(t, err)
+}

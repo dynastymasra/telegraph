@@ -75,6 +75,11 @@ type (
 		CanAddWebPagePreview bool       `json:"can_add_web_page_previews,omitempty"`
 	}
 
+	ChatMemberResponse struct {
+		Client  *Client
+		Request *gorequest.SuperAgent
+	}
+
 	ChatMemberArrayResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
@@ -230,6 +235,57 @@ func parseIntegerResponse(res *http.Response, body []byte) (*int, *http.Response
 	model := struct {
 		ErrorResponse
 		Result *int `json:"result,omitempty"`
+	}{}
+	if err := json.Unmarshal(body, &model); err != nil {
+		return nil, res, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, res, fmt.Errorf(model.Description)
+	}
+
+	return model.Result, res, nil
+}
+
+/*
+GetChatMember Use this method to get information about a member of a chat. Returns a ChatMember object on success.
+*/
+func (client *Client) GetChatMember(chatID interface{}, userID int64) *ChatMemberResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointGetChatMember, client.accessToken)
+	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v&user_id=%v", chatID, userID))
+
+	return &ChatMemberResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// Commit request to telegram api
+func (chat *ChatMemberResponse) Commit() (*ChatMember, *http.Response, error) {
+	var errs []error
+	var body []byte
+	res := &http.Response{}
+
+	operation := func() error {
+		res, body, errs = chat.Request.EndBytes()
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, chat.Client.expBackOff); err != nil {
+		return nil, MakeHTTPResponse(chat.Request), err
+	}
+
+	return parseChatMemberResponse(res, body)
+}
+
+func parseChatMemberResponse(res *http.Response, body []byte) (*ChatMember, *http.Response, error) {
+	model := struct {
+		ErrorResponse
+		Result *ChatMember `json:"result,omitempty"`
 	}{}
 	if err := json.Unmarshal(body, &model); err != nil {
 		return nil, res, err

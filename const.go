@@ -44,4 +44,5 @@ const (
 	EndpointGetChat                 = "/bot%v/getChat"
 	EndpointGetChatAdministrators   = "/bot%v/getChatAdministrators"
 	EndpointGetChatMembersCount     = "/bot%v/getChatMembersCount"
+	EndpointGetChatMember           = "/bot%v/getChatMember"
 )
