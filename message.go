@@ -10,16 +10,10 @@ import (
 )
 
 type (
-	ChatType  string
 	ParseMode string
 )
 
 const (
-	ChatTypePrivate    ChatType = "private"
-	ChatTypeGroup               = "group"
-	ChatTypeSuperGroup          = "supergroup"
-	ChatTypeChannel             = "channel"
-
 	ParseModeMarkdown ParseMode = "Markdown"
 	ParseModeHTML               = "HTML"
 )
@@ -173,18 +167,6 @@ type (
 		OrderInfo               *OrderInfo `json:"order_info,omitempty"`
 		TelegramPaymentChargeID string     `json:"telegram_payment_charge_id"`
 		ProviderPaymentChargeID string     `json:"provider_payment_charge_id"`
-	}
-
-	Chat struct {
-		ID                     int64    `json:"id"`
-		Type                   ChatType `json:"type"`
-		Title                  string   `json:"title,omitempty"`
-		Username               string   `json:"username,omitempty"`
-		FirstName              string   `json:"first_name,omitempty"`
-		LastName               string   `json:"last_name,omitempty"`
-		AllMemberAdministrator bool     `json:"all_members_are_administrators,omitempty"`
-		Description            string   `json:"description,omitempty"`
-		InviteLink             string   `json:"invite_link,omitempty"`
 	}
 
 	From struct {
