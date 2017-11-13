@@ -62,3 +62,146 @@ func TestUnbanChatMemberSuccess(t *testing.T) {
 	assert.Equal(t, http.StatusOK, status)
 	assert.NoError(t, err)
 }
+
+func TestRestrictChatMemberSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointRestrictChatMember, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.RestrictChatMember("32423423", 23423423).SetCanSendMessages(true).
+		SetCanSendMediaMessages(true).SetCanSendOtherMessages(true).SetCanAddWebPagePreviews(true).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestPromoteChatMemberSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointPromoteChatMember, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.PromoteChatMember("32423423", 23423423).SetCanChangeInfo(true).
+		SetCanPostMessages(true).SetCanEditMessages(true).SetCanDeleteMessages(true).SetCanInviteUsers(true).
+		SetCanRestrictMembers(true).SetCanPinMessages(true).SetCanPromoteMembers(true).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestExportChatInviteLinkSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointExportChatInviteLink, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.ExportChatInviteLink(32423423).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestSetChatPhotoSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSetChatPhoto, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.SetChatPhoto(32423423, "./LICENSE").Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestDeleteChatPhotoSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointDeleteChatPhoto, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.DeleteChatPhoto(32423423).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestSetChatTitleSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSetChatTitle, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.SetChatTitle(32423423, "title").Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestSetDescriptionSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSetChatDescription, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.SetChatDescription(32423423).SetDescription("description").Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestPinChatMessageSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointPinChatMessage, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.PinChatMessage(32423423, 23423423).SetDisableNotification(true).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestUnpinChatMessageSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointUnpinChatMessage, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.UnpinChatMessage(32423423).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestLeaveChatSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointLeaveChat, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.LeaveChat(32423423).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}

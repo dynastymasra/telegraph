@@ -83,3 +83,364 @@ func (client *Client) UnbanChatMember(chatID interface{}, userID int64) *VoidRes
 		Request: request,
 	}
 }
+
+/*
+RestrictChatMember Use this method to restrict a user in a supergroup.
+The bot must be an administrator in the supergroup for this to work and must have the appropriate admin rights.
+Pass True for all boolean parameters to lift restrictions from a user. Returns True on success.
+*/
+func (client *Client) RestrictChatMember(chatID interface{}, userID int64) *VoidResponse {
+	body := JSON{
+		"chat_id": chatID,
+		"user_id": userID,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointRestrictChatMember, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetCanSendMessages Pass True, if the user can send text messages, contacts, locations and venues
+func (call *VoidResponse) SetCanSendMessages(can bool) *VoidResponse {
+	body := JSON{
+		"can_send_messages": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetCanSendMediaMessages Pass True, if the user can send audios, documents, photos, videos, video notes and voice notes,
+// implies can_send_messages
+func (call *VoidResponse) SetCanSendMediaMessages(can bool) *VoidResponse {
+	body := JSON{
+		"can_send_media_messages": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetCanSendOtherMessages Pass True, if the user can send animations, games, stickers and use inline bots,
+// implies can_send_media_messages
+func (call *VoidResponse) SetCanSendOtherMessages(can bool) *VoidResponse {
+	body := JSON{
+		"can_send_other_messages": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetCanAddWebPagePreviews Pass True, if the user may add web page previews to their messages, implies can_send_media_messages
+func (call *VoidResponse) SetCanAddWebPagePreviews(can bool) *VoidResponse {
+	body := JSON{
+		"can_add_web_page_previews": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+/*
+PromoteChatMember Use this method to promote or demote a user in a supergroup or a channel.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Pass False for all boolean parameters to demote a user. Returns True on success.
+*/
+func (client *Client) PromoteChatMember(chatID interface{}, userID int64) *VoidResponse {
+	body := JSON{
+		"chat_id": chatID,
+		"user_id": userID,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointPromoteChatMember, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetCanChangeInfo Pass True, if the administrator can change chat title, photo and other settings
+func (call *VoidResponse) SetCanChangeInfo(can bool) *VoidResponse {
+	body := JSON{
+		"can_change_info": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetCanPostMessages Pass True, if the administrator can create channel posts, channels only
+func (call *VoidResponse) SetCanPostMessages(can bool) *VoidResponse {
+	body := JSON{
+		"can_post_messages": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetCanEditMessages Pass True, if the administrator can edit messages of other users, channels only
+func (call *VoidResponse) SetCanEditMessages(can bool) *VoidResponse {
+	body := JSON{
+		"can_edit_messages": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetCanDeleteMessages Pass True, if the administrator can delete messages of other users
+func (call *VoidResponse) SetCanDeleteMessages(can bool) *VoidResponse {
+	body := JSON{
+		"can_delete_messages": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetCanInviteUsers Pass True, if the administrator can invite new users to the chat
+func (call *VoidResponse) SetCanInviteUsers(can bool) *VoidResponse {
+	body := JSON{
+		"can_invite_users": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetCanRestrictMembers Pass True, if the administrator can restrict, ban or unban chat members
+func (call *VoidResponse) SetCanRestrictMembers(can bool) *VoidResponse {
+	body := JSON{
+		"can_restrict_members": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetCanPinMessages Pass True, if the administrator can pin messages, supergroups only
+func (call *VoidResponse) SetCanPinMessages(can bool) *VoidResponse {
+	body := JSON{
+		"can_pin_messages": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetCanPromoteMembers Pass True,
+// if the administrator can add new administrators with a subset of his own privileges or demote administrators that he has promoted,
+// directly or indirectly (promoted by administrators that were appointed by him)
+func (call *VoidResponse) SetCanPromoteMembers(can bool) *VoidResponse {
+	body := JSON{
+		"can_promote_members": can,
+	}
+
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+/*
+ExportChatInviteLink Use this method to export an invite link to a supergroup or a channel.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Returns exported invite link as String on success.
+*/
+func (client *Client) ExportChatInviteLink(chatID interface{}) *VoidResponse {
+	body := JSON{
+		"chat_id": chatID,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointExportChatInviteLink, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+SetChatPhoto Use this method to set a new profile photo for the chat. Photos can't be changed for private chats.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Returns True on success.
+*/
+func (client *Client) SetChatPhoto(chatID interface{}, path string) *VoidResponse {
+	body := JSON{
+		"chat_id": chatID,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSetChatPhoto, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeMultipart).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body).
+		SendFile(path, "", "photo")
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+DeleteChatPhoto Use this method to delete a chat photo. Photos can't be changed for private chats. The bot must b
+*/
+func (client *Client) DeleteChatPhoto(chatID interface{}) *VoidResponse {
+	body := JSON{
+		"chat_id": chatID,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointDeleteChatPhoto, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+SetChatTitle Use this method to change the title of a chat. Titles can't be changed for private chats.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Returns True on success.
+*/
+func (client *Client) SetChatTitle(chatID interface{}, title string) *VoidResponse {
+	body := JSON{
+		"chat_id": chatID,
+		"title":   title,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSetChatTitle, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+SetChatDescription Use this method to change the description of a supergroup or a channel.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Returns True on success.
+*/
+func (client *Client) SetChatDescription(chatID interface{}) *VoidResponse {
+	body := JSON{
+		"chat_id": chatID,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSetChatDescription, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetDescription New chat description, 0-255 characters
+func (call *VoidResponse) SetDescription(description string) *VoidResponse {
+	body := JSON{
+		"description": description,
+	}
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+/*
+PinChatMessage Use this method to pin a message in a supergroup.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Returns True on success.
+*/
+func (client *Client) PinChatMessage(chatID interface{}, messageID int64) *VoidResponse {
+	body := JSON{
+		"chat_id":    chatID,
+		"message_id": messageID,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointPinChatMessage, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetDisableNotification Pass True, if it is not necessary to send a notification to all group members about the new pinned message
+func (call *VoidResponse) SetDisableNotification(disable bool) *VoidResponse {
+	body := JSON{
+		"disable_notification": disable,
+	}
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+/*
+UnpinChatMessage Use this method to unpin a message in a supergroup chat.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Returns True on success.
+*/
+func (client *Client) UnpinChatMessage(chatID interface{}) *VoidResponse {
+	body := JSON{
+		"chat_id": chatID,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointUnpinChatMessage, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+LeaveChat Use this method for your bot to leave a group, supergroup or channel. Returns True on success.
+*/
+func (client *Client) LeaveChat(chatID interface{}) *VoidResponse {
+	body := JSON{
+		"chat_id": chatID,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointLeaveChat, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
