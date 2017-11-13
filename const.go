@@ -12,8 +12,6 @@ const (
 	EndpointGetUpdate               = "/bot%v/getUpdates"
 	EndpointDeleteWebHook           = "/bot%v/deleteWebhook"
 	EndpointGetWebHookInfo          = "/bot%v/getWebhookInfo"
-	EndpointGetFile                 = "/bot%v/getFile"
-	EndpointGetContent              = "/file/bot%v/%v"
 	EndpointSendMessage             = "/bot%v/sendMessage"
 	EndpointForwardMessage          = "/bot%v/forwardMessage"
 	EndpointSendPhoto               = "/bot%v/sendPhoto"
@@ -29,4 +27,6 @@ const (
 	EndpointSendContact             = "/bot%v/sendContact"
 	EndpointSendChatAction          = "/bot%v/sendChatAction"
 	EndpointGetUserProfilePhoto     = "/bot%v/getUserProfilePhotos"
+	EndpointGetFile                 = "/bot%v/getFile"
+	EndpointGetContent              = "/file/bot%v/%v"
 )

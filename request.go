@@ -8,11 +8,6 @@ import (
 
 type (
 	JSON map[string]interface{}
-
-	PrepareRequest struct {
-		Client  *Client
-		Request *gorequest.SuperAgent
-	}
 )
 
 func (client *Client) SendChatAction(chatID, action string) *VoidResponse {

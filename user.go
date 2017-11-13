@@ -151,3 +151,27 @@ func parseUserProfilePhotos(res *http.Response, body []byte) (*UserProfilePhotos
 
 	return model.Result, res, nil
 }
+
+// Download direct get file and download file from telegram
+func (user *UserProfilePhotosResponse) Download() (*http.Response, []byte, error) {
+	profile, _, err := user.Commit()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var fileID string
+	var fileSize int
+	for _, first := range profile.Photos {
+		for _, second := range first {
+			if second.FileSize > fileSize {
+				fileID = second.FileID
+				fileSize = second.FileSize
+			}
+		}
+		if len(fileID) > 0 {
+			break
+		}
+	}
+
+	return user.Client.GetFile(fileID).Download()
+}

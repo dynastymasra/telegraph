@@ -3,100 +3,96 @@ package telegraph
 import (
 	"fmt"
 
+	"encoding/json"
+	"net/http"
+
+	"github.com/cenkalti/backoff"
 	"github.com/parnurzeal/gorequest"
 )
 
 type (
-	GetFileCall struct {
+	File struct {
+		FileID   string `json:"file_id"`
+		FileSize int64  `json:"file_size,omitempty"`
+		FilePath string `json:"file_path,omitempty"`
+	}
+
+	FileResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
-
-	getFileResponse struct {
-		OK          bool   `json:"ok"`
-		Result      result `json:"result,omitempty"`
-		Description string `json:"description,omitempty"`
-	}
-
-	result struct {
-		FileID   string `json:"file_id"`
-		FileSize int64  `json:"file_size"`
-		FilePath string `json:"file_path"`
-	}
 )
 
-// GetFile get path file from telegram
-func (client *Client) GetFile(fileId string) *GetFileCall {
+/*
+GetFile This object represents a file ready to be downloaded.
+The file can be downloaded via the link https://api.telegram.org/file/bot<token>/<file_path>.
+It is guaranteed that the link will be valid for at least 1 hour.
+When the link expires, a new one can be requested by calling getFile.
+*/
+func (client *Client) GetFile(fileId string) *FileResponse {
 	url := client.baseURL + fmt.Sprintf(EndpointGetFile, client.accessToken)
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Query(fmt.Sprintf("file_id=%v", fileId))
 
-	return &GetFileCall{
+	return &FileResponse{
 		Client:  client,
 		Request: request,
 	}
 }
 
-// Download used for direct download file after call GetFile
-//func (call *GetFileCall) Download() (*http.Response, []byte, error) {
-//	res, body, err := call.Commit()
-//	if err != nil {
-//		return nil, nil, err
-//	}
-//	result := &getFileResponse{}
-//	if err := json.Unmarshal(body, result); err != nil {
-//		return nil, nil, err
-//	}
-//	if res.StatusCode != http.StatusOK {
-//		return nil, nil, fmt.Errorf(string(body))
-//	}
-//
-//	return call.Client.GetContent(result.Result.FilePath).Commit()
-//}
+// Commit request to telegram api
+func (file *FileResponse) Commit() (*File, *http.Response, error) {
+	var errs []error
+	var body []byte
+	res := &http.Response{}
 
-// Commit make request get file to telegram
-//func (call *GetFileCall) Commit() (*http.Response, []byte, error) {
-//	prepareRequest := PrepareRequest{
-//		Client:  call.Client,
-//		Request: call.Request,
-//	}
-//	return prepareRequest.Commit()
-//}
+	operation := func() error {
+		res, body, errs = file.Request.EndBytes()
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
 
-// Download download random user profile photo
-//func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) {
-//	res, body, err := call.Commit()
-//	if err != nil {
-//		return nil, nil, err
-//	}
-//	result := &getUserProfilePhotoResponse{}
-//	if err := json.Unmarshal(body, result); err != nil {
-//		return nil, nil, err
-//	}
-//	if res.StatusCode != http.StatusOK {
-//		return nil, nil, fmt.Errorf(string(body))
-//	}
-//
-//	var id string
-//	var size int64
-//	for _, first := range result.Result.Photos {
-//		for _, second := range first {
-//			if second.FileSize >= size {
-//				id = second.FileID
-//				size = second.FileSize
-//			}
-//		}
-//	}
-//
-//	return call.Client.GetFile(id).Download()
-//}
+	if err := backoff.Retry(operation, file.Client.expBackOff); err != nil {
+		return nil, MakeHTTPResponse(file.Request), err
+	}
+
+	return parseFile(res, body)
+}
+
+func parseFile(res *http.Response, body []byte) (*File, *http.Response, error) {
+	model := struct {
+		ErrorResponse
+		Result *File `json:"result,omitempty"`
+	}{}
+	if err := json.Unmarshal(body, &model); err != nil {
+		return nil, res, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, res, fmt.Errorf(model.Description)
+	}
+
+	return model.Result, res, nil
+}
+
+// Download direct download file from telegram after get file
+func (file *FileResponse) Download() (*http.Response, []byte, error) {
+	model, _, err := file.Commit()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return file.Client.GetContent(model.FilePath).Download()
+}
 
 // GetContent used after call function GetFile, this download file from telegram
-func (client *Client) GetContent(path string) *PrepareRequest {
+func (client *Client) GetContent(path string) *VoidResponse {
 	url := client.baseURL + fmt.Sprintf(EndpointGetContent, client.accessToken, path)
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
 
-	return &PrepareRequest{
+	return &VoidResponse{
 		Client:  client,
 		Request: request,
 	}

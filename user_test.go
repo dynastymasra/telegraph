@@ -149,3 +149,73 @@ func TestGetUserProfilePhotosFailed(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestGetUserProfilePhotosDownloadSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetUserProfilePhoto, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"total_count": 3,
+			"photos": [
+				[
+					{
+						"file_id": "AgADBQADHqgxG_jQeQRAHAUL7cXIIy4QvjIABDpyUK1bDUxwZeUAAgI",
+						"file_size": 11160,
+						"width": 160,
+						"height": 160
+					},
+					{
+						"file_id": "AgAKBQADBqgxG_jQeQRAHAUL7cXIIy4QvjIABEQQfjmV2aXWZuUAAgI",
+						"file_size": 30082,
+						"width": 320,
+						"height": 320
+					},
+					{
+						"file_id": "AgADSQADBqgxG_jQeQRAHAUL7cXIIy4QvjIABIJ0vp2ffevPZ-UAAgI",
+						"file_size": 39421,
+						"width": 640,
+						"height": 640
+					}
+				]
+			]
+		}
+	}`)
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetFile, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"file_id": "AgADSQADBqgxG_jQeQRAHAUL7cXIIy4QvjIABIJ0vp2ffevPZ-UAAgI",
+			"file_size": 39421,
+			"file_path": "path"
+		}
+	}`)
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetContent, "token", "path")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	res, body, err := client.GetUserProfilePhotos(123123213).SetLimit(10).SetOffset(10).Download()
+
+	assert.NotNil(t, res)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NotNil(t, body)
+	assert.NoError(t, err)
+}
+
+func TestGetUserProfilePhotosDownloadFailed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetUserProfilePhoto, "token")).Reply(http.StatusUnauthorized).JSON(`{
+		"ok": false,
+		"error_code": 401,
+		"description": "Unauthorized"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	res, body, err := client.GetUserProfilePhotos(123123213).SetLimit(10).SetOffset(10).Download()
+
+	assert.Nil(t, res)
+	assert.Nil(t, body)
+	assert.Error(t, err)
+}

@@ -12,11 +12,8 @@ import (
 
 type (
 	VoidResponse struct {
-		Client   *Client
-		Request  *gorequest.SuperAgent
-		err      error
-		Response *http.Response
-		Body     []byte
+		Client  *Client
+		Request *gorequest.SuperAgent
 	}
 
 	ErrorResponse struct {
@@ -63,6 +60,31 @@ func (call *VoidResponse) Commit() (int, error) {
 	}
 
 	return res.StatusCode, nil
+}
+
+// Download response from telegram API
+func (call *VoidResponse) Download() (*http.Response, []byte, error) {
+	var errs []error
+	var body []byte
+	res := &http.Response{}
+
+	operation := func() error {
+		res, body, errs = call.Request.EndBytes()
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, call.Client.expBackOff); err != nil {
+		return nil, nil, err
+	}
+
+	if res.StatusCode >= http.StatusBadRequest {
+		_, err := parseErrorResponse(res, body)
+		return nil, nil, err
+	}
+	return res, body, nil
 }
 
 func parseErrorResponse(res *http.Response, body []byte) (int, error) {
