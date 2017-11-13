@@ -102,13 +102,6 @@ type (
 		Animation    *Animation      `json:"animation,animation"`
 	}
 
-	PhotoSize struct {
-		FileID   string `json:"file_id"`
-		Width    int    `json:"width"`
-		Height   int    `json:"height"`
-		FileSize int    `json:"file_size"`
-	}
-
 	Sticker struct {
 		FileID       string        `json:"file_id"`
 		Width        int           `json:"width"`

@@ -12,20 +12,6 @@ type (
 		Request *gorequest.SuperAgent
 	}
 
-	GetUserProfilePhotoCall struct {
-		Client  *Client
-		Request *gorequest.SuperAgent
-	}
-
-	getUserProfilePhotoResponse struct {
-		Result      photos `json:"result,omitempty"`
-		Description string `json:"description,omitempty"`
-	}
-
-	photos struct {
-		Photos [][]result `json:"photos"`
-	}
-
 	getFileResponse struct {
 		OK          bool   `json:"ok"`
 		Result      result `json:"result,omitempty"`
@@ -77,34 +63,6 @@ func (client *Client) GetFile(fileId string) *GetFileCall {
 //	return prepareRequest.Commit()
 //}
 
-// GetUserProfilePhoto prepare get user profile photo
-func (client *Client) GetUserProfilePhoto(userID string) *GetUserProfilePhotoCall {
-	url := client.baseURL + fmt.Sprintf(EndpointGetUserProfilePhoto, client.accessToken)
-	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Query(fmt.Sprintf("user_id=%v", userID))
-
-	return &GetUserProfilePhotoCall{
-		Client:  client,
-		Request: request,
-	}
-}
-
-// Limit set limit response returned
-func (call *GetUserProfilePhotoCall) Limit(limit int) *GetUserProfilePhotoCall {
-	return &GetUserProfilePhotoCall{
-		Client:  call.Client,
-		Request: call.Request.Query(fmt.Sprintf("limit=%v", limit)),
-	}
-}
-
-// Offset set offset response returned
-func (call *GetUserProfilePhotoCall) Offset(offset int) *GetUserProfilePhotoCall {
-	return &GetUserProfilePhotoCall{
-		Client:  call.Client,
-		Request: call.Request.Query(fmt.Sprintf("offset=%v", offset)),
-	}
-}
-
 // Download download random user profile photo
 //func (call *GetUserProfilePhotoCall) Download() (*http.Response, []byte, error) {
 //	res, body, err := call.Commit()
@@ -131,15 +89,6 @@ func (call *GetUserProfilePhotoCall) Offset(offset int) *GetUserProfilePhotoCall
 //	}
 //
 //	return call.Client.GetFile(id).Download()
-//}
-
-// Commit get user profile photo
-//func (call *GetUserProfilePhotoCall) Commit() (*http.Response, []byte, error) {
-//	prepareRequest := PrepareRequest{
-//		Client:  call.Client,
-//		Request: call.Request,
-//	}
-//	return prepareRequest.Commit()
 //}
 
 // GetContent used after call function GetFile, this download file from telegram
