@@ -367,6 +367,17 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 		endpoint            string       `json:"-"`
 	}
+
+	SendContact struct {
+		ChatID              string       `json:"chat_id"`
+		PhoneNumber         string       `json:"phone_number"`
+		FirstName           string       `json:"first_name"`
+		LastName            string       `json:"last_name,omitempty"`
+		DisableNotification bool         `json:"disable_notification,omitempty"`
+		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
+		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
+		endpoint            string       `json:"-"`
+	}
 )
 
 /*
@@ -1429,6 +1440,96 @@ func (venue *SendVenue) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *Send
 SendVenue Use this method to send information about a venue. On success, the sent Message is returned.
 */
 func (client *Client) SendVenue(message SendVenue) *MessageResponse {
+	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(message)
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+NewSendContact Use this method to send phone contacts. On success, the sent Message is returned.
+*/
+func NewSendContact(chatID, phoneNumber, firstName string) *SendContact {
+	return &SendContact{
+		ChatID:      chatID,
+		PhoneNumber: phoneNumber,
+		FirstName:   firstName,
+		endpoint:    EndpointSendContact,
+	}
+}
+
+// SetLastName Contact's last name
+func (contact *SendContact) SetLastName(lastName string) *SendContact {
+	contact.LastName = lastName
+	return contact
+}
+
+// SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
+func (contact *SendContact) SetDisableNotification(disable bool) *SendContact {
+	contact.DisableNotification = disable
+	return contact
+}
+
+// SetReplyToMessageId If the message is a reply, ID of the original message
+func (contact *SendContact) SetReplyToMessageId(messageId int64) *SendContact {
+	contact.ReplyToMessageID = messageId
+	return contact
+}
+
+// SetForceReply
+func (contact *SendContact) SetForceReply(reply ForceReply) *SendContact {
+	contact.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		nil,
+		&reply,
+	}
+	return contact
+}
+
+// SetInlineKeyboardMarkup
+func (contact *SendContact) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendContact {
+	contact.ReplyMarkup = &ReplyMarkup{
+		&InlineKeyboardMarkup{
+			InlineKeyboard: inline,
+		},
+		nil,
+		nil,
+		nil,
+	}
+	return contact
+}
+
+// SetReplyKeyboardMarkup
+func (contact *SendContact) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendContact {
+	contact.ReplyMarkup = &ReplyMarkup{
+		nil,
+		&reply,
+		nil,
+		nil,
+	}
+	return contact
+}
+
+// SetReplyKeyboardRemove
+func (contact *SendContact) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendContact {
+	contact.ReplyMarkup = &ReplyMarkup{
+		nil,
+		nil,
+		&remove,
+		nil,
+	}
+	return contact
+}
+
+/*
+SendContact Use this method to send phone contacts. On success, the sent Message is returned.
+*/
+func (client *Client) SendContact(message SendContact) *MessageResponse {
 	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
