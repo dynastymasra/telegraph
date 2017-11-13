@@ -79,6 +79,11 @@ type (
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
+
+	IntegerResponse struct {
+		Client  *Client
+		Request *gorequest.SuperAgent
+	}
 )
 
 /*
@@ -174,6 +179,57 @@ func parseArrayChatMember(res *http.Response, body []byte) ([]ChatMember, *http.
 	model := struct {
 		ErrorResponse
 		Result []ChatMember `json:"result,omitempty"`
+	}{}
+	if err := json.Unmarshal(body, &model); err != nil {
+		return nil, res, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, res, fmt.Errorf(model.Description)
+	}
+
+	return model.Result, res, nil
+}
+
+/*
+GetChatMembersCount Use this method to get the number of members in a chat. Returns Int on success.
+*/
+func (client *Client) GetChatMembersCount(chatID interface{}) *IntegerResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointGetChatMembersCount, client.accessToken)
+	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v", chatID))
+
+	return &IntegerResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// Commit request to telegram api
+func (chat *IntegerResponse) Commit() (*int, *http.Response, error) {
+	var errs []error
+	var body []byte
+	res := &http.Response{}
+
+	operation := func() error {
+		res, body, errs = chat.Request.EndBytes()
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, chat.Client.expBackOff); err != nil {
+		return nil, MakeHTTPResponse(chat.Request), err
+	}
+
+	return parseIntegerResponse(res, body)
+}
+
+func parseIntegerResponse(res *http.Response, body []byte) (*int, *http.Response, error) {
+	model := struct {
+		ErrorResponse
+		Result *int `json:"result,omitempty"`
 	}{}
 	if err := json.Unmarshal(body, &model); err != nil {
 		return nil, res, err

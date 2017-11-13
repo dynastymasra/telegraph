@@ -145,3 +145,62 @@ func TestGetChatAdministratorsFailed(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestGetChatMembersCountSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetChatMembersCount, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": 2
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	count, res, err := client.GetChatMembersCount("33242342").Commit()
+
+	assert.NotNil(t, count)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestGetChatMembersCountError(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointGetChatMembersCount, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	count, res, err := client.GetChatMembersCount("33242342").Commit()
+
+	assert.Nil(t, count)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestGetChatMembersCountFailedUnmarshal(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetChatMembersCount, "token")).Reply(http.StatusBadRequest).XML("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	count, res, err := client.GetChatMembersCount("33242342").Commit()
+
+	assert.Nil(t, count)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestGetChatMembersCountFailed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetChatMembersCount, "token")).Reply(http.StatusNotFound).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: chat not found"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	count, res, err := client.GetChatMembersCount("33242342").Commit()
+
+	assert.Nil(t, count)
+	assert.Equal(t, http.StatusNotFound, res.StatusCode)
+	assert.Error(t, err)
+}
