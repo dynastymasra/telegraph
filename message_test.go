@@ -1116,3 +1116,35 @@ func TestSendLocationReplyMarkup(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 	assert.NoError(t, err)
 }
+
+func TestEditMessageLiveLocationSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointEditMessageLiveLocation, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	inline := [][]telegraph.InlineKeyboardButton{}
+	message := telegraph.NewEditMessageLiveLocation(1233456.34, 32423423.98).SetChatId("23423432").
+		SetInlineMessageId("232423432").SetReplyMarkup(inline).SetMessageId(234324)
+	res, err := client.EditMessageLiveLocation(*message)
+
+	assert.NotNil(t, res)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestEditMessageLiveLocationError(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointEditMessageLiveLocation, "token")).Reply(http.StatusOK).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	inline := [][]telegraph.InlineKeyboardButton{}
+	message := telegraph.NewEditMessageLiveLocation(1233456.34, 32423423.98).SetChatId("23423432").
+		SetInlineMessageId("232423432").SetReplyMarkup(inline).SetMessageId(234324)
+	res, err := client.EditMessageLiveLocation(*message)
+
+	assert.Nil(t, res)
+	assert.Error(t, err)
+}
