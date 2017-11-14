@@ -11,20 +11,16 @@ import (
 )
 
 type (
-	// ChatType kind of chat type telegram
-	ChatType string
-	// StatusType kind of status type telegram user
+	ChatType   string
 	StatusType string
 )
 
 const (
-	// ChatTypePrivate const type
 	ChatTypePrivate    ChatType = "private"
 	ChatTypeGroup               = "group"
 	ChatTypeSuperGroup          = "supergroup"
 	ChatTypeChannel             = "channel"
 
-	// StatusTypeCreator const type
 	StatusTypeCreator       StatusType = "creator"
 	StatusTypeAdministrator            = "administrator"
 	StatusTypeMember                   = "member"
