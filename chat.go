@@ -30,6 +30,7 @@ const (
 )
 
 type (
+	// Chat This object represents a chat.
 	Chat struct {
 		ID                     int64      `json:"id"`
 		Type                   ChatType   `json:"type"`
@@ -46,6 +47,7 @@ type (
 		CanSetStickerSet       bool       `json:"can_set_sticker_set,omitempty"`
 	}
 
+	// ChatPhoto This object represents a chat photo.
 	ChatPhoto struct {
 		SmallFileID string `json:"small_file_id"`
 		BigFileID   string `json:"big_file_id"`
@@ -56,6 +58,7 @@ type (
 		Request *gorequest.SuperAgent
 	}
 
+	// ChatMember This object contains information about one member of a chat.
 	ChatMember struct {
 		User                 *User      `json:"user"`
 		Status               StatusType `json:"status"`

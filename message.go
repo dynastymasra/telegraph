@@ -19,9 +19,10 @@ const (
 )
 
 type (
+	// Message This object represents a message.
 	Message struct {
 		MessageID             int64              `json:"message_id"`
-		From                  *From              `json:"from,omitempty"`
+		From                  *User              `json:"from,omitempty"`
 		Date                  int64              `json:"date"`
 		Chat                  Chat               `json:"chat"`
 		ForwardFrom           *User              `json:"forward_from,omitempty"`
@@ -62,6 +63,7 @@ type (
 		SuccessfulPayment     *SuccessfulPayment `json:"successful_payment,omitempty"`
 	}
 
+	// MessageEntity This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
 	MessageEntity struct {
 		Type   string `json:"type"`
 		Offset int    `json:"offset"`
@@ -70,6 +72,7 @@ type (
 		User   *User  `json:"user,omitempty"`
 	}
 
+	// Audio This object represents an audio file to be treated as music by the Telegram clients
 	Audio struct {
 		FileID    string `json:"file_id"`
 		Duration  int    `json:"duration"`
@@ -79,6 +82,7 @@ type (
 		FileSize  int    `json:"file_size,omitempty"`
 	}
 
+	// Document This object represents a general file (as opposed to photos, voice messages and audio files).
 	Document struct {
 		FileID   string     `json:"file_id"`
 		Thumb    *PhotoSize `json:"thumb,omitempty"`
@@ -87,6 +91,7 @@ type (
 		FileSize int        `json:"file_size,omitempty"`
 	}
 
+	// Game This object represents a game. Use BotFather to create and edit games, their short names will act as unique identifiers.
 	Game struct {
 		Title        string          `json:"title"`
 		Description  string          `json:"description"`
@@ -96,6 +101,7 @@ type (
 		Animation    *Animation      `json:"animation,animation"`
 	}
 
+	// Sticker This object represents a sticker.
 	Sticker struct {
 		FileID       string        `json:"file_id"`
 		Width        int           `json:"width"`
@@ -107,6 +113,7 @@ type (
 		MaskPosition *MaskPosition `json:"mask_position,omitempty"`
 	}
 
+	// Video This object represents a sticker.
 	Video struct {
 		FileID   string     `json:"file_id"`
 		Width    int64      `json:"width"`
@@ -117,6 +124,7 @@ type (
 		FileSize int        `json:"file_size,omitempty"`
 	}
 
+	// Voice This object represents a voice note.
 	Voice struct {
 		FileID   string `json:"file_id"`
 		Duration int    `json:"duration"`
@@ -124,6 +132,7 @@ type (
 		FileSize int    `json:"file_size,omitempty"`
 	}
 
+	// VideoNote This object represents a video message (available in Telegram apps as of v.4.0).
 	VideoNote struct {
 		FileID   string     `json:"file_id"`
 		Length   int        `json:"length"`
@@ -132,6 +141,7 @@ type (
 		FileSize int        `json:"file_size,omitempty"`
 	}
 
+	// Contact This object represents a phone contact.
 	Contact struct {
 		PhoneNumber string `json:"phone_number"`
 		FirstName   string `json:"first_name"`
@@ -139,11 +149,13 @@ type (
 		UserID      int64  `json:"user_id,omitempty"`
 	}
 
+	// Location This object represents a point on the map.
 	Location struct {
 		Longitude float64 `json:"longitude"`
 		Latitude  float64 `json:"latitude"`
 	}
 
+	// Venue This object represents a venue.
 	Venue struct {
 		Location     Location `json:"location"`
 		Title        string   `json:"title"`
@@ -151,6 +163,7 @@ type (
 		FoursquareID string   `json:"foursquare_id,omitempty"`
 	}
 
+	// Invoice This object contains basic information about an invoice.
 	Invoice struct {
 		Title          string `json:"title"`
 		Description    string `json:"description"`
@@ -159,6 +172,7 @@ type (
 		TotalAmount    int64  `json:"total_amount"`
 	}
 
+	// SuccessfulPayment This object contains basic information about a successful payment.
 	SuccessfulPayment struct {
 		Currency                string     `json:"currency"`
 		TotalAmount             int64      `json:"total_amount"`
@@ -169,15 +183,8 @@ type (
 		ProviderPaymentChargeID string     `json:"provider_payment_charge_id"`
 	}
 
-	From struct {
-		ID           int64  `json:"id"`
-		IsBot        bool   `json:"is_bot"`
-		FirstName    string `json:"first_name"`
-		LastName     string `json:"last_name,omitempty"`
-		Username     string `json:"username,omitempty"`
-		LanguageCode string `json:"language_code,omitempty"`
-	}
-
+	// Animation You can provide an animation for your game so that it looks stylish in chats (check out Lumberjack for an example).
+	// This object represents an animation file to be displayed in the message containing a game.
 	Animation struct {
 		FileID   string     `json:"file_id"`
 		Thumb    *PhotoSize `json:"thumb,omitempty"`
@@ -186,6 +193,7 @@ type (
 		FileSize int        `json:"file_size,omitempty"`
 	}
 
+	// MaskPosition This object describes the position on faces where a mask should be placed by default.
 	MaskPosition struct {
 		Point  string  `json:"point"`
 		XShift float64 `json:"x_shift"`
@@ -193,6 +201,7 @@ type (
 		Scale  float64 `json:"scale"`
 	}
 
+	// OrderInfo This object represents information about an order.
 	OrderInfo struct {
 		Name            string           `json:"name,omitempty"`
 		PhoneNumber     string           `json:"phone_number,omitempty"`
@@ -200,6 +209,7 @@ type (
 		ShippingAddress *ShippingAddress `json:"shipping_address,omitempty"`
 	}
 
+	// ShippingAddress This object represents a shipping address.
 	ShippingAddress struct {
 		CountryCode string `json:"country_code"`
 		State       string `json:"state"`
@@ -222,7 +232,6 @@ type (
 		DisableNotification   bool         `json:"disable_notification,omitempty"`
 		ReplyMessageID        int64        `json:"reply_to_message_id,omitempty"`
 		ReplyMarkup           *ReplyMarkup `json:"reply_markup,omitempty"`
-		endpoint              string       `json:"-"`
 	}
 
 	ForwardMessage struct {
@@ -230,7 +239,6 @@ type (
 		FromChatID          string `json:"from_chat_id"`
 		DisableNotification bool   `json:"disable_notification,omitempty"`
 		MessageID           int64  `json:"message_id"`
-		endpoint            string `json:"-"`
 	}
 
 	SendPhoto struct {
@@ -351,7 +359,6 @@ type (
 		DisableNotification bool         `json:"disable_notification,omitempty"`
 		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
-		endpoint            string       `json:"-"`
 	}
 )
 
@@ -361,9 +368,8 @@ Text of the message to be sent
 */
 func NewTextMessage(chatID, text string) *SendMessage {
 	return &SendMessage{
-		ChatID:   chatID,
-		Text:     text,
-		endpoint: EndpointSendMessage,
+		ChatID: chatID,
+		Text:   text,
 	}
 }
 
@@ -440,7 +446,7 @@ func (message *SendMessage) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *
 
 // SendMessage Use this method to send text messages. On success, the sent Message is returned.
 func (client *Client) SendMessage(message SendMessage) *MessageResponse {
-	url := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	url := client.baseURL + fmt.Sprintf(EndpointSendMessage, client.accessToken)
 	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
@@ -458,7 +464,6 @@ func NewForwardMessage(chatID, fromChatID string, messageID int64) *ForwardMessa
 		ChatID:     chatID,
 		FromChatID: fromChatID,
 		MessageID:  messageID,
-		endpoint:   EndpointForwardMessage,
 	}
 }
 
@@ -470,7 +475,7 @@ func (forward *ForwardMessage) SetDisableNotification(disable bool) *ForwardMess
 
 // ForwardMessage Use this method to forward messages of any kind. On success, the sent Message is returned.
 func (client *Client) ForwardMessage(message ForwardMessage) *MessageResponse {
-	url := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	url := client.baseURL + fmt.Sprintf(EndpointForwardMessage, client.accessToken)
 	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
@@ -1433,7 +1438,6 @@ func NewContactMessage(chatID, phoneNumber, firstName string) *SendContact {
 		ChatID:      chatID,
 		PhoneNumber: phoneNumber,
 		FirstName:   firstName,
-		endpoint:    EndpointSendContact,
 	}
 }
 
@@ -1505,7 +1509,7 @@ func (contact *SendContact) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *
 SendContact Use this method to send phone contacts. On success, the sent Message is returned.
 */
 func (client *Client) SendContact(message SendContact) *MessageResponse {
-	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSendContact, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 

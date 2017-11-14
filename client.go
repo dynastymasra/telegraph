@@ -6,12 +6,14 @@ import (
 	"github.com/cenkalti/backoff"
 )
 
+// Client struct configuration telegram
 type Client struct {
 	accessToken string
 	baseURL     string
 	expBackOff  *backoff.ExponentialBackOff
 }
 
+// NewClient create new telegram configuration with access token
 func NewClient(accessToken string) *Client {
 	return &Client{
 		accessToken: accessToken,

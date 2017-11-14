@@ -2,6 +2,7 @@ package telegraph
 
 import "encoding/json"
 
+// WebHookParseRequest function for parse request from telegram web hook, return struct Update if success
 func WebHookParseRequest(r []byte) (*Update, error) {
 	update := &Update{}
 

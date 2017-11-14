@@ -57,7 +57,7 @@ if err != nil {
 ## Contributing
 
 If you find any issue you want to fix it, feel free to send me a pull request. 
-And also if you have idea for improvement feel free to send me a pull request.
+And also if you have idea for improvement this library, feel free to send me a pull request.
 
 ## Library
 

@@ -63,6 +63,8 @@ type (
 		Selective  bool `json:"selective,omitempty"`
 	}
 
+	// ReplyMarkup Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard,
+	// instructions to remove reply keyboard or to force a reply from the user.
 	ReplyMarkup struct {
 		*InlineKeyboardMarkup
 		*ReplyKeyboardMarkup
@@ -70,6 +72,7 @@ type (
 		*ForceReply
 	}
 
+	// PhotoSize This object represents one size of a photo or a file / sticker thumbnail.
 	PhotoSize struct {
 		FileID   string `json:"file_id"`
 		Width    int    `json:"width"`

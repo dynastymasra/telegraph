@@ -11,6 +11,10 @@ import (
 )
 
 type (
+	// File This object represents a file ready to be downloaded.
+	// The file can be downloaded via the link https://api.telegram.org/file/bot<token>/<file_path>.
+	// It is guaranteed that the link will be valid for at least 1 hour.
+	// When the link expires, a new one can be requested by calling getFile.
 	File struct {
 		FileID   string `json:"file_id"`
 		FileSize int64  `json:"file_size,omitempty"`
@@ -87,7 +91,7 @@ func (file *FileResponse) Download() (*http.Response, []byte, error) {
 	return file.Client.GetContent(model.FilePath).Download()
 }
 
-// GetContent used after call function GetFile, this download file from telegram
+// GetContent used after call function GetFile, this download file from telegram with path file
 func (client *Client) GetContent(path string) *VoidResponse {
 	url := client.baseURL + fmt.Sprintf(EndpointGetContent, client.accessToken, path)
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)

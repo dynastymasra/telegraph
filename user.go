@@ -21,6 +21,7 @@ type (
 		LanguageCode string `json:"language_code,omitempty"`
 	}
 
+	// UserProfilePhotos This object represent a user's profile pictures.
 	UserProfilePhotos struct {
 		TotalCount int           `json:"total_count"`
 		Photos     [][]PhotoSize `json:"photos"`
