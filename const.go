@@ -6,6 +6,7 @@ const (
 	UserAgentHeader = "User-Agent"
 	BaseURL         = "https://api.telegram.org"
 
+	// UserAgent header send to telegram
 	UserAgent = "Telegram Go SDK(Telegraph)"
 
 	EndpointGetMe                   = "/bot%v/getMe"

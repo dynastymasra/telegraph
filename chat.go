@@ -11,16 +11,20 @@ import (
 )
 
 type (
-	ChatType   string
+	// ChatType kind of chat type telegram
+	ChatType string
+	// StatusType kind of status type telegram user
 	StatusType string
 )
 
 const (
+	// ChatTypePrivate const type
 	ChatTypePrivate    ChatType = "private"
 	ChatTypeGroup               = "group"
 	ChatTypeSuperGroup          = "supergroup"
 	ChatTypeChannel             = "channel"
 
+	// StatusTypeCreator const type
 	StatusTypeCreator       StatusType = "creator"
 	StatusTypeAdministrator            = "administrator"
 	StatusTypeMember                   = "member"
@@ -53,6 +57,7 @@ type (
 		BigFileID   string `json:"big_file_id"`
 	}
 
+	// ChatResponse struct to handle request and response telegram api
 	ChatResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
