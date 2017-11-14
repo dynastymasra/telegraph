@@ -219,11 +219,13 @@ type (
 		PostCode    string `json:"post_code"`
 	}
 
+	// MessageResponse struct to handle request and response telegram api
 	MessageResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
 
+	// SendMessage Use this method to send text messages. On success, the sent Message is returned.
 	SendMessage struct {
 		ChatID                string       `json:"chat_id"`
 		Text                  string       `json:"text,omitempty"`
@@ -234,6 +236,7 @@ type (
 		ReplyMarkup           *ReplyMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// ForwardMessage Use this method to forward messages of any kind. On success, the sent Message is returned.
 	ForwardMessage struct {
 		ChatID              string `json:"chat_id"`
 		FromChatID          string `json:"from_chat_id"`
@@ -241,6 +244,7 @@ type (
 		MessageID           int64  `json:"message_id"`
 	}
 
+	// SendPhoto Use this method to send photos. On success, the sent Message is returned.
 	SendPhoto struct {
 		ChatID              string       `json:"chat_id"`
 		Photo               string       `json:"photo"`
@@ -250,6 +254,9 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// SendAudio Use this method to send audio files, if you want Telegram clients to display them in the music player.
+	// Your audio must be in the .mp3 format. On success, the sent Message is returned.
+	// Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
 	SendAudio struct {
 		ChatID              string       `json:"chat_id"`
 		Audio               string       `json:"audio"`
@@ -262,6 +269,8 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// SendDocument Use this method to send general files. On success, the sent Message is returned.
+	// Bots can currently send files of any type of up to 50 MB in size, this limit may be changed in the future.
 	SendDocument struct {
 		ChatID              string       `json:"chat_id"`
 		Document            string       `json:"document"`
@@ -271,6 +280,10 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// SendVideo Use this method to send video files,
+	// Telegram clients support mp4 videos (other formats may be sent as Document).
+	// On success, the sent Message is returned.
+	// Bots can currently send video files of up to 50 MB in size, this limit may be changed in the future.
 	SendVideo struct {
 		ChatID              string       `json:"chat_id"`
 		Video               string       `json:"video"`
@@ -283,6 +296,9 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// SendVoice Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
+	// For this to work, your audio must be in an .ogg file encoded with OPUS (other formats may be sent as Audio or Document).
+	// On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
 	SendVoice struct {
 		ChatID              string       `json:"chat_id"`
 		Voice               string       `json:"voice"`
@@ -293,6 +309,8 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// SendVideoNote As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long.
+	// Use this method to send video messages. On success, the sent Message is returned.
 	SendVideoNote struct {
 		ChatID              string       `json:"chat_id"`
 		VideoNote           string       `json:"video_note"`
@@ -303,6 +321,7 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// SendLocation Use this method to send point on the map. On success, the sent Message is returned.
 	SendLocation struct {
 		ChatID              string       `json:"chat_id"`
 		Latitude            float64      `json:"latitude"`
@@ -313,6 +332,9 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// EditMessageLiveLocation Use this method to edit live location messages sent by the bot or via the bot (for inline bots).
+	// A location can be edited until its live_period expires or editing is explicitly disabled by a call to stopMessageLiveLocation.
+	// On success, if the edited message was sent by the bot, the edited Message is returned, otherwise True is returned.
 	EditMessageLiveLocation struct {
 		ChatID          string                `json:"chat_id,omitempty"`
 		MessageID       int64                 `json:"message_id,omitempty"`
@@ -322,6 +344,9 @@ type (
 		ReplyMarkup     *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// StopMessageLiveLocation Use this method to stop updating a live location message sent by the bot or via the bot
+	// (for inline bots) before live_period expires. On success, if the message was sent by the bot,
+	// the sent Message is returned, otherwise True is returned.
 	StopMessageLiveLocation struct {
 		ChatID          string                `json:"chat_id,omitempty"`
 		MessageID       int64                 `json:"message_id,omitempty"`
@@ -329,6 +354,7 @@ type (
 		ReplyMarkup     *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// SendVenue Use this method to send information about a venue. On success, the sent Message is returned.
 	SendVenue struct {
 		ChatID              string       `json:"chat_id"`
 		Latitude            float64      `json:"latitude"`
@@ -341,6 +367,7 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// SendContact Use this method to send phone contacts. On success, the sent Message is returned.
 	SendContact struct {
 		ChatID              string       `json:"chat_id"`
 		PhoneNumber         string       `json:"phone_number"`
