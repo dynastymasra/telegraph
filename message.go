@@ -367,7 +367,6 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 	}
 
-	// SendContact Use this method to send phone contacts. On success, the sent Message is returned.
 	SendContact struct {
 		ChatID              string       `json:"chat_id"`
 		PhoneNumber         string       `json:"phone_number"`
