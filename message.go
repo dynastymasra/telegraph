@@ -367,6 +367,7 @@ type (
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
 	}
 
+	// SendContact Use this method to send phone contacts. On success, the sent Message is returned.
 	SendContact struct {
 		ChatID              string       `json:"chat_id"`
 		PhoneNumber         string       `json:"phone_number"`
@@ -408,13 +409,14 @@ func (message *SendMessage) SetDisableNotification(disable bool) *SendMessage {
 	return message
 }
 
-// ReplyMessageToID If the message is a reply, ID of the original message
+// SetReplyMessageToId If the message is a reply, ID of the original message
 func (message *SendMessage) SetReplyMessageToId(id int64) *SendMessage {
 	message.ReplyMessageID = id
 	return message
 }
 
-// SetForceReply
+// SetForceReply Additional interface options.
+// A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove keyboard or to force a reply from the user.
 func (message *SendMessage) SetForceReply(reply ForceReply) *SendMessage {
 	message.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -425,7 +427,8 @@ func (message *SendMessage) SetForceReply(reply ForceReply) *SendMessage {
 	return message
 }
 
-// SetInlineKeyboardMarkup
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove keyboard or to force a reply from the user.
 func (message *SendMessage) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendMessage {
 	message.ReplyMarkup = &ReplyMarkup{
 		&InlineKeyboardMarkup{
@@ -438,7 +441,8 @@ func (message *SendMessage) SetInlineKeyboardMarkup(inline [][]InlineKeyboardBut
 	return message
 }
 
-// SetReplyKeyboardMarkup
+// SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove keyboard or to force a reply from the user.
 func (message *SendMessage) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendMessage {
 	message.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -449,7 +453,8 @@ func (message *SendMessage) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *S
 	return message
 }
 
-// SetReplyKeyboardRemove
+// SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove keyboard or to force a reply from the user.
 func (message *SendMessage) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendMessage {
 	message.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -526,13 +531,14 @@ func (photo *SendPhoto) SetDisableNotification(disable bool) *SendPhoto {
 	return photo
 }
 
-// SetReplyToMessageId
+// SetReplyToMessageId If the message is a reply, ID of the original message
 func (photo *SendPhoto) SetReplyToMessageId(messageId int64) *SendPhoto {
 	photo.ReplyToMessageID = messageId
 	return photo
 }
 
-// SetForceReply
+// SetForceReply Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard,
+// instructions to remove reply keyboard or to force a reply from the user.
 func (photo *SendPhoto) SetForceReply(reply ForceReply) *SendPhoto {
 	photo.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -543,7 +549,8 @@ func (photo *SendPhoto) SetForceReply(reply ForceReply) *SendPhoto {
 	return photo
 }
 
-// SetInlineKeyboardMarkup
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (photo *SendPhoto) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendPhoto {
 	photo.ReplyMarkup = &ReplyMarkup{
 		&InlineKeyboardMarkup{
@@ -556,7 +563,8 @@ func (photo *SendPhoto) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton)
 	return photo
 }
 
-// SetReplyKeyboardMarkup
+// SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (photo *SendPhoto) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendPhoto {
 	photo.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -567,7 +575,8 @@ func (photo *SendPhoto) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendP
 	return photo
 }
 
-// SetReplyKeyboardRemove
+// SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (photo *SendPhoto) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendPhoto {
 	photo.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -623,7 +632,8 @@ func (document *SendDocument) SetReplyToMessageId(messageId int64) *SendDocument
 	return document
 }
 
-// SetForceReply
+// SetForceReply Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard,
+// instructions to remove reply keyboard or to force a reply from the user.
 func (document *SendDocument) SetForceReply(reply ForceReply) *SendDocument {
 	document.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -634,7 +644,8 @@ func (document *SendDocument) SetForceReply(reply ForceReply) *SendDocument {
 	return document
 }
 
-// SetInlineKeyboardMarkup
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (document *SendDocument) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendDocument {
 	document.ReplyMarkup = &ReplyMarkup{
 		&InlineKeyboardMarkup{
@@ -647,7 +658,8 @@ func (document *SendDocument) SetInlineKeyboardMarkup(inline [][]InlineKeyboardB
 	return document
 }
 
-// SetReplyKeyboardMarkup
+// SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (document *SendDocument) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendDocument {
 	document.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -658,7 +670,8 @@ func (document *SendDocument) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) 
 	return document
 }
 
-// SetReplyKeyboardRemove
+// SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (document *SendDocument) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendDocument {
 	document.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -738,7 +751,8 @@ func (audio *SendAudio) SetReplyToMessageId(messageId int64) *SendAudio {
 	return audio
 }
 
-// SetForceReply
+// SetForceReply Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (audio *SendAudio) SetForceReply(reply ForceReply) *SendAudio {
 	audio.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -749,7 +763,8 @@ func (audio *SendAudio) SetForceReply(reply ForceReply) *SendAudio {
 	return audio
 }
 
-// SetInlineKeyboardMarkup
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (audio *SendAudio) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendAudio {
 	audio.ReplyMarkup = &ReplyMarkup{
 		&InlineKeyboardMarkup{
@@ -762,7 +777,8 @@ func (audio *SendAudio) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton)
 	return audio
 }
 
-// SetReplyKeyboardMarkup
+// SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (audio *SendAudio) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendAudio {
 	audio.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -773,7 +789,8 @@ func (audio *SendAudio) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendA
 	return audio
 }
 
-// SetReplyKeyboardRemove
+// SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (audio *SendAudio) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendAudio {
 	audio.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -854,7 +871,8 @@ func (video *SendVideo) SetHeight(height int) *SendVideo {
 	return video
 }
 
-// SetForceReply
+// SetForceReply Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard,
+// instructions to remove reply keyboard or to force a reply from the user.
 func (video *SendVideo) SetForceReply(reply ForceReply) *SendVideo {
 	video.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -865,7 +883,8 @@ func (video *SendVideo) SetForceReply(reply ForceReply) *SendVideo {
 	return video
 }
 
-// SetInlineKeyboardMarkup
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (video *SendVideo) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendVideo {
 	video.ReplyMarkup = &ReplyMarkup{
 		&InlineKeyboardMarkup{
@@ -878,7 +897,8 @@ func (video *SendVideo) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton)
 	return video
 }
 
-// SetReplyKeyboardMarkup
+// SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (video *SendVideo) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendVideo {
 	video.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -889,7 +909,8 @@ func (video *SendVideo) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendV
 	return video
 }
 
-// SetReplyKeyboardRemove
+// SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (video *SendVideo) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendVideo {
 	video.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -960,7 +981,8 @@ func (voice *SendVoice) SetReplyToMessageId(messageId int64) *SendVoice {
 	return voice
 }
 
-// SetForceReply
+// SetForceReply Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (voice *SendVoice) SetForceReply(reply ForceReply) *SendVoice {
 	voice.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -971,7 +993,8 @@ func (voice *SendVoice) SetForceReply(reply ForceReply) *SendVoice {
 	return voice
 }
 
-// SetInlineKeyboardMarkup
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (voice *SendVoice) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendVoice {
 	voice.ReplyMarkup = &ReplyMarkup{
 		&InlineKeyboardMarkup{
@@ -984,7 +1007,8 @@ func (voice *SendVoice) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton)
 	return voice
 }
 
-// SetReplyKeyboardMarkup
+// SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (voice *SendVoice) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendVoice {
 	voice.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -995,7 +1019,8 @@ func (voice *SendVoice) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendV
 	return voice
 }
 
-// SetReplyKeyboardRemove
+// SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (voice *SendVoice) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendVoice {
 	voice.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1062,7 +1087,8 @@ func (video *SendVideoNote) SetReplyToMessageId(messageId int64) *SendVideoNote 
 	return video
 }
 
-// SetForceReply
+// SetForceReply Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (video *SendVideoNote) SetForceReply(reply ForceReply) *SendVideoNote {
 	video.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1073,7 +1099,8 @@ func (video *SendVideoNote) SetForceReply(reply ForceReply) *SendVideoNote {
 	return video
 }
 
-// SetInlineKeyboardMarkup
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (video *SendVideoNote) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendVideoNote {
 	video.ReplyMarkup = &ReplyMarkup{
 		&InlineKeyboardMarkup{
@@ -1086,7 +1113,8 @@ func (video *SendVideoNote) SetInlineKeyboardMarkup(inline [][]InlineKeyboardBut
 	return video
 }
 
-// SetReplyKeyboardMarkup
+// SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (video *SendVideoNote) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendVideoNote {
 	video.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1097,7 +1125,8 @@ func (video *SendVideoNote) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *S
 	return video
 }
 
-// SetReplyKeyboardRemove
+// SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (video *SendVideoNote) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendVideoNote {
 	video.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1156,7 +1185,8 @@ func (location *SendLocation) SetReplyToMessageId(messageId int64) *SendLocation
 	return location
 }
 
-// SetForceReply
+// SetForceReply Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard,
+// instructions to remove reply keyboard or to force a reply from the user.
 func (location *SendLocation) SetForceReply(reply ForceReply) *SendLocation {
 	location.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1167,7 +1197,8 @@ func (location *SendLocation) SetForceReply(reply ForceReply) *SendLocation {
 	return location
 }
 
-// SetInlineKeyboardMarkup
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (location *SendLocation) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendLocation {
 	location.ReplyMarkup = &ReplyMarkup{
 		&InlineKeyboardMarkup{
@@ -1180,7 +1211,8 @@ func (location *SendLocation) SetInlineKeyboardMarkup(inline [][]InlineKeyboardB
 	return location
 }
 
-// SetReplyKeyboardMarkup
+// SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (location *SendLocation) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendLocation {
 	location.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1191,7 +1223,8 @@ func (location *SendLocation) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) 
 	return location
 }
 
-// SetReplyKeyboardRemove
+// SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (location *SendLocation) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendLocation {
 	location.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1373,7 +1406,8 @@ func (venue *SendVenue) SetReplyToMessageId(messageId int64) *SendVenue {
 	return venue
 }
 
-// SetForceReply
+// SetForceReply Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard,
+// instructions to remove reply keyboard or to force a reply from the user.
 func (venue *SendVenue) SetForceReply(reply ForceReply) *SendVenue {
 	venue.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1384,7 +1418,8 @@ func (venue *SendVenue) SetForceReply(reply ForceReply) *SendVenue {
 	return venue
 }
 
-// SetInlineKeyboardMarkup
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (venue *SendVenue) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendVenue {
 	venue.ReplyMarkup = &ReplyMarkup{
 		&InlineKeyboardMarkup{
@@ -1397,7 +1432,8 @@ func (venue *SendVenue) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton)
 	return venue
 }
 
-// SetReplyKeyboardMarkup
+// SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (venue *SendVenue) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendVenue {
 	venue.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1408,7 +1444,8 @@ func (venue *SendVenue) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendV
 	return venue
 }
 
-// SetReplyKeyboardRemove
+// SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (venue *SendVenue) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendVenue {
 	venue.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1462,7 +1499,8 @@ func (contact *SendContact) SetReplyToMessageId(messageId int64) *SendContact {
 	return contact
 }
 
-// SetForceReply
+// SetForceReply Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (contact *SendContact) SetForceReply(reply ForceReply) *SendContact {
 	contact.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1473,7 +1511,8 @@ func (contact *SendContact) SetForceReply(reply ForceReply) *SendContact {
 	return contact
 }
 
-// SetInlineKeyboardMarkup
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (contact *SendContact) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *SendContact {
 	contact.ReplyMarkup = &ReplyMarkup{
 		&InlineKeyboardMarkup{
@@ -1486,7 +1525,8 @@ func (contact *SendContact) SetInlineKeyboardMarkup(inline [][]InlineKeyboardBut
 	return contact
 }
 
-// SetReplyKeyboardMarkup
+// SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (contact *SendContact) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *SendContact {
 	contact.ReplyMarkup = &ReplyMarkup{
 		nil,
@@ -1497,7 +1537,8 @@ func (contact *SendContact) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *S
 	return contact
 }
 
-// SetReplyKeyboardRemove
+// SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
 func (contact *SendContact) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *SendContact {
 	contact.ReplyMarkup = &ReplyMarkup{
 		nil,
