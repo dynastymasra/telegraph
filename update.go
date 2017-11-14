@@ -26,6 +26,7 @@ type (
 		PreCheckoutQuery   *PreCheckoutQuery   `json:"pre_checkout_query,omitempty"`
 	}
 
+	// UpdateArrayResponse struct to handle request and response telegram api
 	UpdateArrayResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent

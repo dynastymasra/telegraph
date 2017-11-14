@@ -1238,11 +1238,10 @@ func (client *Client) EditMessageLiveLocation(message EditMessageLiveLocation) (
 		Send(message)
 
 	var errs []error
-	var body []byte
 	res := &http.Response{}
 
 	operation := func() error {
-		res, body, errs = request.EndBytes()
+		res, _, errs = request.EndBytes()
 		if len(errs) > 0 {
 			return errs[0]
 		}
@@ -1301,11 +1300,10 @@ func (client *Client) StopMessageLiveLocation(message StopMessageLiveLocation) (
 		Send(message)
 
 	var errs []error
-	var body []byte
 	res := &http.Response{}
 
 	operation := func() error {
-		res, body, errs = request.EndBytes()
+		res, _, errs = request.EndBytes()
 		if len(errs) > 0 {
 			return errs[0]
 		}

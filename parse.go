@@ -11,11 +11,13 @@ import (
 )
 
 type (
+	// VoidResponse struct to handle request and response telegram api
 	VoidResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
 
+	// ErrorResponse struct parse error response from telegram
 	ErrorResponse struct {
 		OK          bool   `json:"ok"`
 		ErrorCode   int    `json:"error_code,omitempty"`

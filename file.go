@@ -21,6 +21,7 @@ type (
 		FilePath string `json:"file_path,omitempty"`
 	}
 
+	// FileResponse struct to handle request and response telegram api
 	FileResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent

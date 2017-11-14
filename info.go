@@ -22,6 +22,7 @@ type (
 		AllowedUpdates       []string `json:"allowed_updates,omitempty"`
 	}
 
+	// InfoResponse struct to handle request and response telegram api
 	InfoResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
@@ -29,7 +30,7 @@ type (
 )
 
 /*
-Use this method to specify a url and receive incoming updates via an outgoing webhook.
+SetWebHook Use this method to specify a url and receive incoming updates via an outgoing webhook.
 Whenever there is an update for the bot, we will send an HTTPS POST request to the specified url,
 containing a JSON-serialized Update. In case of an unsuccessful request,
 we will give up after a reasonable amount of attempts. Returns true.

@@ -27,11 +27,13 @@ type (
 		Photos     [][]PhotoSize `json:"photos"`
 	}
 
+	// UserResponse struct to handle request and response telegram api
 	UserResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
 
+	// UserProfilePhotosResponse struct to handle request and response telegram api
 	UserProfilePhotosResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent

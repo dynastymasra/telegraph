@@ -7,6 +7,7 @@ import (
 )
 
 type (
+	// JSON struct json type
 	JSON map[string]interface{}
 )
 

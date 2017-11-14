@@ -78,16 +78,19 @@ type (
 		CanAddWebPagePreview bool       `json:"can_add_web_page_previews,omitempty"`
 	}
 
+	// ChatMemberResponse struct to handle request and response telegram api
 	ChatMemberResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
 
+	// ChatMemberArrayResponse struct to handle request and response telegram api
 	ChatMemberArrayResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
 
+	// IntegerResponse struct to handle request and response telegram api
 	IntegerResponse struct {
 		Client  *Client
 		Request *gorequest.SuperAgent
