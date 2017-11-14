@@ -233,3 +233,18 @@ func TestDeleteChatStickerSetSuccess(t *testing.T) {
 	assert.Equal(t, http.StatusOK, status)
 	assert.NoError(t, err)
 }
+
+func TestAnswerCallbackQuerySuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointAnswerCallbackQuery, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.AnswerCallbackQuery("23434234").SetText("text").SetShowAlert(true).
+		SetUrl("https://www.cubesoft.co.id").SetCacheTime(123123123).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}

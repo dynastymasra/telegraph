@@ -479,3 +479,70 @@ func (client *Client) DeleteChatStickerSet(chatID interface{}) *VoidResponse {
 		Request: request,
 	}
 }
+
+/*
+AnswerCallbackQuery Use this method to send answers to callback queries sent from inline keyboards.
+The answer will be displayed to the user as a notification at the top of the chat screen or as an alert.
+On success, True is returned.
+*/
+func (client *Client) AnswerCallbackQuery(callbackQueryID string) *VoidResponse {
+	body := JSON{
+		"callback_query_id": callbackQueryID,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointAnswerCallbackQuery, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetText Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters
+func (call *VoidResponse) SetText(text string) *VoidResponse {
+	body := JSON{
+		"text": text,
+	}
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetShowAlert If true, an alert will be shown by the client instead of a notification at the top of the chat screen.
+// Defaults to false.
+func (call *VoidResponse) SetShowAlert(alert bool) *VoidResponse {
+	body := JSON{
+		"show_alert": alert,
+	}
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetUrl URL that will be opened by the user's client.
+// If you have created a Game and accepted the conditions via @Botfather,
+// specify the URL that opens your game – note that this will only work if the query comes from a callback_game button.
+func (call *VoidResponse) SetUrl(url string) *VoidResponse {
+	body := JSON{
+		"url": url,
+	}
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetCacheTime The maximum amount of time in seconds that the result of the callback query may be cached client-side.
+// Telegram apps will support caching starting in version 3.14. Defaults to 0.
+func (call *VoidResponse) SetCacheTime(cache int64) *VoidResponse {
+	body := JSON{
+		"cache_time": cache,
+	}
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}

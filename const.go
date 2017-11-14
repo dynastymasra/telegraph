@@ -1,7 +1,7 @@
 package telegraph
 
 const (
-	Version         = "1.0.0-Development"
+	Version         = "1.0.0"
 	UserAgentHeader = "User-Agent"
 	BaseURL         = "https://api.telegram.org"
 
@@ -47,4 +47,5 @@ const (
 	EndpointGetChatMember           = "/bot%v/getChatMember"
 	EndpointSetChatStickerSet       = "/bot%v/setChatStickerSet"
 	EndpointDeleteChatStickerSet    = "/bot%v/deleteChatStickerSet"
+	EndpointAnswerCallbackQuery     = "/bot%v/answerCallbackQuery"
 )
