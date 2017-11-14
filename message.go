@@ -248,7 +248,6 @@ type (
 		DisableNotification bool         `json:"disable_notification,omitempty"`
 		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
-		endpoint            string       `json:"-"`
 	}
 
 	SendAudio struct {
@@ -261,7 +260,6 @@ type (
 		DisableNotification bool         `json:"disable_notification,omitempty"`
 		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
-		endpoint            string       `json:"-"`
 	}
 
 	SendDocument struct {
@@ -271,7 +269,6 @@ type (
 		DisableNotification bool         `json:"disable_notification,omitempty"`
 		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
-		endpoint            string       `json:"-"`
 	}
 
 	SendVideo struct {
@@ -284,7 +281,6 @@ type (
 		DisableNotification bool         `json:"disable_notification,omitempty"`
 		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
-		endpoint            string       `json:"-"`
 	}
 
 	SendVoice struct {
@@ -295,7 +291,6 @@ type (
 		DisableNotification bool         `json:"disable_notification,omitempty"`
 		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
-		endpoint            string       `json:"-"`
 	}
 
 	SendVideoNote struct {
@@ -306,7 +301,6 @@ type (
 		DisableNotification bool         `json:"disable_notification,omitempty"`
 		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
-		endpoint            string       `json:"-"`
 	}
 
 	SendLocation struct {
@@ -317,7 +311,6 @@ type (
 		DisableNotification bool         `json:"disable_notification,omitempty"`
 		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
-		endpoint            string       `json:"-"`
 	}
 
 	EditMessageLiveLocation struct {
@@ -327,7 +320,6 @@ type (
 		Latitude        float64               `json:"latitude"`
 		Longitude       float64               `json:"longitude"`
 		ReplyMarkup     *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
-		endpoint        string                `json:"-"`
 	}
 
 	StopMessageLiveLocation struct {
@@ -335,7 +327,6 @@ type (
 		MessageID       int64                 `json:"message_id,omitempty"`
 		InlineMessageID string                `json:"inline_message_id,omitempty"`
 		ReplyMarkup     *InlineKeyboardMarkup `json:"reply_markup,omitempty"`
-		endpoint        string                `json:"-"`
 	}
 
 	SendVenue struct {
@@ -348,7 +339,6 @@ type (
 		DisableNotification bool         `json:"disable_notification,omitempty"`
 		ReplyToMessageID    int64        `json:"reply_to_message_id,omitempty"`
 		ReplyMarkup         *ReplyMarkup `json:"reply_markup,omitempty"`
-		endpoint            string       `json:"-"`
 	}
 
 	SendContact struct {
@@ -493,9 +483,8 @@ or upload a new photo using multipart/form-data.
 */
 func NewPhotoMessage(chatId, photo string) *SendPhoto {
 	return &SendPhoto{
-		ChatID:   chatId,
-		Photo:    photo,
-		endpoint: EndpointSendPhoto,
+		ChatID: chatId,
+		Photo:  photo,
 	}
 }
 
@@ -565,7 +554,7 @@ func (photo *SendPhoto) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *Send
 
 // SendPhoto Use this method to send photos. On success, the sent Message is returned.
 func (client *Client) SendPhoto(message SendPhoto, upload bool) *MessageResponse {
-	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSendPhoto, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
@@ -587,7 +576,6 @@ func NewDocumentMessage(chatId, document string) *SendDocument {
 	return &SendDocument{
 		ChatID:   chatId,
 		Document: document,
-		endpoint: EndpointSendDocument,
 	}
 }
 
@@ -660,7 +648,7 @@ SendDocument Use this method to send general files. On success, the sent Message
 Bots can currently send files of any type of up to 50 MB in size, this limit may be changed in the future.
 */
 func (client *Client) SendDocument(message SendDocument, upload bool) *MessageResponse {
-	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSendDocument, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
@@ -683,9 +671,8 @@ For sending voice messages, use the sendVoice method instead.
 */
 func NewAudioMessage(chatId, audio string) *SendAudio {
 	return &SendAudio{
-		ChatID:   chatId,
-		Audio:    audio,
-		endpoint: EndpointSendAudio,
+		ChatID: chatId,
+		Audio:  audio,
 	}
 }
 
@@ -779,7 +766,7 @@ Bots can currently send audio files of up to 50 MB in size, this limit may be ch
 For sending voice messages, use the sendVoice method instead.
 */
 func (client *Client) SendAudio(message SendAudio, upload bool) *MessageResponse {
-	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSendAudio, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
@@ -800,9 +787,8 @@ Bots can currently send video files of up to 50 MB in size, this limit may be ch
 */
 func NewVideoMessage(chatId, video string) *SendVideo {
 	return &SendVideo{
-		ChatID:   chatId,
-		Video:    video,
-		endpoint: EndpointSendVideo,
+		ChatID: chatId,
+		Video:  video,
 	}
 }
 
@@ -896,7 +882,7 @@ Bots can currently send audio files of up to 50 MB in size, this limit may be ch
 For sending voice messages, use the sendVoice method instead.
 */
 func (client *Client) SendVideo(message SendVideo, upload bool) *MessageResponse {
-	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSendVideo, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
@@ -919,9 +905,8 @@ this limit may be changed in the future.
 */
 func NewVoiceMessage(chatId, voice string) *SendVoice {
 	return &SendVoice{
-		ChatID:   chatId,
-		Voice:    voice,
-		endpoint: EndpointSendVoice,
+		ChatID: chatId,
+		Voice:  voice,
 	}
 }
 
@@ -1002,7 +987,7 @@ On success, the sent Message is returned.
 Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
 */
 func (client *Client) SendVoice(message SendVoice, upload bool) *MessageResponse {
-	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSendVoice, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
@@ -1024,7 +1009,6 @@ func NewVideoNoteMessage(chatId, video string) *SendVideoNote {
 	return &SendVideoNote{
 		ChatID:    chatId,
 		VideoNote: video,
-		endpoint:  EndpointSendVideoNote,
 	}
 }
 
@@ -1103,7 +1087,7 @@ SendVideoNote As of v.4.0, Telegram clients support rounded square mp4 videos of
 Use this method to send video messages. On success, the sent Message is returned.
 */
 func (client *Client) SendVideoNote(message SendVideoNote, upload bool) *MessageResponse {
-	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSendVideoNote, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
@@ -1125,7 +1109,6 @@ func NewLocationMessage(chatId string, latitude, longitude float64) *SendLocatio
 		ChatID:    chatId,
 		Latitude:  latitude,
 		Longitude: longitude,
-		endpoint:  EndpointSendLocation,
 	}
 }
 
@@ -1197,7 +1180,7 @@ func (location *SendLocation) SetReplyKeyboardRemove(remove ReplyKeyboardRemove)
 SendLocation Use this method to send point on the map. On success, the sent Message is returned.
 */
 func (client *Client) SendLocation(message SendLocation) *MessageResponse {
-	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSendLocation, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
@@ -1216,7 +1199,6 @@ func NewEditMessageLiveLocation(latitude, longitude float64) *EditMessageLiveLoc
 	return &EditMessageLiveLocation{
 		Latitude:  latitude,
 		Longitude: longitude,
-		endpoint:  EndpointEditMessageLiveLocation,
 	}
 }
 
@@ -1251,7 +1233,7 @@ func (location *EditMessageLiveLocation) SetReplyMarkup(inlineKeyboard [][]Inlin
 // A location can be edited until its live_period expires or editing is explicitly disabled by a call to stopMessageLiveLocation.
 // On success, if the edited message was sent by the bot, the edited Message is returned, otherwise True is returned.
 func (client *Client) EditMessageLiveLocation(message EditMessageLiveLocation) (*http.Response, error) {
-	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointEditMessageLiveLocation, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
@@ -1278,9 +1260,7 @@ NewStopMessageLiveLocation Use this method to stop updating a live location mess
 On success, if the message was sent by the bot, the sent Message is returned, otherwise True is returned.
 */
 func NewStopMessageLiveLocation() *StopMessageLiveLocation {
-	return &StopMessageLiveLocation{
-		endpoint: EndpointStopMessageLiveLocation,
-	}
+	return &StopMessageLiveLocation{}
 }
 
 // SetChatId Required if inline_message_id is not specified.
@@ -1316,7 +1296,7 @@ StopMessageLiveLocation Use this method to stop updating a live location message
 otherwise True is returned.
 */
 func (client *Client) StopMessageLiveLocation(message StopMessageLiveLocation) (*http.Response, error) {
-	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointStopMessageLiveLocation, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
@@ -1348,7 +1328,6 @@ func NewVenueMessage(chatID, title, address string, latitude, longitude float64)
 		Address:   address,
 		Latitude:  latitude,
 		Longitude: longitude,
-		endpoint:  EndpointSendVenue,
 	}
 }
 
@@ -1420,7 +1399,7 @@ func (venue *SendVenue) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *Send
 SendVenue Use this method to send information about a venue. On success, the sent Message is returned.
 */
 func (client *Client) SendVenue(message SendVenue) *MessageResponse {
-	endpoint := client.baseURL + fmt.Sprintf(message.endpoint, client.accessToken)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSendVenue, client.accessToken)
 	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(message)
 
