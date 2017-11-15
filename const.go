@@ -50,4 +50,6 @@ const (
 	EndpointSetChatStickerSet       = "/bot%v/setChatStickerSet"
 	EndpointDeleteChatStickerSet    = "/bot%v/deleteChatStickerSet"
 	EndpointAnswerCallbackQuery     = "/bot%v/answerCallbackQuery"
+	EndpointEditMessageText         = "/bot%v/editMessageText"
+	EndpointEditMessageCaption      = "/bot%v/editMessageCaption"
 )
