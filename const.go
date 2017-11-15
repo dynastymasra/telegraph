@@ -52,4 +52,6 @@ const (
 	EndpointAnswerCallbackQuery     = "/bot%v/answerCallbackQuery"
 	EndpointEditMessageText         = "/bot%v/editMessageText"
 	EndpointEditMessageCaption      = "/bot%v/editMessageCaption"
+	EndpointEditMessageReplyMarkup  = "/bot%v/editMessageReplyMarkup"
+	EndpointDeleteMessage           = "/bot%v/deleteMessage"
 )

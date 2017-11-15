@@ -48,6 +48,40 @@ func (client *Client) EditMessageCaption() *EditMessageResponse {
 	}
 }
 
+/*
+EditMessageReplyMarkup Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
+On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
+*/
+func (client *Client) EditMessageReplyMarkup() *EditMessageResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointEditMessageReplyMarkup, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version)
+
+	return &EditMessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+DeleteMessage Use this method to delete a message, including service messages, with the following limitations:
+- A message can only be deleted if it was sent less than 48 hours ago.
+- Bots can delete outgoing messages in groups and supergroups.
+- Bots granted can_post_messages permissions can delete outgoing messages in channels.
+- If the bot is an administrator of a group, it can delete any message there.
+- If the bot has can_delete_messages permission in a supergroup or a channel, it can delete any message there.
+Returns True on success.
+*/
+func (client *Client) DeleteMessage(chatID interface{}, messageID int64) *EditMessageResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointDeleteMessage, client.accessToken)
+	request := gorequest.New().Get(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v&message_id=%v", chatID, messageID))
+
+	return &EditMessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // SetChatId Required if inline_message_id is not specified.
 // Unique identifier for the target chat or username of the target channel (in the format @channelusername)
 func (edit *EditMessageResponse) SetChatId(chatID interface{}) *EditMessageResponse {

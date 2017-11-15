@@ -77,3 +77,65 @@ func TestEditMessageCaptionError(t *testing.T) {
 	assert.Nil(t, res)
 	assert.Error(t, err)
 }
+
+func TestEditMessageReplyMarkupSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointEditMessageReplyMarkup, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	inline := [][]telegraph.InlineKeyboardButton{}
+	res, err := client.EditMessageReplyMarkup().SetChatId(1312312).SetMessageId(2323423).
+		SetInlineMessageId("inline").SetReplyMarkup(inline).Commit()
+
+	assert.NotNil(t, res)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestEditMessageReplyMarkupError(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointEditMessageReplyMarkup, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	inline := [][]telegraph.InlineKeyboardButton{}
+	res, err := client.EditMessageReplyMarkup().SetChatId(1312312).SetMessageId(2323423).
+		SetInlineMessageId("inline").SetReplyMarkup(inline).Commit()
+
+	assert.Nil(t, res)
+	assert.Error(t, err)
+}
+
+func TestDeleteMessageSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointDeleteMessage, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	res, err := client.DeleteMessage(23223, 232344).Commit()
+
+	assert.NotNil(t, res)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestDeleteMessageError(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointDeleteMessage, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	res, err := client.DeleteMessage(23223, 232344).Commit()
+
+	assert.Nil(t, res)
+	assert.Error(t, err)
+}
