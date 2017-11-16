@@ -4,6 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/dynastymasra/telegraph/badge.svg?branch=master)](https://coveralls.io/github/dynastymasra/telegraph?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dynastymasra/telegraph)](https://goreportcard.com/report/github.com/dynastymasra/telegraph)
 [![GoDoc](https://godoc.org/github.com/dynastymasra/telegraph?status.svg)](https://godoc.org/github.com/dynastymasra/telegraph)
+[![Version](https://img.shields.io/badge/version-1.2.0-orange.svg)](https://github.com/dynastymasra/telegraph/tree/1.2.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
