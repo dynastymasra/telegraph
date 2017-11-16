@@ -1563,6 +1563,101 @@ func (client *Client) SendContact(message SendContact) *MessageResponse {
 	}
 }
 
+/*
+SendSticker Use this method to send .webp stickers. On success, the sent Message is returned.
+Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended),
+pass an HTTP URL as a String for Telegram to get a .webp file from the Internet, or upload a new one
+*/
+func (client *Client) SendSticker(chatID interface{}, sticker string, upload bool) *MessageResponse {
+	body := JSON{
+		"chat_id": chatID,
+		"sticker": sticker,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSendSticker, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(sticker, "", "sticker")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
+func (message *MessageResponse) SetDisableNotification(disable bool) *MessageResponse {
+	body := JSON{
+		"disable_notification": disable,
+	}
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetReplyToMessageId If the message is a reply, ID of the original message
+func (message *MessageResponse) SetReplyToMessageId(messageID int64) *MessageResponse {
+	body := JSON{
+		"reply_to_message_id": messageID,
+	}
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetForceReply Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+func (message *MessageResponse) SetForceReply(reply ForceReply) *MessageResponse {
+	body := JSON{
+		"reply_markup": reply,
+	}
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+func (message *MessageResponse) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *MessageResponse {
+	body := JSON{
+		"reply_markup": JSON{
+			"inline_keyboard": inline,
+		},
+	}
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+func (message *MessageResponse) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup) *MessageResponse {
+	body := JSON{
+		"reply_markup": reply,
+	}
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+func (message *MessageResponse) SetReplyKeyboardRemove(remove ReplyKeyboardRemove) *MessageResponse {
+	body := JSON{
+		"reply_markup": remove,
+	}
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
 // Commit process request send message to telegram
 func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
 	var errs []error
