@@ -3,7 +3,6 @@ package telegraph
 import (
 	"net/http"
 
-	"encoding/json"
 	"fmt"
 
 	"github.com/cenkalti/backoff"
@@ -44,9 +43,13 @@ func (call *VoidResponse) Commit() (int, error) {
 	var errs []error
 	var body []byte
 	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+		Result bool `json:"result,omitempty"`
+	}{}
 
 	operation := func() error {
-		res, body, errs = call.Request.EndBytes()
+		res, body, errs = call.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}
@@ -58,13 +61,13 @@ func (call *VoidResponse) Commit() (int, error) {
 	}
 
 	if res.StatusCode >= http.StatusBadRequest {
-		return parseErrorResponse(res, body)
+		return res.StatusCode, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
 	}
 
 	return res.StatusCode, nil
 }
 
-// Download response from telegram API
+// Download response from telegram API cannot used with Commit
 func (call *VoidResponse) Download() (*http.Response, []byte, error) {
 	var errs []error
 	var body []byte
@@ -83,16 +86,7 @@ func (call *VoidResponse) Download() (*http.Response, []byte, error) {
 	}
 
 	if res.StatusCode >= http.StatusBadRequest {
-		_, err := parseErrorResponse(res, body)
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("%v", body)
 	}
 	return res, body, nil
-}
-
-func parseErrorResponse(res *http.Response, body []byte) (int, error) {
-	var response ErrorResponse
-	if err := json.Unmarshal(body, &response); err != nil {
-		return res.StatusCode, err
-	}
-	return res.StatusCode, fmt.Errorf(response.Description)
 }

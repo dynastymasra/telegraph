@@ -248,3 +248,75 @@ func TestAnswerCallbackQuerySuccess(t *testing.T) {
 	assert.Equal(t, http.StatusOK, status)
 	assert.NoError(t, err)
 }
+
+func TestUploadStickerFileSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointUploadStickerFile, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.UploadStickerFile(234234, "./LICENSE").Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestCreateNewStickerSetSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointCreateNewStickerSet, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.CreateNewStickerSet(234234, "test", "test", "./LICENSE", ":D", true).
+		SetContainsMask(true).SetMaskPosition(telegraph.MaskPosition{}).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestAddStickerToSetSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointAddStickerToSet, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.AddStickerToSet(234234, "test", "./LICENSE", ":D", true).
+		SetContainsMask(true).SetMaskPosition(telegraph.MaskPosition{}).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestSetStickerPositionInSetSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSetStickerPositionInSet, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.SetStickerPositionInSet("test", 2342342).Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}
+
+func TestDeleteStickerFromSetSuccess(t *testing.T) {
+	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointDeleteStickerFromSet, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.DeleteStickerFromSet("test").Commit()
+
+	assert.Equal(t, http.StatusOK, status)
+	assert.NoError(t, err)
+}

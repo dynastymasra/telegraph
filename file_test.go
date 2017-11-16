@@ -43,19 +43,6 @@ func TestGetFileError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestGetFileFailedUnmarshal(t *testing.T) {
-	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetFile, "token")).Reply(http.StatusBadRequest).XML("")
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-
-	model, res, err := client.GetFile("33242342").Commit()
-
-	assert.Nil(t, model)
-	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
-	assert.Error(t, err)
-}
-
 func TestGetFileFailed(t *testing.T) {
 	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetFile, "token")).Reply(http.StatusBadRequest).JSON(`{
 		"ok": false,

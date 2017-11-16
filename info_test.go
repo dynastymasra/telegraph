@@ -86,18 +86,6 @@ func TestSetWebHookError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestSetWebHookFailedUnmarshal(t *testing.T) {
-	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSetWebHook, "token")).Reply(http.StatusBadGateway).XML(``)
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-
-	status, err := client.SetWebHook("https://www.cubesoft.co.id").Commit()
-
-	assert.Equal(t, http.StatusBadGateway, status)
-	assert.Error(t, err)
-}
-
 func TestSetWebHookFailed(t *testing.T) {
 	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSetWebHook, "token")).Reply(http.StatusBadRequest).XML(`{
 		"ok": false,
@@ -148,19 +136,6 @@ func TestGetWebHookInfoError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestGetWebHookInfoFailedUnmarshal(t *testing.T) {
-	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetWebHookInfo, "token")).Reply(http.StatusBadRequest).XML("")
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-
-	info, res, err := client.GetWebHookInfo().Commit()
-
-	assert.Nil(t, info)
-	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
-	assert.Error(t, err)
-}
-
 func TestGetWebHookInfoFailed(t *testing.T) {
 	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetWebHookInfo, "token")).Reply(http.StatusNotFound).JSON(`{
 		"ok": false,
@@ -203,18 +178,6 @@ func TestDeleteWebHookError(t *testing.T) {
 	status, err := client.DeleteWebHook().Commit()
 
 	assert.Equal(t, http.StatusInternalServerError, status)
-	assert.Error(t, err)
-}
-
-func TestDeleteWebHookFailedUnmarshal(t *testing.T) {
-	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointDeleteWebHook, "token")).Reply(http.StatusBadRequest).XML("")
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-
-	status, err := client.DeleteWebHook().Commit()
-
-	assert.Equal(t, http.StatusBadRequest, status)
 	assert.Error(t, err)
 }
 

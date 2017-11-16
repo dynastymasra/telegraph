@@ -3,7 +3,6 @@ package telegraph
 import (
 	"fmt"
 
-	"encoding/json"
 	"net/http"
 
 	"github.com/cenkalti/backoff"
@@ -50,9 +49,13 @@ func (file *FileResponse) Commit() (*File, *http.Response, error) {
 	var errs []error
 	var body []byte
 	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+		Result *File `json:"result,omitempty"`
+	}{}
 
 	operation := func() error {
-		res, body, errs = file.Request.EndBytes()
+		res, body, errs = file.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}
@@ -62,27 +65,14 @@ func (file *FileResponse) Commit() (*File, *http.Response, error) {
 	if err := backoff.Retry(operation, file.Client.expBackOff); err != nil {
 		return nil, MakeHTTPResponse(file.Request), err
 	}
-
-	return parseFile(res, body)
-}
-
-func parseFile(res *http.Response, body []byte) (*File, *http.Response, error) {
-	model := struct {
-		ErrorResponse
-		Result *File `json:"result,omitempty"`
-	}{}
-	if err := json.Unmarshal(body, &model); err != nil {
-		return nil, res, err
-	}
-
 	if res.StatusCode != http.StatusOK {
-		return nil, res, fmt.Errorf(model.Description)
+		return nil, res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
 	}
 
 	return model.Result, res, nil
 }
 
-// Download direct download file from telegram after get file
+// Download direct download file from telegram after get file, cannot used with Commit
 func (file *FileResponse) Download() (*http.Response, []byte, error) {
 	model, _, err := file.Commit()
 	if err != nil {

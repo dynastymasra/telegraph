@@ -3,7 +3,6 @@ package telegraph
 import (
 	"fmt"
 
-	"encoding/json"
 	"net/http"
 
 	"github.com/cenkalti/backoff"
@@ -120,9 +119,13 @@ func (info *InfoResponse) Commit() (*WebhookInfo, *http.Response, error) {
 	var errs []error
 	var body []byte
 	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+		Result *WebhookInfo `json:"result,omitempty"`
+	}{}
 
 	operation := func() error {
-		res, body, errs = info.Request.EndBytes()
+		res, body, errs = info.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}
@@ -132,19 +135,9 @@ func (info *InfoResponse) Commit() (*WebhookInfo, *http.Response, error) {
 	if err := backoff.Retry(operation, info.Client.expBackOff); err != nil {
 		return nil, MakeHTTPResponse(info.Request), err
 	}
-	return parseWebHookInfo(res, body)
-}
-
-func parseWebHookInfo(res *http.Response, body []byte) (*WebhookInfo, *http.Response, error) {
-	model := struct {
-		ErrorResponse
-		Result *WebhookInfo `json:"result,omitempty"`
-	}{}
-	if err := json.Unmarshal(body, &model); err != nil {
-		return nil, res, err
-	}
 	if res.StatusCode != http.StatusOK {
-		return nil, res, fmt.Errorf(model.Description)
+		return nil, res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
 	}
+
 	return model.Result, res, nil
 }

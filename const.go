@@ -2,7 +2,7 @@ package telegraph
 
 const (
 	// Version of telegraph
-	Version         = "1.0.0"
+	Version         = "1.2.0"
 	UserAgentHeader = "User-Agent"
 	BaseURL         = "https://api.telegram.org"
 
@@ -56,4 +56,9 @@ const (
 	EndpointDeleteMessage           = "/bot%v/deleteMessage"
 	EndpointSendSticker             = "/bot%v/sendSticker"
 	EndpointGetStickerSet           = "/bot%v/getStickerSet"
+	EndpointUploadStickerFile       = "/bot%v/uploadStickerFile"
+	EndpointCreateNewStickerSet     = "/bot%v/createNewStickerSet"
+	EndpointAddStickerToSet         = "/bot%v/addStickerToSet"
+	EndpointSetStickerPositionInSet = "/bot%v/setStickerPositionInSet"
+	EndpointDeleteStickerFromSet    = "/bot%v/deleteStickerFromSet"
 )

@@ -547,3 +547,135 @@ func (call *VoidResponse) SetCacheTime(cache int64) *VoidResponse {
 		Request: call.Request.Send(body),
 	}
 }
+
+/*
+UploadStickerFile Use this method to upload a .png file with a sticker
+for later use in createNewStickerSet and addStickerToSet methods (can be used multiple times).
+Returns the uploaded File on success.
+*/
+func (client *Client) UploadStickerFile(userID int64, path string) *VoidResponse {
+	body := JSON{
+		"user_id": userID,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointUploadStickerFile, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeMultipart).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body).SendFile(path, "", "png_sticker")
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+CreateNewStickerSet Use this method to create new sticker set owned by a user.
+The bot will be able to edit the created sticker set. Returns True on success.
+
+Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px,
+and either width or height must be exactly 512px. Pass a file_id as a String to send a file that already exists on the Telegram servers,
+pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one
+*/
+func (client *Client) CreateNewStickerSet(userID int64, name, title, pngSticker, emoji string, upload bool) *VoidResponse {
+	body := JSON{
+		"user_id":     userID,
+		"name":        name,
+		"title":       title,
+		"png_sticker": pngSticker,
+		"emojis":      emoji,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointCreateNewStickerSet, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(pngSticker, "", "png_sticker")
+	}
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+AddStickerToSet Use this method to add a new sticker to a set created by the bot. Returns True on success.
+*/
+func (client *Client) AddStickerToSet(userID int64, name, pngSticker, emoji string, upload bool) *VoidResponse {
+	body := JSON{
+		"user_id":     userID,
+		"name":        name,
+		"png_sticker": pngSticker,
+		"emojis":      emoji,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointAddStickerToSet, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(pngSticker, "", "png_sticker")
+	}
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+SetStickerPositionInSet Use this method to move a sticker in a set created by the bot to a specific position .
+Returns True on success.
+*/
+func (client *Client) SetStickerPositionInSet(sticker string, position int) *VoidResponse {
+	body := JSON{
+		"sticker":  sticker,
+		"position": position,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSetStickerPositionInSet, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+DeleteStickerFromSet Use this method to delete a sticker from a set created by the bot. Returns True on success.
+*/
+func (client *Client) DeleteStickerFromSet(sticker string) *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointDeleteStickerFromSet, client.accessToken)
+	request := gorequest.New().Get(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("sticker=%v", sticker))
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetContainsMask Pass True, if a set of mask stickers should be created
+func (call *VoidResponse) SetContainsMask(mask bool) *VoidResponse {
+	body := JSON{
+		"contains_masks": mask,
+	}
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
+
+// SetMaskPosition A JSON-serialized object for position where the mask should be placed on faces
+func (call *VoidResponse) SetMaskPosition(position MaskPosition) *VoidResponse {
+	body := JSON{
+		"mask_position": position,
+	}
+	return &VoidResponse{
+		Client:  call.Client,
+		Request: call.Request.Send(body),
+	}
+}
