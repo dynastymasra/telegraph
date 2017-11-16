@@ -1,7 +1,6 @@
 package telegraph
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -101,18 +100,6 @@ type (
 		Animation    *Animation      `json:"animation,animation"`
 	}
 
-	// Sticker This object represents a sticker.
-	Sticker struct {
-		FileID       string        `json:"file_id"`
-		Width        int           `json:"width"`
-		Height       int           `json:"height"`
-		Thumb        *PhotoSize    `json:"thumb,omitempty"`
-		Emoji        string        `json:"emoji,omitempty"`
-		SetName      string        `json:"set_name,omitempty"`
-		FileSize     int           `json:"file_size,omitempty"`
-		MaskPosition *MaskPosition `json:"mask_position,omitempty"`
-	}
-
 	// Video This object represents a sticker.
 	Video struct {
 		FileID   string     `json:"file_id"`
@@ -191,14 +178,6 @@ type (
 		FileName string     `json:"file_name,omitempty"`
 		MimeType string     `json:"mime_type,omitempty"`
 		FileSize int        `json:"file_size,omitempty"`
-	}
-
-	// MaskPosition This object describes the position on faces where a mask should be placed by default.
-	MaskPosition struct {
-		Point  string  `json:"point"`
-		XShift float64 `json:"x_shift"`
-		YShift float64 `json:"y_shift"`
-		Scale  float64 `json:"scale"`
 	}
 
 	// OrderInfo This object represents information about an order.
@@ -1663,9 +1642,13 @@ func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
 	var errs []error
 	var body []byte
 	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+		Result *Message `json:"result,omitempty"`
+	}{}
 
 	operation := func() error {
-		res, body, errs = message.Request.EndBytes()
+		res, body, errs = message.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}
@@ -1675,19 +1658,9 @@ func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
 	if err := backoff.Retry(operation, message.Client.expBackOff); err != nil {
 		return nil, MakeHTTPResponse(message.Request), err
 	}
-	return parseMessage(res, body)
-}
-
-func parseMessage(res *http.Response, body []byte) (*Message, *http.Response, error) {
-	model := struct {
-		ErrorResponse
-		Result *Message `json:"result,omitempty"`
-	}{}
-	if err := json.Unmarshal(body, &model); err != nil {
-		return nil, res, err
-	}
 	if res.StatusCode != http.StatusOK {
-		return nil, res, fmt.Errorf(model.Description)
+		return nil, res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
 	}
+
 	return model.Result, res, nil
 }

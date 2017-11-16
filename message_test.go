@@ -89,19 +89,6 @@ func TestSendMessageForwardError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestSendMessageForwardFailedUnmarshal(t *testing.T) {
-	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointForwardMessage, "token")).Reply(http.StatusBadRequest).XML("")
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-	message := telegraph.NewForwardMessage("1233456", "test", 123123213)
-	model, res, err := client.ForwardMessage(*message).Commit()
-
-	assert.Nil(t, model)
-	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
-	assert.Error(t, err)
-}
-
 func TestSendMessageForwardFailed(t *testing.T) {
 	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointForwardMessage, "token")).Reply(http.StatusBadRequest).JSON(`{
 		"ok": false,
@@ -366,19 +353,6 @@ func TestSendMessageTextError(t *testing.T) {
 
 	assert.Nil(t, model)
 	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
-	assert.Error(t, err)
-}
-
-func TestSendMessageTextFailedUnmarshal(t *testing.T) {
-	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendMessage, "token")).Reply(http.StatusBadRequest).XML("")
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-	message := telegraph.NewTextMessage("1233456", "test")
-	model, res, err := client.SendMessage(*message).Commit()
-
-	assert.Nil(t, model)
-	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
 
@@ -1364,21 +1338,6 @@ func TestSendStickerError(t *testing.T) {
 
 	assert.Nil(t, model)
 	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
-	assert.Error(t, err)
-}
-
-func TestSendStickerFailedUnmarshal(t *testing.T) {
-	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendSticker, "token")).Reply(http.StatusBadRequest).XML("")
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-	model, res, err := client.SendSticker(123131231, "./LICENSE", true).
-		SetDisableNotification(true).SetReplyToMessageId(324234234).SetForceReply(telegraph.ForceReply{}).
-		SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
-		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).Commit()
-
-	assert.Nil(t, model)
-	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
 

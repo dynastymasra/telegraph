@@ -79,4 +79,12 @@ type (
 		Height   int    `json:"height"`
 		FileSize int    `json:"file_size"`
 	}
+
+	// MaskPosition This object describes the position on faces where a mask should be placed by default.
+	MaskPosition struct {
+		Point  string  `json:"point"`
+		XShift float64 `json:"x_shift"`
+		YShift float64 `json:"y_shift"`
+		Scale  float64 `json:"scale"`
+	}
 )

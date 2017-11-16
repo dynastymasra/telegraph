@@ -55,4 +55,5 @@ const (
 	EndpointEditMessageReplyMarkup  = "/bot%v/editMessageReplyMarkup"
 	EndpointDeleteMessage           = "/bot%v/deleteMessage"
 	EndpointSendSticker             = "/bot%v/sendSticker"
+	EndpointGetStickerSet           = "/bot%v/getStickerSet"
 )
