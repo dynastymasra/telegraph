@@ -21,13 +21,23 @@ $ go get github.com/dynastymasra/telegraph
 
 ## How to use
 
-import library `github.com/dynastymasra/telegraph`, This library support telegram available method in 
-[Documentation](https://core.telegram.org/bots/api#available-methods), Direct use sdk without back off retry,
-crate new client for make request to `Telegram API`.
+import library `github.com/dynastymasra/telegraph`, 
+See Telegram API [Documentation](https://core.telegram.org/bots/api#available-methods) to know available method can use, 
+and what params can use in a method.
 
 Create new client with no use back off retry, use params `access token` obtain from telegram bot father.
 ```go
 client := telegraph.NewClient(<access_token>)
+
+res, err := client.SetWebHook("https://www.cubesoft.co.id").SetCertificate("./LICENSE").SetMaxConnection(100).SetAllowedUpdates("1", "2", "3").Commit()
+if err != nil {
+	// Do something when error
+}
+
+info, res, err := client.GetWebHookInfo().Commit()
+if err != nil {
+	// Do something when error
+}
 ```
 
 Create new client with use back off retry, with params `access token` obtain from telegram bot father and `max interval` and `max elapsed time`
