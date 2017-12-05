@@ -43,6 +43,11 @@ if err != nil {
 Create new client with use back off retry, with params `access token` obtain from telegram bot father and `max interval` and `max elapsed time`
 ```go
 client := telegraph.NewClientWithBackOff(<access_token>, telegraph.NewBackOff(<max_interval>, <max_elapsed_time>))
+
+res, err := client.DeleteWebHook().Commit()
+if err != nil {
+	// Do something when error
+}
 ```
 
 Parse telegram web hook request, reference to telegram [Documentation](https://core.telegram.org/bots/api#getting-updates)
