@@ -3,26 +3,32 @@ package telegraph
 import (
 	"fmt"
 
+	"net/http"
+
+	"github.com/cenkalti/backoff"
 	"github.com/parnurzeal/gorequest"
 )
 
 type (
-	// JSON struct json type
-	JSON map[string]interface{}
+	// VoidResponse struct to handle request and response telegram api
+	VoidResponse struct {
+		Client  *Client
+		Request *gorequest.SuperAgent
+	}
 )
 
 /*
-SendChatAction Use this method when you need to tell the user that something is happening on the bot's side.
-The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status).
-Returns True on success.
+SetWebHook Use this method to specify a url and receive incoming updates via an outgoing webhook.
+Whenever there is an update for the bot, we will send an HTTPS POST request to the specified url,
+containing a JSON-serialized Update. In case of an unsuccessful request,
+we will give up after a reasonable amount of attempts. Returns true.
 */
-func (client *Client) SendChatAction(chatID, action string) *VoidResponse {
+func (client *Client) SetWebHook(webHook string) *VoidResponse {
 	body := JSON{
-		"chat_id": chatID,
-		"action":  action,
+		"url": webHook,
 	}
 
-	url := client.baseURL + fmt.Sprintf(EndpointSendChatAction, client.accessToken)
+	url := client.baseURL + fmt.Sprintf(EndpointSetWebHook, client.accessToken)
 	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
@@ -31,651 +37,82 @@ func (client *Client) SendChatAction(chatID, action string) *VoidResponse {
 	}
 }
 
-/*
-KickChatMember Use this method to kick a user from a group, a supergroup or a channel.
-In the case of supergroups and channels, the user will not be able to return to the group on their own using invite links, etc.,
-unless unbanned first. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-Returns True on success.
-*/
-func (client *Client) KickChatMember(chatID interface{}, userID int64) *VoidResponse {
-	body := JSON{
-		"chat_id": chatID,
-		"user_id": userID,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointKickChatMember, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
-
+// SetCertificate Upload your public key certificate so that the root certificate in use can be checked.
+// See our self-signed guide for details.
+func (void *VoidResponse) SetCertificate(path string) *VoidResponse {
 	return &VoidResponse{
-		Client:  client,
-		Request: request,
+		Client:  void.Client,
+		Request: void.Request.Type(gorequest.TypeMultipart).SendFile(path, "", "certificate"),
 	}
 }
 
-// SetUntilDate Date when the user will be unbanned, unix time.
-// If user is banned for more than 366 days or less than 30 seconds from the current time they are considered to be banned forever
-func (call *VoidResponse) SetUntilDate(untilDate int64) *VoidResponse {
+// SetMaxConnection Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery,
+// 1-100. Defaults to 40. Use lower values to limit the load on your bot‘s server,
+// and higher values to increase your bot’s throughput.
+func (void *VoidResponse) SetMaxConnection(conn int) *VoidResponse {
 	body := JSON{
-		"until_date": untilDate,
+		"max_connections": conn,
 	}
 
 	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
+		Client:  void.Client,
+		Request: void.Request.Send(body),
 	}
 }
 
 /*
-UnbanChatMember Use this method to unban a previously kicked user in a supergroup or channel.
-The user will not return to the group or channel automatically, but will be able to join via link, etc.
-The bot must be an administrator for this to work. Returns True on success.
+SetAllowedUpdates List the types of updates you want your bot to receive.
+For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
+See Update for a complete list of available update types.
+Specify an empty list to receive all updates regardless of type (default).
+If not specified, the previous setting will be used.
 */
-func (client *Client) UnbanChatMember(chatID interface{}, userID int64) *VoidResponse {
+func (void *VoidResponse) SetAllowedUpdates(allowed ...string) *VoidResponse {
 	body := JSON{
-		"chat_id": chatID,
-		"user_id": userID,
+		"allowed_updates": allowed,
 	}
 
-	url := client.baseURL + fmt.Sprintf(EndpointUnbanChatMember, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	return &VoidResponse{
+		Client:  void.Client,
+		Request: void.Request.Send(body),
+	}
+}
+
+// Commit execute request to telegram
+func (void *VoidResponse) Commit() (*http.Response, error) {
+	var errs []error
+	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+		Result *bool `json:"result,omitempty"`
+	}{}
+
+	operation := func() error {
+		res, _, errs = void.Request.End()
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, void.Client.expBackOff); err != nil {
+		return MakeHTTPResponse(void.Request), err
+	}
+	if res.StatusCode != http.StatusOK {
+		return res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
+	}
+
+	return res, nil
+}
+
+// DeleteWebHook Use this method to remove webhook integration if you decide to switch back to getUpdates.
+// Returns True on success. Requires no parameters.
+func (client *Client) DeleteWebHook() *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointDeleteWebHook, client.accessToken)
+	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &VoidResponse{
 		Client:  client,
 		Request: request,
-	}
-}
-
-/*
-RestrictChatMember Use this method to restrict a user in a supergroup.
-The bot must be an administrator in the supergroup for this to work and must have the appropriate admin rights.
-Pass True for all boolean parameters to lift restrictions from a user. Returns True on success.
-*/
-func (client *Client) RestrictChatMember(chatID interface{}, userID int64) *VoidResponse {
-	body := JSON{
-		"chat_id": chatID,
-		"user_id": userID,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointRestrictChatMember, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-// SetCanSendMessages Pass True, if the user can send text messages, contacts, locations and venues
-func (call *VoidResponse) SetCanSendMessages(can bool) *VoidResponse {
-	body := JSON{
-		"can_send_messages": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetCanSendMediaMessages Pass True, if the user can send audios, documents, photos, videos, video notes and voice notes,
-// implies can_send_messages
-func (call *VoidResponse) SetCanSendMediaMessages(can bool) *VoidResponse {
-	body := JSON{
-		"can_send_media_messages": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetCanSendOtherMessages Pass True, if the user can send animations, games, stickers and use inline bots,
-// implies can_send_media_messages
-func (call *VoidResponse) SetCanSendOtherMessages(can bool) *VoidResponse {
-	body := JSON{
-		"can_send_other_messages": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetCanAddWebPagePreviews Pass True, if the user may add web page previews to their messages, implies can_send_media_messages
-func (call *VoidResponse) SetCanAddWebPagePreviews(can bool) *VoidResponse {
-	body := JSON{
-		"can_add_web_page_previews": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-/*
-PromoteChatMember Use this method to promote or demote a user in a supergroup or a channel.
-The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-Pass False for all boolean parameters to demote a user. Returns True on success.
-*/
-func (client *Client) PromoteChatMember(chatID interface{}, userID int64) *VoidResponse {
-	body := JSON{
-		"chat_id": chatID,
-		"user_id": userID,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointPromoteChatMember, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-// SetCanChangeInfo Pass True, if the administrator can change chat title, photo and other settings
-func (call *VoidResponse) SetCanChangeInfo(can bool) *VoidResponse {
-	body := JSON{
-		"can_change_info": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetCanPostMessages Pass True, if the administrator can create channel posts, channels only
-func (call *VoidResponse) SetCanPostMessages(can bool) *VoidResponse {
-	body := JSON{
-		"can_post_messages": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetCanEditMessages Pass True, if the administrator can edit messages of other users, channels only
-func (call *VoidResponse) SetCanEditMessages(can bool) *VoidResponse {
-	body := JSON{
-		"can_edit_messages": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetCanDeleteMessages Pass True, if the administrator can delete messages of other users
-func (call *VoidResponse) SetCanDeleteMessages(can bool) *VoidResponse {
-	body := JSON{
-		"can_delete_messages": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetCanInviteUsers Pass True, if the administrator can invite new users to the chat
-func (call *VoidResponse) SetCanInviteUsers(can bool) *VoidResponse {
-	body := JSON{
-		"can_invite_users": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetCanRestrictMembers Pass True, if the administrator can restrict, ban or unban chat members
-func (call *VoidResponse) SetCanRestrictMembers(can bool) *VoidResponse {
-	body := JSON{
-		"can_restrict_members": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetCanPinMessages Pass True, if the administrator can pin messages, supergroups only
-func (call *VoidResponse) SetCanPinMessages(can bool) *VoidResponse {
-	body := JSON{
-		"can_pin_messages": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetCanPromoteMembers Pass True,
-// if the administrator can add new administrators with a subset of his own privileges or demote administrators that he has promoted,
-// directly or indirectly (promoted by administrators that were appointed by him)
-func (call *VoidResponse) SetCanPromoteMembers(can bool) *VoidResponse {
-	body := JSON{
-		"can_promote_members": can,
-	}
-
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-/*
-ExportChatInviteLink Use this method to export an invite link to a supergroup or a channel.
-The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-Returns exported invite link as String on success.
-*/
-func (client *Client) ExportChatInviteLink(chatID interface{}) *VoidResponse {
-	body := JSON{
-		"chat_id": chatID,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointExportChatInviteLink, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-SetChatPhoto Use this method to set a new profile photo for the chat. Photos can't be changed for private chats.
-The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-Returns True on success.
-*/
-func (client *Client) SetChatPhoto(chatID interface{}, path string) *VoidResponse {
-	body := JSON{
-		"chat_id": chatID,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointSetChatPhoto, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeMultipart).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body).
-		SendFile(path, "", "photo")
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-DeleteChatPhoto Use this method to delete a chat photo. Photos can't be changed for private chats. The bot must b
-*/
-func (client *Client) DeleteChatPhoto(chatID interface{}) *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointDeleteChatPhoto, client.accessToken)
-	request := gorequest.New().Get(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Query(fmt.Sprintf("chat_id=%v", chatID))
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-SetChatTitle Use this method to change the title of a chat. Titles can't be changed for private chats.
-The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-Returns True on success.
-*/
-func (client *Client) SetChatTitle(chatID interface{}, title string) *VoidResponse {
-	body := JSON{
-		"chat_id": chatID,
-		"title":   title,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointSetChatTitle, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-SetChatDescription Use this method to change the description of a supergroup or a channel.
-The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-Returns True on success.
-*/
-func (client *Client) SetChatDescription(chatID interface{}) *VoidResponse {
-	body := JSON{
-		"chat_id": chatID,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointSetChatDescription, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-// SetDescription New chat description, 0-255 characters
-func (call *VoidResponse) SetDescription(description string) *VoidResponse {
-	body := JSON{
-		"description": description,
-	}
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-/*
-PinChatMessage Use this method to pin a message in a supergroup.
-The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-Returns True on success.
-*/
-func (client *Client) PinChatMessage(chatID interface{}, messageID int64) *VoidResponse {
-	body := JSON{
-		"chat_id":    chatID,
-		"message_id": messageID,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointPinChatMessage, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-// SetDisableNotification Pass True, if it is not necessary to send a notification to all group members about the new pinned message
-func (call *VoidResponse) SetDisableNotification(disable bool) *VoidResponse {
-	body := JSON{
-		"disable_notification": disable,
-	}
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-/*
-UnpinChatMessage Use this method to unpin a message in a supergroup chat.
-The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-Returns True on success.
-*/
-func (client *Client) UnpinChatMessage(chatID interface{}) *VoidResponse {
-	body := JSON{
-		"chat_id": chatID,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointUnpinChatMessage, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-LeaveChat Use this method for your bot to leave a group, supergroup or channel. Returns True on success.
-*/
-func (client *Client) LeaveChat(chatID interface{}) *VoidResponse {
-	body := JSON{
-		"chat_id": chatID,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointLeaveChat, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-SetChatStickerSet Use this method to set a new group sticker set for a supergroup.
-The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-Use the field can_set_sticker_set optionally returned in getChat requests to check if the bot can use this method.
-Returns True on success.
-*/
-func (client *Client) SetChatStickerSet(chatID interface{}, stickerSetName string) *VoidResponse {
-	body := JSON{
-		"chat_id":          chatID,
-		"sticker_set_name": stickerSetName,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointSetChatStickerSet, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-DeleteChatStickerSet Use this method to delete a group sticker set from a supergroup.
-The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-Use the field can_set_sticker_set optionally returned in getChat requests to check if the bot can use this method.
-Returns True on success.
-*/
-func (client *Client) DeleteChatStickerSet(chatID interface{}) *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointDeleteChatStickerSet, client.accessToken)
-	request := gorequest.New().Get(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Query(fmt.Sprintf("chat_id=%v", chatID))
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-AnswerCallbackQuery Use this method to send answers to callback queries sent from inline keyboards.
-The answer will be displayed to the user as a notification at the top of the chat screen or as an alert.
-On success, True is returned.
-*/
-func (client *Client) AnswerCallbackQuery(callbackQueryID string) *VoidResponse {
-	body := JSON{
-		"callback_query_id": callbackQueryID,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointAnswerCallbackQuery, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-// SetText Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters
-func (call *VoidResponse) SetText(text string) *VoidResponse {
-	body := JSON{
-		"text": text,
-	}
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetShowAlert If true, an alert will be shown by the client instead of a notification at the top of the chat screen.
-// Defaults to false.
-func (call *VoidResponse) SetShowAlert(alert bool) *VoidResponse {
-	body := JSON{
-		"show_alert": alert,
-	}
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetUrl URL that will be opened by the user's client.
-// If you have created a Game and accepted the conditions via @Botfather,
-// specify the URL that opens your game – note that this will only work if the query comes from a callback_game button.
-func (call *VoidResponse) SetUrl(url string) *VoidResponse {
-	body := JSON{
-		"url": url,
-	}
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetCacheTime The maximum amount of time in seconds that the result of the callback query may be cached client-side.
-// Telegram apps will support caching starting in version 3.14. Defaults to 0.
-func (call *VoidResponse) SetCacheTime(cache int64) *VoidResponse {
-	body := JSON{
-		"cache_time": cache,
-	}
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-/*
-UploadStickerFile Use this method to upload a .png file with a sticker
-for later use in createNewStickerSet and addStickerToSet methods (can be used multiple times).
-Returns the uploaded File on success.
-*/
-func (client *Client) UploadStickerFile(userID int64, path string) *VoidResponse {
-	body := JSON{
-		"user_id": userID,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointUploadStickerFile, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeMultipart).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body).SendFile(path, "", "png_sticker")
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-CreateNewStickerSet Use this method to create new sticker set owned by a user.
-The bot will be able to edit the created sticker set. Returns True on success.
-
-Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px,
-and either width or height must be exactly 512px. Pass a file_id as a String to send a file that already exists on the Telegram servers,
-pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one
-*/
-func (client *Client) CreateNewStickerSet(userID int64, name, title, pngSticker, emoji string, upload bool) *VoidResponse {
-	body := JSON{
-		"user_id":     userID,
-		"name":        name,
-		"title":       title,
-		"png_sticker": pngSticker,
-		"emojis":      emoji,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointCreateNewStickerSet, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
-
-	if upload {
-		request.Type(gorequest.TypeMultipart).SendFile(pngSticker, "", "png_sticker")
-	}
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-AddStickerToSet Use this method to add a new sticker to a set created by the bot. Returns True on success.
-*/
-func (client *Client) AddStickerToSet(userID int64, name, pngSticker, emoji string, upload bool) *VoidResponse {
-	body := JSON{
-		"user_id":     userID,
-		"name":        name,
-		"png_sticker": pngSticker,
-		"emojis":      emoji,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointAddStickerToSet, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
-
-	if upload {
-		request.Type(gorequest.TypeMultipart).SendFile(pngSticker, "", "png_sticker")
-	}
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-SetStickerPositionInSet Use this method to move a sticker in a set created by the bot to a specific position .
-Returns True on success.
-*/
-func (client *Client) SetStickerPositionInSet(sticker string, position int) *VoidResponse {
-	body := JSON{
-		"sticker":  sticker,
-		"position": position,
-	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointSetStickerPositionInSet, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-/*
-DeleteStickerFromSet Use this method to delete a sticker from a set created by the bot. Returns True on success.
-*/
-func (client *Client) DeleteStickerFromSet(sticker string) *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointDeleteStickerFromSet, client.accessToken)
-	request := gorequest.New().Get(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Query(fmt.Sprintf("sticker=%v", sticker))
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
-}
-
-// SetContainsMask Pass True, if a set of mask stickers should be created
-func (call *VoidResponse) SetContainsMask(mask bool) *VoidResponse {
-	body := JSON{
-		"contains_masks": mask,
-	}
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
-	}
-}
-
-// SetMaskPosition A JSON-serialized object for position where the mask should be placed on faces
-func (call *VoidResponse) SetMaskPosition(position MaskPosition) *VoidResponse {
-	body := JSON{
-		"mask_position": position,
-	}
-	return &VoidResponse{
-		Client:  call.Client,
-		Request: call.Request.Send(body),
 	}
 }

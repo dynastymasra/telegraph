@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/dynastymasra/telegraph/badge.svg?branch=master)](https://coveralls.io/github/dynastymasra/telegraph?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dynastymasra/telegraph)](https://goreportcard.com/report/github.com/dynastymasra/telegraph)
 [![GoDoc](https://godoc.org/github.com/dynastymasra/telegraph?status.svg)](https://godoc.org/github.com/dynastymasra/telegraph)
-[![Version](https://img.shields.io/badge/version-1.2.0-orange.svg)](https://github.com/dynastymasra/telegraph/tree/1.2.0)
+[![Version](https://img.shields.io/badge/version-2.0.0-orange.svg)](https://github.com/dynastymasra/telegraph/tree/2.0.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
@@ -22,28 +22,17 @@ $ go get github.com/dynastymasra/telegraph
 ## How to use
 
 import library `github.com/dynastymasra/telegraph`, This library support telegram available method in 
-[Documentation](https://core.telegram.org/bots/api#available-methods), Direct use sdk without back off retry
+[Documentation](https://core.telegram.org/bots/api#available-methods), Direct use sdk without back off retry,
+crate new client for make request to `Telegram API`.
 
+Create new client with no use back off retry, use params `access token` obtain from telegram bot father.
 ```go
-payload := telegraph.NewTextMessage(<chat_id>, <text>)
-	
 client := telegraph.NewClient(<access_token>)
-message, res, err := client.SendMessage(payload).Commit()
-if err != nil {
-	// Do something if error
-}
 ```
 
-or use back off retry
-
+Create new client with use back off retry, with params `access token` obtain from telegram bot father and `max interval` and `max elapsed time`
 ```go
-payload := telegraph.NewTextMessage(<chat_id>, <text>)
-	
 client := telegraph.NewClientWithBackOff(<access_token>, telegraph.NewBackOff(<max_interval>, <max_elapsed_time>))
-message, res, err := client.SendMessage(payload).Commit()
-if err != nil {
-    // Do something if error	
-}
 ```
 
 Parse telegram web hook request, reference to telegram [Documentation](https://core.telegram.org/bots/api#getting-updates)

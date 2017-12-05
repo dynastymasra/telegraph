@@ -2,7 +2,7 @@ package telegraph
 
 const (
 	// Version of telegraph
-	Version         = "1.2.0"
+	Version         = "2.0.0"
 	UserAgentHeader = "User-Agent"
 	BaseURL         = "https://api.telegram.org"
 

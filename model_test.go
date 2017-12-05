@@ -1,16 +1,15 @@
 package telegraph_test
 
 import (
+	"net/http"
 	"telegraph"
 	"testing"
-
-	"net/http"
 
 	"github.com/parnurzeal/gorequest"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMakeHTTPResponseInternalServerError(t *testing.T) {
+func TestMakeHTTPResponse_InternalServerError(t *testing.T) {
 	agent := gorequest.New()
 
 	res := telegraph.MakeHTTPResponse(agent)
