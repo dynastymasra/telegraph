@@ -22,7 +22,7 @@ $ go get github.com/dynastymasra/telegraph
 ## How to use
 
 import library `github.com/dynastymasra/telegraph`, 
-See Telegram API [Documentation](https://core.telegram.org/bots/api#available-methods) to know available method can use, 
+See Telegram API [Documentation](https://core.telegram.org/bots/api#available-methods) to know available method can used, 
 and what params can use in a method.
 
 Create new client with no use back off retry, use params `access token` obtain from telegram bot father.
