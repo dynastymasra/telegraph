@@ -60,6 +60,62 @@ func (message *MessageResponse) SetDisableWebPagePreview(disable bool) *MessageR
 	}
 }
 
+/*
+ForwardMessage Use this method to forward messages of any kind. On success, the sent Message is returned.
+*/
+func (client *Client) ForwardMessage(chatId, fromChatId interface{}, messageId int) *MessageResponse {
+	body := JSON{
+		"chat_id":      chatId,
+		"from_chat_id": fromChatId,
+		"message_id":   messageId,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointForwardMessage, client.accessToken)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+SendPhoto Use this method to send photos. On success, the sent Message is returned.
+set upload true if its upload file to telegram
+*/
+func (client *Client) SendPhoto(chatId interface{}, photo string, upload bool) *MessageResponse {
+	body := JSON{
+		"chat_id": chatId,
+		"photo":   photo,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSendPhoto, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(photo, "", "photo")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetCaption Photo caption (may also be used when resending photos by file_id), 0-200 characters
+func (message *MessageResponse) SetCaption(caption string) *MessageResponse {
+	body := JSON{
+		"caption": caption,
+	}
+
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
 // SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
 func (message *MessageResponse) SetDisableNotification(disable bool) *MessageResponse {
 	body := JSON{
@@ -72,8 +128,8 @@ func (message *MessageResponse) SetDisableNotification(disable bool) *MessageRes
 	}
 }
 
-// SetReplyToMessageId If the message is a reply, ID of the original message
-func (message *MessageResponse) SetReplyToMessageId(id int64) *MessageResponse {
+// SetReplyToMessageID If the message is a reply, ID of the original message
+func (message *MessageResponse) SetReplyToMessageID(id int64) *MessageResponse {
 	body := JSON{
 		"reply_to_message_id": id,
 	}
