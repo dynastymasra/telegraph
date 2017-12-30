@@ -471,3 +471,77 @@ func TestSendVideo_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestSendVoice_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendVoice, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 323,
+			"from": {
+				"id": 23423423,
+				"is_bot": true,
+				"first_name": "cube",
+				"username": "soft"
+			},
+			"chat": {
+				"id": 75092216,
+				"first_name": "Cube",
+				"last_name": "soft",
+				"username": "cubesoft",
+				"type": "private"
+			},
+			"date": 1510304972,
+			"voice": {
+				"duration": 56,
+				"mime_type": "voice/ogg",
+				"file_id": "BAADBQADbAAJDDKD68EpVM5CtxU_7nK9Ag",
+				"file_size": 4214667
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendVoice(2434234, "./LICENSE", true).SetDisableNotification(false).
+		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).Commit()
+
+	assert.NotNil(t, message)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSendVoice_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendVoice, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendVoice(2434234, "./LICENSE", true).SetDisableNotification(false).
+		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).Commit()
+
+	assert.Nil(t, message)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestSendVoice_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendVoice, "token")).Reply(http.StatusBadRequest).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: chat not found"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendVoice(2434234, "./LICENSE", true).SetDisableNotification(false).
+		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).Commit()
+
+	assert.Nil(t, message)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}

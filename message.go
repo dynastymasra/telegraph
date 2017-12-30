@@ -82,7 +82,8 @@ func (client *Client) ForwardMessage(chatId, fromChatId interface{}, messageId i
 
 /*
 SendPhoto Use this method to send photos. On success, the sent Message is returned.
-set upload true if its upload file to telegram.
+
+Set upload true if its upload file to telegram.
 */
 func (client *Client) SendPhoto(chatId interface{}, photo string, upload bool) *MessageResponse {
 	body := JSON{
@@ -110,7 +111,8 @@ Your audio must be in the .mp3 format. On success, the sent Message is returned.
 Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
 
 For sending voice messages, use the sendVoice method instead.
-set upload true if its upload file to telegram.
+
+Set upload true if its upload file to telegram.
 */
 func (client *Client) SendAudio(chatId interface{}, audio string, upload bool) *MessageResponse {
 	body := JSON{
@@ -160,7 +162,7 @@ func (message *MessageResponse) SetTitle(title string) *MessageResponse {
 SendDocument Use this method to send general files. On success, the sent Message is returned.
 Bots can currently send files of any type of up to 50 MB in size, this limit may be changed in the future.
 
-set upload true if its upload file to telegram.
+Set upload true if its upload file to telegram.
 */
 func (client *Client) SendDocument(chatId interface{}, document string, upload bool) *MessageResponse {
 	body := JSON{
@@ -187,7 +189,7 @@ SendVideo Use this method to send video files, Telegram clients support mp4 vide
 On success, the sent Message is returned.
 Bots can currently send video files of up to 50 MB in size, this limit may be changed in the future.
 
-set upload true if its upload file to telegram.
+Set upload true if its upload file to telegram.
 */
 func (client *Client) SendVideo(chatId interface{}, video string, upload bool) *MessageResponse {
 	body := JSON{
@@ -230,6 +232,34 @@ func (message *MessageResponse) SetHeight(height int) *MessageResponse {
 	return &MessageResponse{
 		Client:  message.Client,
 		Request: message.Request.Send(body),
+	}
+}
+
+/*
+SendVoice Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
+For this to work, your audio must be in an .ogg file encoded with OPUS (other formats may be sent as Audio or Document).
+On success, the sent Message is returned.
+Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
+
+Set upload true if its upload file to telegram.
+*/
+func (client *Client) SendVoice(chatId interface{}, voice string, upload bool) *MessageResponse {
+	body := JSON{
+		"chat_id": chatId,
+		"voice":   voice,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSendVoice, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(voice, "", "voice")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
 	}
 }
 
