@@ -230,3 +230,83 @@ func TestForwardMessage_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestSendAudio_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendAudio, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 322343,
+			"from": {
+				"id": 234234324,
+				"is_bot": true,
+				"first_name": "cube",
+				"username": "cubesoft"
+			},
+			"chat": {
+				"id": 34234234,
+				"first_name": "cube",
+				"last_name": "soft",
+				"username": "cubesoft",
+				"type": "private"
+			},
+			"date": 1510279759,
+			"audio": {
+				"duration": 162,
+				"mime_type": "audio/mpeg",
+				"title": "test",
+				"performer": "cube",
+				"file_id": "NDNDJF949388JF30",
+				"file_size": 2668544
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendAudio(2434234, "./LICENSE", true).SetDisableNotification(false).
+		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).
+		SetPerformer("performer").SetTitle("title").Commit()
+
+	assert.NotNil(t, message)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSendAudio_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendAudio, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendAudio(2434234, "./LICENSE", true).SetDisableNotification(false).
+		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).
+		SetPerformer("performer").SetTitle("title").Commit()
+
+	assert.Nil(t, message)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestSendAudio_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendAudio, "token")).Reply(http.StatusBadRequest).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: chat not found"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	message, res, err := client.SendAudio(2434234, "./LICENSE", true).SetDisableNotification(false).
+		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).
+		SetPerformer("performer").SetTitle("title").Commit()
+
+	assert.Nil(t, message)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}

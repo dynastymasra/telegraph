@@ -104,10 +104,73 @@ func (client *Client) SendPhoto(chatId interface{}, photo string, upload bool) *
 	}
 }
 
+/*
+SendAudio Use this method to send audio files, if you want Telegram clients to display them in the music player.
+Your audio must be in the .mp3 format. On success, the sent Message is returned.
+Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
+
+For sending voice messages, use the sendVoice method instead.
+*/
+func (client *Client) SendAudio(chatId interface{}, audio string, upload bool) *MessageResponse {
+	body := JSON{
+		"chat_id": chatId,
+		"audio":   audio,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSendAudio, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(audio, "", "audio")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // SetCaption Photo caption (may also be used when resending photos by file_id), 0-200 characters
 func (message *MessageResponse) SetCaption(caption string) *MessageResponse {
 	body := JSON{
 		"caption": caption,
+	}
+
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetDuration Duration of the audio in seconds
+func (message *MessageResponse) SetDuration(duration int) *MessageResponse {
+	body := JSON{
+		"duration": duration,
+	}
+
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetPerformer Performer
+func (message *MessageResponse) SetPerformer(performer string) *MessageResponse {
+	body := JSON{
+		"performer": performer,
+	}
+
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetTitle Track name
+func (message *MessageResponse) SetTitle(title string) *MessageResponse {
+	body := JSON{
+		"title": title,
 	}
 
 	return &MessageResponse{
