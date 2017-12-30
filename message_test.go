@@ -385,3 +385,89 @@ func TestSendDocument_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestSendVideo_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendVideo, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 323,
+			"from": {
+				"id": 23423423,
+				"is_bot": true,
+				"first_name": "cube",
+				"username": "soft"
+			},
+			"chat": {
+				"id": 75092216,
+				"first_name": "Cube",
+				"last_name": "soft",
+				"username": "cubesoft",
+				"type": "private"
+			},
+			"date": 1510304972,
+			"video": {
+				"duration": 56,
+				"width": 640,
+				"height": 360,
+				"mime_type": "video/mp4",
+				"thumb": {
+					"file_id": "AAQFAJDSFDSFN2drMyAAR1OUFoDZdeqdcuAAIC",
+					"file_size": 320,
+					"width": 90,
+					"height": 51
+				},
+				"file_id": "BAADBQADbAAJDDKD68EpVM5CtxU_7nK9Ag",
+				"file_size": 4214667
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendVideo(2434234, "./LICENSE", true).SetDisableNotification(false).
+		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).SetWidth(1000).
+		SetHeight(1000).Commit()
+
+	assert.NotNil(t, message)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSendVideo_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendVideo, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendVideo(2434234, "./LICENSE", true).SetDisableNotification(false).
+		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).SetWidth(1000).
+		SetHeight(1000).Commit()
+
+	assert.Nil(t, message)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestSendVideo_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendVideo, "token")).Reply(http.StatusBadRequest).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: chat not found"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	message, res, err := client.SendVideo(2434234, "./LICENSE", true).SetDisableNotification(false).
+		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).SetWidth(1000).
+		SetHeight(1000).Commit()
+
+	assert.Nil(t, message)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}

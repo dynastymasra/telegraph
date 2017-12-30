@@ -132,18 +132,6 @@ func (client *Client) SendAudio(chatId interface{}, audio string, upload bool) *
 	}
 }
 
-// SetDuration Duration of the audio in seconds
-func (message *MessageResponse) SetDuration(duration int) *MessageResponse {
-	body := JSON{
-		"duration": duration,
-	}
-
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
-}
-
 // SetPerformer Performer
 func (message *MessageResponse) SetPerformer(performer string) *MessageResponse {
 	body := JSON{
@@ -194,10 +182,73 @@ func (client *Client) SendDocument(chatId interface{}, document string, upload b
 	}
 }
 
+/*
+SendVideo Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
+On success, the sent Message is returned.
+Bots can currently send video files of up to 50 MB in size, this limit may be changed in the future.
+
+set upload true if its upload file to telegram.
+*/
+func (client *Client) SendVideo(chatId interface{}, video string, upload bool) *MessageResponse {
+	body := JSON{
+		"chat_id": chatId,
+		"video":   video,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSendVideo, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(video, "", "video")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetWidth Video width
+func (message *MessageResponse) SetWidth(width int) *MessageResponse {
+	body := JSON{
+		"width": width,
+	}
+
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetHeight Video height
+func (message *MessageResponse) SetHeight(height int) *MessageResponse {
+	body := JSON{
+		"height": height,
+	}
+
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
 // SetCaption Photo caption (may also be used when resending photos by file_id), 0-200 characters
 func (message *MessageResponse) SetCaption(caption string) *MessageResponse {
 	body := JSON{
 		"caption": caption,
+	}
+
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetDuration Duration of the audio in seconds
+func (message *MessageResponse) SetDuration(duration int) *MessageResponse {
+	body := JSON{
+		"duration": duration,
 	}
 
 	return &MessageResponse{
