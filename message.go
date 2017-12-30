@@ -331,6 +331,38 @@ func (message *MessageResponse) SetDuration(duration int) *MessageResponse {
 	}
 }
 
+/*
+SendLocation Use this method to send point on the map. On success, the sent Message is returned.
+*/
+func (client *Client) SendLocation(chatId interface{}, latitude, longitude float64) *MessageResponse {
+	body := JSON{
+		"chat_id":   chatId,
+		"latitude":  latitude,
+		"longitude": longitude,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSendLocation, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetLivePeriod Period in seconds for which the location will be updated (see Live Locations, should be between 60 and 86400.
+func (message *MessageResponse) SetLivePeriod(livePeriod int) *MessageResponse {
+	body := JSON{
+		"livePeriod": livePeriod,
+	}
+
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
 // SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
 func (message *MessageResponse) SetDisableNotification(disable bool) *MessageResponse {
 	body := JSON{
