@@ -82,7 +82,7 @@ func (client *Client) ForwardMessage(chatId, fromChatId interface{}, messageId i
 
 /*
 SendPhoto Use this method to send photos. On success, the sent Message is returned.
-set upload true if its upload file to telegram
+set upload true if its upload file to telegram.
 */
 func (client *Client) SendPhoto(chatId interface{}, photo string, upload bool) *MessageResponse {
 	body := JSON{
@@ -110,6 +110,7 @@ Your audio must be in the .mp3 format. On success, the sent Message is returned.
 Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.
 
 For sending voice messages, use the sendVoice method instead.
+set upload true if its upload file to telegram.
 */
 func (client *Client) SendAudio(chatId interface{}, audio string, upload bool) *MessageResponse {
 	body := JSON{
@@ -128,18 +129,6 @@ func (client *Client) SendAudio(chatId interface{}, audio string, upload bool) *
 	return &MessageResponse{
 		Client:  client,
 		Request: request,
-	}
-}
-
-// SetCaption Photo caption (may also be used when resending photos by file_id), 0-200 characters
-func (message *MessageResponse) SetCaption(caption string) *MessageResponse {
-	body := JSON{
-		"caption": caption,
-	}
-
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
 	}
 }
 
@@ -171,6 +160,44 @@ func (message *MessageResponse) SetPerformer(performer string) *MessageResponse 
 func (message *MessageResponse) SetTitle(title string) *MessageResponse {
 	body := JSON{
 		"title": title,
+	}
+
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+/*
+SendDocument Use this method to send general files. On success, the sent Message is returned.
+Bots can currently send files of any type of up to 50 MB in size, this limit may be changed in the future.
+
+set upload true if its upload file to telegram.
+*/
+func (client *Client) SendDocument(chatId interface{}, document string, upload bool) *MessageResponse {
+	body := JSON{
+		"chat_id":  chatId,
+		"document": document,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSendDocument, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(document, "", "document")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetCaption Photo caption (may also be used when resending photos by file_id), 0-200 characters
+func (message *MessageResponse) SetCaption(caption string) *MessageResponse {
+	body := JSON{
+		"caption": caption,
 	}
 
 	return &MessageResponse{

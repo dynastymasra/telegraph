@@ -59,6 +59,24 @@ if err != nil {
 }
 ```
 
+Send message to telegram use Telegraph SDK
+
+```go
+client := telegraph.NewClientWithBackOff(<access_token>, telegraph.NewBackOff(<max_interval>, <max_elapsed_time>))
+
+// Use upload false if file from url
+message, res, err := client.SendPhoto(<chat_id>, "http://www.images.com/images/jpg", false).SetCaption("test image").Commit()
+if err != nil {
+	// Do something when error
+}
+// Use upload true if from path file
+
+message, res, err := client.SendAudio(<chat_id>, "/home/audio/audio.mp3", true).SetCaption("test audio").SetDuration(1000).Commit()
+if err != nil {
+	// Do something when error
+}
+```
+
 ## Contributing
 
 If you find any issue you want to fix it, feel free to send me a pull request. 
