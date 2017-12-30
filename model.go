@@ -9,6 +9,7 @@ import (
 type (
 	ChatType   string
 	StatusType string
+	MediaType  string
 )
 
 const (
@@ -23,6 +24,9 @@ const (
 	StatusTypeRestricted               = "restricted"
 	StatusTypeLeft                     = "left"
 	StatusTypeKicked                   = "kicked"
+
+	MediaTypePhoto MediaType = "photo"
+	MediaTypeVideo           = "video"
 )
 
 type (
@@ -403,6 +407,19 @@ type (
 	ReplyKeyboardRemove struct {
 		RemoveKeyboard bool `json:"remove_keyboard"`
 		Selective      bool `json:"selective,omitempty"`
+	}
+
+	// InputMedia This object represents the content of a media message to be sent. It should be one of
+	// InputMediaPhoto
+	// InputMediaVideo
+	// See documentation for details https://core.telegram.org/bots/api#inputmedia
+	InputMedia struct {
+		Type     MediaType `json:"type"`
+		Media    string    `json:"media"`
+		Caption  string    `json:"caption,omitempty"`
+		Width    int       `json:"width,omitempty"`
+		Height   int       `json:"height,omitempty"`
+		Duration int       `json:"duration,omitempty"`
 	}
 )
 

@@ -15,6 +15,12 @@ type (
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
+
+	// ArrayMessageResponse struct to handle request and array response telegram api
+	ArrayMessageResponse struct {
+		Client  *Client
+		Request *gorequest.SuperAgent
+	}
 )
 
 /*
@@ -399,6 +405,50 @@ func (message *MessageResponse) SetReplyKeyboardRemove(remove ReplyKeyboardRemov
 	}
 }
 
+/*
+SendMediaGroup Use this method to send a group of photos or videos as an album. On success, an array of the sent Messages is returned.
+Not supported upload file to telegram, use url or file id instead.
+*/
+func (client *Client) SendMediaGroup(chatId interface{}, media []InputMedia) *ArrayMessageResponse {
+	body := JSON{
+		"chat_id": chatId,
+		"media":   media,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSendMediaGroup, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &ArrayMessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
+func (message *ArrayMessageResponse) SetDisableNotification(disable bool) *ArrayMessageResponse {
+	body := JSON{
+		"disable_notification": disable,
+	}
+
+	return &ArrayMessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetReplyToMessageID If the message is a reply, ID of the original message
+func (message *ArrayMessageResponse) SetReplyToMessageID(id int64) *ArrayMessageResponse {
+	body := JSON{
+		"reply_to_message_id": id,
+	}
+
+	return &ArrayMessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
 // Commit execute request to telegram
 func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
 	var errs []error
@@ -407,6 +457,34 @@ func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
 	model := struct {
 		ErrorResponse
 		Result *Message `json:"result,omitempty"`
+	}{}
+
+	operation := func() error {
+		res, body, errs = message.Request.EndStruct(&model)
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, message.Client.expBackOff); err != nil {
+		return nil, MakeHTTPResponse(message.Request), err
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
+	}
+
+	return model.Result, res, nil
+}
+
+// Commit execute request to telegram
+func (message *ArrayMessageResponse) Commit() ([]Message, *http.Response, error) {
+	var errs []error
+	var body []byte
+	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+		Result []Message `json:"result,omitempty"`
 	}{}
 
 	operation := func() error {

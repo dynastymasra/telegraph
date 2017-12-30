@@ -625,3 +625,100 @@ func TestSendVideoNote_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestSendMediaGroup_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendMediaGroup, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": [
+			{
+				"message_id": 266,
+				"from": {
+					"id": 123213123,
+					"is_bot": true,
+					"first_name": "Squrecode",
+					"username": "SquarecodeBot"
+				},
+				"chat": {
+					"id": 123123123,
+					"first_name": "Dimas",
+					"last_name": "Ragil T",
+					"username": "dynastymasra",
+					"type": "private"
+				},
+				"date": 1514611687,
+				"photo": [
+					{
+						"file_id": "AgADBAADrZM7G8EXZAe74FQYND4BBC5_iRoABLXsrlGezyfrZyUAAgI",
+						"file_size": 1448,
+						"width": 90,
+						"height": 60
+					},
+					{
+						"file_id": "AgADBAADrZM7G8EXZAe74FQYND4BBC5_iRoABKqrvmmBKVrcaCUAAgI",
+						"file_size": 34312,
+						"width": 320,
+						"height": 213
+					},
+					{
+						"file_id": "AgADBAADrZM7G8EXZAe74FQYND4BBC5_iRoABCxvL8Yd5FkiaSUAAgI",
+						"file_size": 176613,
+						"width": 800,
+						"height": 533
+					},
+					{
+						"file_id": "AgADBAADrZM7G8EXZAe74FQYND4BBC5_iRoABGB0oHcZejCPaiUAAgI",
+						"file_size": 418037,
+						"width": 1280,
+						"height": 853
+					},
+					{
+						"file_id": "AgADBAADrZM7G8EXZAe74FQYND4BBC5_iRoABBYyAbzewQOoayUAAgI",
+						"file_size": 1507837,
+						"width": 2560,
+						"height": 1707
+					}
+				],
+				"caption": "test"
+			}
+		]
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendMediaGroup(2434234, []telegraph.InputMedia{}).SetDisableNotification(false).
+		SetReplyToMessageID(234324234).Commit()
+
+	assert.NotNil(t, message)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSendMediaGroup_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendMediaGroup, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendMediaGroup(2434234, []telegraph.InputMedia{}).SetDisableNotification(false).
+		SetReplyToMessageID(234324234).Commit()
+
+	assert.Nil(t, message)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestSendMediaGroup_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendMediaGroup, "token")).Reply(http.StatusBadRequest).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: chat not found"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendMediaGroup(2434234, []telegraph.InputMedia{}).SetDisableNotification(false).
+		SetReplyToMessageID(234324234).Commit()
+
+	assert.Nil(t, message)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}
