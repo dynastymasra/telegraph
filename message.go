@@ -275,6 +275,44 @@ func (message *MessageResponse) SetCaption(caption string) *MessageResponse {
 	}
 }
 
+/*
+SendVideoNote As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long.
+Use this method to send video messages. On success, the sent Message is returned.
+
+Set upload true if its upload file to telegram.
+*/
+func (client *Client) SendVideoNote(chatId interface{}, videoNote string, upload bool) *MessageResponse {
+	body := JSON{
+		"chat_id":    chatId,
+		"video_note": videoNote,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSendVideoNote, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(videoNote, "", "video_note")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetLength Video width and height
+func (message *MessageResponse) SetLength(length int) *MessageResponse {
+	body := JSON{
+		"length": length,
+	}
+
+	return &MessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
 // SetDuration Duration of the audio in seconds
 func (message *MessageResponse) SetDuration(duration int) *MessageResponse {
 	body := JSON{
