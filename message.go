@@ -508,6 +508,20 @@ func (client *Client) EditMessageLiveLocation(latitude, longitude float64) *RawM
 	}
 }
 
+/*
+StopMessageLiveLocation Use this method to stop updating a live location message sent by the bot or via the bot (for inline bots) before live_period expires.
+On success, if the message was sent by the bot, the sent Message is returned, otherwise True is returned.
+*/
+func (client *Client) StopMessageLiveLocation() *RawMessageResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointStopMessageLiveLocation, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version)
+
+	return &RawMessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // SetChatID Required if inline_message_id is not specified.
 // Unique identifier for the target chat or username of the target channel (in the format @channelusername)
 func (message *RawMessageResponse) SetChatID(chatId interface{}) *RawMessageResponse {
