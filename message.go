@@ -21,6 +21,12 @@ type (
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
+
+	// RawMessageResponse struct to handle request and raw response telegram api
+	RawMessageResponse struct {
+		Client  *Client
+		Request *gorequest.SuperAgent
+	}
 )
 
 /*
@@ -481,6 +487,78 @@ func (message *ArrayMessageResponse) SetReplyToMessageID(id int64) *ArrayMessage
 	}
 }
 
+/*
+EditMessageLiveLocation Use this method to edit live location messages sent by the bot or via the bot (for inline bots).
+A location can be edited until its live_period expires or editing is explicitly disabled by a call to stopMessageLiveLocation.
+On success, if the edited message was sent by the bot, the edited Message is returned, otherwise True is returned.
+*/
+func (client *Client) EditMessageLiveLocation(latitude, longitude float64) *RawMessageResponse {
+	body := JSON{
+		"latitude":  latitude,
+		"longitude": longitude,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointEditMessageLiveLocation, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &RawMessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetChatID Required if inline_message_id is not specified.
+// Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+func (message *RawMessageResponse) SetChatID(chatId interface{}) *RawMessageResponse {
+	body := JSON{
+		"chat_id": chatId,
+	}
+
+	return &RawMessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetMessageID Required if inline_message_id is not specified. Identifier of the sent message
+func (message *RawMessageResponse) SetMessageID(messageId int) *RawMessageResponse {
+	body := JSON{
+		"message_id": messageId,
+	}
+
+	return &RawMessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetInlineMessageID Required if chat_id and message_id are not specified. Identifier of the inline message
+func (message *RawMessageResponse) SetInlineMessageID(inlineMessage string) *RawMessageResponse {
+	body := JSON{
+		"inline_message_id": inlineMessage,
+	}
+
+	return &RawMessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+func (message *RawMessageResponse) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *RawMessageResponse {
+	body := JSON{
+		"reply_markup": JSON{
+			"inline_keyboard": inline,
+		},
+	}
+	return &RawMessageResponse{
+		Client:  message.Client,
+		Request: message.Request.Send(body),
+	}
+}
+
 // Commit execute request to telegram
 func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
 	var errs []error
@@ -535,4 +613,31 @@ func (message *ArrayMessageResponse) Commit() ([]Message, *http.Response, error)
 	}
 
 	return model.Result, res, nil
+}
+
+// Commit execute request to telegram
+func (message *RawMessageResponse) Commit() (*http.Response, error) {
+	var errs []error
+	var body []byte
+	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+	}{}
+
+	operation := func() error {
+		res, body, errs = message.Request.EndStruct(&model)
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, message.Client.expBackOff); err != nil {
+		return MakeHTTPResponse(message.Request), err
+	}
+	if res.StatusCode != http.StatusOK {
+		return res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
+	}
+
+	return res, nil
 }
