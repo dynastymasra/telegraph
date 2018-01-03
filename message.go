@@ -53,11 +53,9 @@ func (message *MessageResponse) SetParseMode(mode string) *MessageResponse {
 	body := JSON{
 		"parse_mode": mode,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 // SetDisableWebPagePreview Disables link previews for links in this message
@@ -65,11 +63,9 @@ func (message *MessageResponse) SetDisableWebPagePreview(disable bool) *MessageR
 	body := JSON{
 		"disable_web_page_preview": disable,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 /*
@@ -151,11 +147,9 @@ func (message *MessageResponse) SetPerformer(performer string) *MessageResponse 
 	body := JSON{
 		"performer": performer,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 // SetTitle Track name
@@ -163,11 +157,9 @@ func (message *MessageResponse) SetTitle(title string) *MessageResponse {
 	body := JSON{
 		"title": title,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 /*
@@ -228,11 +220,9 @@ func (message *MessageResponse) SetWidth(width int) *MessageResponse {
 	body := JSON{
 		"width": width,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 // SetHeight Video height
@@ -240,11 +230,9 @@ func (message *MessageResponse) SetHeight(height int) *MessageResponse {
 	body := JSON{
 		"height": height,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 /*
@@ -280,11 +268,9 @@ func (message *MessageResponse) SetCaption(caption string) *MessageResponse {
 	body := JSON{
 		"caption": caption,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 /*
@@ -318,11 +304,9 @@ func (message *MessageResponse) SetLength(length int) *MessageResponse {
 	body := JSON{
 		"length": length,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 // SetDuration Duration of the audio in seconds
@@ -330,11 +314,9 @@ func (message *MessageResponse) SetDuration(duration int) *MessageResponse {
 	body := JSON{
 		"duration": duration,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 /*
@@ -362,11 +344,9 @@ func (message *MessageResponse) SetLivePeriod(livePeriod int) *MessageResponse {
 	body := JSON{
 		"livePeriod": livePeriod,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 /*
@@ -395,6 +375,36 @@ func (client *Client) SendVenue(chatId interface{}, latitude, longitude float64,
 func (message *MessageResponse) SetFoursquareID(id string) *MessageResponse {
 	body := JSON{
 		"foursquare_id": id,
+	}
+	message.Request = message.Request.Send(body)
+
+	return message
+}
+
+/*
+SendContact Use this method to send phone contacts. On success, the sent Message is returned.
+*/
+func (client *Client) SendContact(chatId interface{}, phoneNumber, firstName string) *MessageResponse {
+	body := JSON{
+		"chat_id":      chatId,
+		"phone_number": phoneNumber,
+		"first_name":   firstName,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSendContact, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetLastName Contact's last name
+func (message *MessageResponse) SetLastName(lastName string) *MessageResponse {
+	body := JSON{
+		"last_name": lastName,
 	}
 	message.Request = message.Request.Send(body)
 
@@ -520,11 +530,9 @@ func (message *ArrayMessageResponse) SetDisableNotification(disable bool) *Array
 	body := JSON{
 		"disable_notification": disable,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &ArrayMessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 // SetReplyToMessageID If the message is a reply, ID of the original message
@@ -532,11 +540,9 @@ func (message *ArrayMessageResponse) SetReplyToMessageID(id int64) *ArrayMessage
 	body := JSON{
 		"reply_to_message_id": id,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &ArrayMessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 // Commit execute request to telegram
@@ -608,11 +614,9 @@ func (message *RawMessageResponse) SetChatID(chatId interface{}) *RawMessageResp
 	body := JSON{
 		"chat_id": chatId,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &RawMessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 // SetMessageID Required if inline_message_id is not specified. Identifier of the sent message
@@ -620,11 +624,9 @@ func (message *RawMessageResponse) SetMessageID(messageId int) *RawMessageRespon
 	body := JSON{
 		"message_id": messageId,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &RawMessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 // SetInlineMessageID Required if chat_id and message_id are not specified. Identifier of the inline message
@@ -632,11 +634,9 @@ func (message *RawMessageResponse) SetInlineMessageID(inlineMessage string) *Raw
 	body := JSON{
 		"inline_message_id": inlineMessage,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &RawMessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 // SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
@@ -647,10 +647,9 @@ func (message *RawMessageResponse) SetInlineKeyboardMarkup(inline [][]InlineKeyb
 			"inline_keyboard": inline,
 		},
 	}
-	return &RawMessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	message.Request = message.Request.Send(body)
+
+	return message
 }
 
 // Commit execute request to telegram

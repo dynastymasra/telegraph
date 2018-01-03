@@ -969,3 +969,77 @@ func TestSendVenue_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestSendContact_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendContact, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": {
+			"message_id": 257,
+			"from": {
+				"id": 23423432,
+				"is_bot": true,
+				"first_name": "Squrecode",
+				"username": "SquarecodeBot"
+			},
+			"chat": {
+				"id": 234324,
+				"first_name": "Dimas",
+				"last_name": "Ragil T",
+				"username": "dynastymasra",
+				"type": "private"
+			},
+			"date": 1510554426,
+			"contact": {
+				"phone_number": "324234234234",
+				"first_name": "Dimas Ragil",
+				"last_name": "Triatmaja",
+				"user_id": 23432423
+			}
+		}
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendContact(2434234, "23423423423", "name").
+		SetDisableNotification(true).SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetLastName("last").Commit()
+
+	assert.NotNil(t, message)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSendContact_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendContact, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendContact(2434234, "23423423423", "name").
+		SetDisableNotification(true).SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetLastName("last").Commit()
+
+	assert.Nil(t, message)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestSendContact_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendContact, "token")).Reply(http.StatusBadRequest).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: chat not found"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	message, res, err := client.SendContact(2434234, "23423423423", "name").
+		SetDisableNotification(true).SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
+		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
+		SetReplyToMessageID(234324234).SetLastName("last").Commit()
+
+	assert.Nil(t, message)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}
