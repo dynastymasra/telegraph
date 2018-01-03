@@ -369,16 +369,46 @@ func (message *MessageResponse) SetLivePeriod(livePeriod int) *MessageResponse {
 	}
 }
 
+/*
+SendVenue Use this method to send information about a venue. On success, the sent Message is returned.
+*/
+func (client *Client) SendVenue(chatId interface{}, latitude, longitude float64, title, address string) *MessageResponse {
+	body := JSON{
+		"chat_id":   chatId,
+		"latitude":  latitude,
+		"longitude": longitude,
+		"title":     title,
+		"address":   address,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSendVenue, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetFoursquareID Foursquare identifier of the venue
+func (message *MessageResponse) SetFoursquareID(id string) *MessageResponse {
+	body := JSON{
+		"foursquare_id": id,
+	}
+	message.Request = message.Request.Send(body)
+
+	return message
+}
+
 // SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
 func (message *MessageResponse) SetDisableNotification(disable bool) *MessageResponse {
 	body := JSON{
 		"disable_notification": disable,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 // SetReplyToMessageID If the message is a reply, ID of the original message
@@ -386,11 +416,9 @@ func (message *MessageResponse) SetReplyToMessageID(id int64) *MessageResponse {
 	body := JSON{
 		"reply_to_message_id": id,
 	}
+	message.Request = message.Request.Send(body)
 
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	return message
 }
 
 // SetForceReply Additional interface options. A JSON-serialized object for an inline keyboard,
@@ -399,10 +427,9 @@ func (message *MessageResponse) SetForceReply(reply ForceReply) *MessageResponse
 	body := JSON{
 		"reply_markup": reply,
 	}
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	message.Request = message.Request.Send(body)
+
+	return message
 }
 
 // SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
@@ -413,10 +440,9 @@ func (message *MessageResponse) SetInlineKeyboardMarkup(inline [][]InlineKeyboar
 			"inline_keyboard": inline,
 		},
 	}
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	message.Request = message.Request.Send(body)
+
+	return message
 }
 
 // SetReplyKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
@@ -425,10 +451,9 @@ func (message *MessageResponse) SetReplyKeyboardMarkup(reply ReplyKeyboardMarkup
 	body := JSON{
 		"reply_markup": reply,
 	}
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
-	}
+	message.Request = message.Request.Send(body)
+
+	return message
 }
 
 // SetReplyKeyboardRemove Additional interface options. A JSON-serialized object for an inline keyboard,
@@ -437,10 +462,37 @@ func (message *MessageResponse) SetReplyKeyboardRemove(remove ReplyKeyboardRemov
 	body := JSON{
 		"reply_markup": remove,
 	}
-	return &MessageResponse{
-		Client:  message.Client,
-		Request: message.Request.Send(body),
+	message.Request = message.Request.Send(body)
+
+	return message
+}
+
+// Commit execute request to telegram
+func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
+	var errs []error
+	var body []byte
+	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+		Result *Message `json:"result,omitempty"`
+	}{}
+
+	operation := func() error {
+		res, body, errs = message.Request.EndStruct(&model)
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
 	}
+
+	if err := backoff.Retry(operation, message.Client.expBackOff); err != nil {
+		return nil, MakeHTTPResponse(message.Request), err
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
+	}
+
+	return model.Result, res, nil
 }
 
 /*
@@ -485,6 +537,34 @@ func (message *ArrayMessageResponse) SetReplyToMessageID(id int64) *ArrayMessage
 		Client:  message.Client,
 		Request: message.Request.Send(body),
 	}
+}
+
+// Commit execute request to telegram
+func (message *ArrayMessageResponse) Commit() ([]Message, *http.Response, error) {
+	var errs []error
+	var body []byte
+	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+		Result []Message `json:"result,omitempty"`
+	}{}
+
+	operation := func() error {
+		res, body, errs = message.Request.EndStruct(&model)
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, message.Client.expBackOff); err != nil {
+		return nil, MakeHTTPResponse(message.Request), err
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
+	}
+
+	return model.Result, res, nil
 }
 
 /*
@@ -571,62 +651,6 @@ func (message *RawMessageResponse) SetInlineKeyboardMarkup(inline [][]InlineKeyb
 		Client:  message.Client,
 		Request: message.Request.Send(body),
 	}
-}
-
-// Commit execute request to telegram
-func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
-	var errs []error
-	var body []byte
-	res := &http.Response{}
-	model := struct {
-		ErrorResponse
-		Result *Message `json:"result,omitempty"`
-	}{}
-
-	operation := func() error {
-		res, body, errs = message.Request.EndStruct(&model)
-		if len(errs) > 0 {
-			return errs[0]
-		}
-		return nil
-	}
-
-	if err := backoff.Retry(operation, message.Client.expBackOff); err != nil {
-		return nil, MakeHTTPResponse(message.Request), err
-	}
-	if res.StatusCode != http.StatusOK {
-		return nil, res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
-	}
-
-	return model.Result, res, nil
-}
-
-// Commit execute request to telegram
-func (message *ArrayMessageResponse) Commit() ([]Message, *http.Response, error) {
-	var errs []error
-	var body []byte
-	res := &http.Response{}
-	model := struct {
-		ErrorResponse
-		Result []Message `json:"result,omitempty"`
-	}{}
-
-	operation := func() error {
-		res, body, errs = message.Request.EndStruct(&model)
-		if len(errs) > 0 {
-			return errs[0]
-		}
-		return nil
-	}
-
-	if err := backoff.Retry(operation, message.Client.expBackOff); err != nil {
-		return nil, MakeHTTPResponse(message.Request), err
-	}
-	if res.StatusCode != http.StatusOK {
-		return nil, res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
-	}
-
-	return model.Result, res, nil
 }
 
 // Commit execute request to telegram
