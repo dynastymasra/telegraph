@@ -795,55 +795,6 @@ func TestSendLocation_Failed(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestEditMessageLiveLocation_Success(t *testing.T) {
-	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointEditMessageLiveLocation, "token")).Reply(http.StatusOK).JSON(`{
-		"ok": true,
-		"result": true
-	}`)
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-	res, err := client.EditMessageLiveLocation(12312312.98, 324234324.67).SetChatID(21342321).
-		SetMessageID(234234234).SetInlineMessageID("test").
-		SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
-
-	assert.NotNil(t, res)
-	assert.Equal(t, http.StatusOK, res.StatusCode)
-	assert.NoError(t, err)
-}
-
-func TestEditMessageLiveLocation_Error(t *testing.T) {
-	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointEditMessageLiveLocation, "token")).Reply(http.StatusInternalServerError).JSON("")
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-	res, err := client.EditMessageLiveLocation(12312312.98, 324234324.67).SetChatID(21342321).
-		SetMessageID(234234234).SetInlineMessageID("test").
-		SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
-
-	assert.NotNil(t, res)
-	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
-	assert.Error(t, err)
-}
-
-func TestEditMessageLiveLocation_Failed(t *testing.T) {
-	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointEditMessageLiveLocation, "token")).Reply(http.StatusBadRequest).JSON(`{
-		"ok": false,
-		"error_code": 400,
-		"description": "Bad Request: chat not found"
-	}`)
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-	res, err := client.EditMessageLiveLocation(12312312.98, 324234324.67).SetChatID(21342321).
-		SetMessageID(234234234).SetInlineMessageID("test").
-		SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
-
-	assert.NotNil(t, res)
-	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
-	assert.Error(t, err)
-}
-
 func TestStopMessageLiveLocation_Success(t *testing.T) {
 	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointStopMessageLiveLocation, "token")).Reply(http.StatusOK).JSON(`{
 		"ok": true,

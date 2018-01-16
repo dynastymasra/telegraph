@@ -40,10 +40,9 @@ func (client *Client) SetWebHook(webHook string) *VoidResponse {
 // SetCertificate Upload your public key certificate so that the root certificate in use can be checked.
 // See our self-signed guide for details.
 func (void *VoidResponse) SetCertificate(path string) *VoidResponse {
-	return &VoidResponse{
-		Client:  void.Client,
-		Request: void.Request.Type(gorequest.TypeMultipart).SendFile(path, "", "certificate"),
-	}
+	void.Request = void.Request.Type(gorequest.TypeMultipart).SendFile(path, "", "certificate")
+
+	return void
 }
 
 // SetMaxConnection Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery,
@@ -53,11 +52,9 @@ func (void *VoidResponse) SetMaxConnection(conn int) *VoidResponse {
 	body := JSON{
 		"max_connections": conn,
 	}
+	void.Request = void.Request.Send(body)
 
-	return &VoidResponse{
-		Client:  void.Client,
-		Request: void.Request.Send(body),
-	}
+	return void
 }
 
 /*
@@ -71,11 +68,100 @@ func (void *VoidResponse) SetAllowedUpdates(allowed ...string) *VoidResponse {
 	body := JSON{
 		"allowed_updates": allowed,
 	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// DeleteWebHook Use this method to remove webhook integration if you decide to switch back to getUpdates.
+// Returns True on success. Requires no parameters.
+func (client *Client) DeleteWebHook() *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointDeleteWebHook, client.accessToken)
+	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &VoidResponse{
-		Client:  void.Client,
-		Request: void.Request.Send(body),
+		Client:  client,
+		Request: request,
 	}
+}
+
+/*
+EditMessageLiveLocation Use this method to edit live location messages sent by the bot or via the bot (for inline bots).
+A location can be edited until its live_period expires or editing is explicitly disabled by a call to stopMessageLiveLocation.
+On success, if the edited message was sent by the bot, the edited Message is returned, otherwise True is returned.
+*/
+func (client *Client) EditMessageLiveLocation(latitude, longitude float64) *VoidResponse {
+	body := JSON{
+		"latitude":  latitude,
+		"longitude": longitude,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointEditMessageLiveLocation, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+StopMessageLiveLocation Use this method to stop updating a live location message sent by the bot or via the bot (for inline bots) before live_period expires.
+On success, if the message was sent by the bot, the sent Message is returned, otherwise True is returned.
+*/
+func (client *Client) StopMessageLiveLocation() *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointStopMessageLiveLocation, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetChatID Required if inline_message_id is not specified.
+// Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+func (void *VoidResponse) SetChatID(chatId interface{}) *VoidResponse {
+	body := JSON{
+		"chat_id": chatId,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetMessageID Required if inline_message_id is not specified. Identifier of the sent message
+func (void *VoidResponse) SetMessageID(messageId int) *VoidResponse {
+	body := JSON{
+		"message_id": messageId,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetInlineMessageID Required if chat_id and message_id are not specified. Identifier of the inline message
+func (void *VoidResponse) SetInlineMessageID(inlineMessage string) *VoidResponse {
+	body := JSON{
+		"inline_message_id": inlineMessage,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
+// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+func (void *VoidResponse) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *VoidResponse {
+	body := JSON{
+		"reply_markup": JSON{
+			"inline_keyboard": inline,
+		},
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
 }
 
 /*
@@ -133,16 +219,4 @@ func (void *VoidResponse) Commit() (*http.Response, error) {
 	}
 
 	return res, nil
-}
-
-// DeleteWebHook Use this method to remove webhook integration if you decide to switch back to getUpdates.
-// Returns True on success. Requires no parameters.
-func (client *Client) DeleteWebHook() *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointDeleteWebHook, client.accessToken)
-	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
-
-	return &VoidResponse{
-		Client:  client,
-		Request: request,
-	}
 }
