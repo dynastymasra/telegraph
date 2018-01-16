@@ -178,7 +178,7 @@ Choose one, depending on what the user is about to receive: typing for text mess
 record_video or upload_video for videos, record_audio or upload_audio for audio files, upload_document for general files,
 find_location for location data, record_video_note or upload_video_note for video notes.
 */
-func (client *Client) SendChatAction(chatId, action string) *VoidResponse {
+func (client *Client) SendChatAction(chatId interface{}, action string) *VoidResponse {
 	body := JSON{
 		"chat_id": chatId,
 		"action":  action,
@@ -192,6 +192,42 @@ func (client *Client) SendChatAction(chatId, action string) *VoidResponse {
 		Client:  client,
 		Request: request,
 	}
+}
+
+/*
+KickChatMember Use this method to kick a user from a group, a supergroup or a channel.
+In the case of supergroups and channels, the user will not be able to return to the group on their own using invite links, etc.,
+unless unbanned first. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Returns True on success.
+
+Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
+Otherwise members may only be removed by the group's creator or by the member that added them.
+*/
+func (client *Client) KickChatMember(chatId interface{}, userId int64) *VoidResponse {
+	body := JSON{
+		"chat_id": chatId,
+		"user_id": userId,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointKickChatMember, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetUntilDate Date when the user will be unbanned, unix time.
+// If user is banned for more than 366 days or less than 30 seconds from the current time they are considered to be banned forever
+func (void *VoidResponse) SetUntilDate(date int64) *VoidResponse {
+	body := JSON{
+		"until_date": date,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
 }
 
 // Commit execute request to telegram

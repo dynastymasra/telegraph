@@ -190,3 +190,43 @@ func TestSendChatAction_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, status.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestKickChatMember_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointKickChatMember, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.KickChatMember("234234234", 123423423).SetUntilDate(2343242342).Commit()
+
+	assert.Equal(t, http.StatusOK, status.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestKickChatMember_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointKickChatMember, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.KickChatMember("234234234", 123423423).SetUntilDate(2343242342).Commit()
+
+	assert.Equal(t, http.StatusInternalServerError, status.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestKickChatMember_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointKickChatMember, "token")).Reply(http.StatusUnauthorized).JSON(`{
+		"ok": false,
+		"error_code": 401,
+		"description": "Unauthorized"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.KickChatMember("234234234", 123423423).SetUntilDate(2343242342).Commit()
+
+	assert.Equal(t, http.StatusUnauthorized, status.StatusCode)
+	assert.Error(t, err)
+}
