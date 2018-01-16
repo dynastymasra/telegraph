@@ -421,6 +421,12 @@ type (
 		Height   int       `json:"height,omitempty"`
 		Duration int       `json:"duration,omitempty"`
 	}
+
+	// This object represent a user's profile pictures.
+	UserProfilePhotos struct {
+		TotalCount int           `json:"total_count"`
+		Photos     [][]PhotoSize `json:"photos"`
+	}
 )
 
 // MakeHTTPResponse create mock http response if request to API is error internal
