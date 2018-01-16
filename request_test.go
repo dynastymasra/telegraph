@@ -100,3 +100,44 @@ func TestDeleteWebHook_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, status.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestSendChatAction_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendChatAction, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.SendChatAction("id", "action").Commit()
+
+	assert.Equal(t, http.StatusOK, status.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSendChatAction_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointSendChatAction, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	status, err := client.SendChatAction("id", "action").Commit()
+
+	assert.Equal(t, http.StatusInternalServerError, status.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestSendChatAction_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSendChatAction, "token")).Reply(http.StatusUnauthorized).JSON(`{
+		"ok": false,
+		"error_code": 401,
+		"description": "Unauthorized"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+
+	status, err := client.SendChatAction("id", "action").Commit()
+
+	assert.Equal(t, http.StatusUnauthorized, status.StatusCode)
+	assert.Error(t, err)
+}
