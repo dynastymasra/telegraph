@@ -56,27 +56,21 @@ The negative offset can be specified to retrieve updates starting from -offset u
 All previous updates will forgotten.
 */
 func (update *ArrayUpdateResponse) SetOffset(offset int) *ArrayUpdateResponse {
-	return &ArrayUpdateResponse{
-		Client:  update.Client,
-		Request: update.Request.Query(fmt.Sprintf("offset=%v", offset)),
-	}
+	update.Request = update.Request.Query(fmt.Sprintf("offset=%v", offset))
+	return update
 }
 
 // SetLimit Limits the number of updates to be retrieved. Values between 1—100 are accepted. Defaults to 100.
 func (update *ArrayUpdateResponse) SetLimit(limit int) *ArrayUpdateResponse {
-	return &ArrayUpdateResponse{
-		Client:  update.Client,
-		Request: update.Request.Query(fmt.Sprintf("limit=%v", limit)),
-	}
+	update.Request = update.Request.Query(fmt.Sprintf("limit=%v", limit))
+	return update
 }
 
 // SetTimeout Timeout in seconds for long polling. Defaults to 0, i.e. usual short polling.
 // Should be positive, short polling should be used for testing purposes only.
 func (update *ArrayUpdateResponse) SetTimeout(timeout int) *ArrayUpdateResponse {
-	return &ArrayUpdateResponse{
-		Client:  update.Client,
-		Request: update.Request.Query(fmt.Sprintf("timeout=%v", timeout)),
-	}
+	update.Request = update.Request.Query(fmt.Sprintf("timeout=%v", timeout))
+	return update
 }
 
 /*
@@ -89,10 +83,8 @@ Please note that this parameter doesn't affect updates created before the call t
 so unwanted updates may be received for a short period of time.
 */
 func (update *ArrayUpdateResponse) SetAllowedUpdates(updates ...string) *ArrayUpdateResponse {
-	return &ArrayUpdateResponse{
-		Client:  update.Client,
-		Request: update.Request.Query(fmt.Sprintf("allowed_updates=%v", updates)),
-	}
+	update.Request = update.Request.Query(fmt.Sprintf("allowed_updates=%v", updates))
+	return update
 }
 
 // Commit request to telegram api
