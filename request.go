@@ -230,9 +230,25 @@ func (void *VoidResponse) SetUntilDate(date int64) *VoidResponse {
 	return void
 }
 
+/*
+GetContent function for download file from telegram server, use param path file in server obtained from function GetFile()
+Exp https://api.telegram.org/file/bot<token>/<file_path>
+*/
+func (client *Client) GetContent(path string) *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointGetContent, client.accessToken, path)
+	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // Commit execute request to telegram
-func (void *VoidResponse) Commit() (*http.Response, error) {
+func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
+	var body []byte
 	var errs []error
+
 	res := &http.Response{}
 	model := struct {
 		ErrorResponse
@@ -240,7 +256,7 @@ func (void *VoidResponse) Commit() (*http.Response, error) {
 	}{}
 
 	operation := func() error {
-		res, _, errs = void.Request.End()
+		res, body, errs = void.Request.EndBytes()
 		if len(errs) > 0 {
 			return errs[0]
 		}
@@ -248,11 +264,11 @@ func (void *VoidResponse) Commit() (*http.Response, error) {
 	}
 
 	if err := backoff.Retry(operation, void.Client.expBackOff); err != nil {
-		return MakeHTTPResponse(void.Request), err
+		return nil, MakeHTTPResponse(void.Request), err
 	}
 	if res.StatusCode != http.StatusOK {
-		return res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
+		return nil, res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
 	}
 
-	return res, nil
+	return body, res, nil
 }
