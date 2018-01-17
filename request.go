@@ -219,11 +219,73 @@ func (client *Client) KickChatMember(chatId interface{}, userId int64) *VoidResp
 	}
 }
 
+/*
+RestrictChatMember Use this method to restrict a user in a supergroup.
+The bot must be an administrator in the supergroup for this to work and must have the appropriate admin rights.
+Pass True for all boolean parameters to lift restrictions from a user. Returns True on success.
+*/
+func (client *Client) RestrictChatMember(chatId interface{}, userId int64) *VoidResponse {
+	body := JSON{
+		"chat_id": chatId,
+		"user_id": userId,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointRestrictChatMember, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // SetUntilDate Date when the user will be unbanned, unix time.
 // If user is banned for more than 366 days or less than 30 seconds from the current time they are considered to be banned forever
 func (void *VoidResponse) SetUntilDate(date int64) *VoidResponse {
 	body := JSON{
 		"until_date": date,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetCanSendMessages Pass True, if the user can send text messages, contacts, locations and venues
+func (void *VoidResponse) SetCanSendMessage(can bool) *VoidResponse {
+	body := JSON{
+		"can_send_messages": can,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetCanSendMediaMessages Pass True, if the user can send audios, documents, photos, videos, video notes and voice notes,
+// implies can_send_messages
+func (void *VoidResponse) SetCanSendMediaMessage(can bool) *VoidResponse {
+	body := JSON{
+		"can_send_media_messages": can,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetCanOtherMessages Pass True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages
+func (void *VoidResponse) SetCanSendOtherMessage(can bool) *VoidResponse {
+	body := JSON{
+		"can_send_other_messages": can,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetCanAddWebPagePreview Pass True, if the user may add web page previews to their messages, implies can_send_media_messages
+func (void *VoidResponse) SetCanAddWebPagePreview(can bool) *VoidResponse {
+	body := JSON{
+		"can_add_web_page_previews": can,
 	}
 	void.Request = void.Request.Send(body)
 
