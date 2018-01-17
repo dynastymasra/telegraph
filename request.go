@@ -293,6 +293,108 @@ func (void *VoidResponse) SetCanAddWebPagePreview(can bool) *VoidResponse {
 }
 
 /*
+PromoteChatMember Use this method to promote or demote a user in a supergroup or a channel.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Pass False for all boolean parameters to demote a user. Returns True on success.
+*/
+func (client *Client) PromoteChatMember(chatId interface{}, userId int64) *VoidResponse {
+	body := JSON{
+		"chat_id": chatId,
+		"user_id": userId,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointPromoteChatMember, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetCanChangeInfo Pass True, if the administrator can change chat title, photo and other settings
+func (void *VoidResponse) SetCanChangeInfo(can bool) *VoidResponse {
+	body := JSON{
+		"can_change_info": can,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetCanPostMessage Pass True, if the administrator can create channel posts, channels only
+func (void *VoidResponse) SetCanPostMessage(can bool) *VoidResponse {
+	body := JSON{
+		"can_post_messages": can,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetCanEditMessage Pass True, if the administrator can edit messages of other users and can pin messages, channels only
+func (void *VoidResponse) SetCanEditMessage(can bool) *VoidResponse {
+	body := JSON{
+		"can_edit_messages": can,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetCanDeleteMessage Pass True, if the administrator can delete messages of other users
+func (void *VoidResponse) SetCanDeleteMessage(can bool) *VoidResponse {
+	body := JSON{
+		"can_delete_messages": can,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetCanInviteUser Pass True, if the administrator can invite new users to the chat
+func (void *VoidResponse) SetCanInviteUser(can bool) *VoidResponse {
+	body := JSON{
+		"can_invite_users": can,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetCanRestrictMember Pass True, if the administrator can restrict, ban or unban chat members
+func (void *VoidResponse) SetCanRestrictMember(can bool) *VoidResponse {
+	body := JSON{
+		"can_restrict_members": can,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetCanPinMessage Pass True, if the administrator can pin messages, supergroups only
+func (void *VoidResponse) SetCanPinMessage(can bool) *VoidResponse {
+	body := JSON{
+		"can_pin_messages": can,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetCanPromoteMember Pass True, if the administrator can add new administrators with a subset of his own privileges or demote administrators that he has promoted,
+// directly or indirectly (promoted by administrators that were appointed by him)
+func (void *VoidResponse) SetCanPromoteMember(can bool) *VoidResponse {
+	body := JSON{
+		"can_promote_members": can,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+/*
 GetContent function for download file from telegram server, file path obtained from function GetFile()
 Exp https://api.telegram.org/file/bot<token>/<file_path>
 */

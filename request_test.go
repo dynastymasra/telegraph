@@ -426,3 +426,52 @@ func TestRestrictChatMember_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.NotNil(t, err)
 }
+
+func TestPromoteChatMember_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointPromoteChatMember, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.PromoteChatMember("32423423", 23423423).SetCanChangeInfo(true).
+		SetCanPostMessage(true).SetCanEditMessage(true).SetCanDeleteMessage(true).SetCanInviteUser(true).
+		SetCanRestrictMember(true).SetCanPinMessage(true).SetCanPromoteMember(true).Commit()
+
+	assert.NotNil(t, body)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestPromoteChatMember_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointPromoteChatMember, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.PromoteChatMember("32423423", 23423423).SetCanChangeInfo(true).
+		SetCanPostMessage(true).SetCanEditMessage(true).SetCanDeleteMessage(true).SetCanInviteUser(true).
+		SetCanRestrictMember(true).SetCanPinMessage(true).SetCanPromoteMember(true).Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.NotNil(t, err)
+}
+
+func TestPromoteChatMember_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointPromoteChatMember, "token")).Reply(http.StatusBadRequest).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: invalid file id"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.PromoteChatMember("32423423", 23423423).SetCanChangeInfo(true).
+		SetCanPostMessage(true).SetCanEditMessage(true).SetCanDeleteMessage(true).SetCanInviteUser(true).
+		SetCanRestrictMember(true).SetCanPinMessage(true).SetCanPromoteMember(true).Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.NotNil(t, err)
+}
