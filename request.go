@@ -231,12 +231,33 @@ func (void *VoidResponse) SetUntilDate(date int64) *VoidResponse {
 }
 
 /*
-GetContent function for download file from telegram server, use param path file in server obtained from function GetFile()
+GetContent function for download file from telegram server, file path obtained from function GetFile()
 Exp https://api.telegram.org/file/bot<token>/<file_path>
 */
 func (client *Client) GetContent(path string) *VoidResponse {
 	url := client.baseURL + fmt.Sprintf(EndpointGetContent, client.accessToken, path)
 	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
+UnbanChatMember Use this method to unban a previously kicked user in a supergroup or channel.
+The user will not return to the group or channel automatically, but will be able to join via link, etc.
+The bot must be an administrator for this to work. Returns True on success.
+*/
+func (client *Client) UnbanChatMember(chatId interface{}, userId int64) *VoidResponse {
+	body := JSON{
+		"chat_id": chatId,
+		"user_id": userId,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointUnbanChatMember, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
 
 	return &VoidResponse{
 		Client:  client,
