@@ -495,6 +495,26 @@ func (client *Client) SetChatTitle(chatId interface{}, title string) *VoidRespon
 	}
 }
 
+/*
+SetChatDescription Use this method to change the description of a supergroup or a channel.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns True on success.
+*/
+func (client *Client) SetChatDescription(chatId interface{}, description string) *VoidResponse {
+	body := JSON{
+		"chat_id":     chatId,
+		"description": description,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointSetChatDescription, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // Commit execute request to telegram
 func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
 	var body []byte
