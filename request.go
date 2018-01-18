@@ -456,6 +456,23 @@ func (client *Client) SetChatPhoto(chatId interface{}, photo string) *VoidRespon
 	}
 }
 
+/*
+DeleteChatPhoto Use this method to delete a chat photo. Photos can't be changed for private chats.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns True on success.
+
+Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
+*/
+func (client *Client) DeleteChatPhoto(chatId interface{}) *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointDeleteChatPhoto, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v", chatId))
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // Commit execute request to telegram
 func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
 	var body []byte
