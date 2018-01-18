@@ -515,6 +515,38 @@ func (client *Client) SetChatDescription(chatId interface{}, description string)
 	}
 }
 
+/*
+PinChatMessage Use this method to pin a message in a supergroup or a channel.
+The bot must be an administrator in the chat for this to work and must have the ‘can_pin_messages’ admin right in the supergroup or ‘can_edit_messages’ admin right in the channel.
+Returns True on success.
+*/
+func (client *Client) PinChatMessage(chatId interface{}, messageId int64) *VoidResponse {
+	body := JSON{
+		"chat_id":    chatId,
+		"message_id": messageId,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointPinChatMessage, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetDisableNotification Pass True, if it is not necessary to send a notification to all chat members about the new pinned message.
+// Notifications are always disabled in channels.
+func (void *VoidResponse) SetDisableNotification(disable bool) *VoidResponse {
+	body := JSON{
+		"disable_notification": disable,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
 // Commit execute request to telegram
 func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
 	var body []byte
