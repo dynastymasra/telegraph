@@ -16,6 +16,12 @@ type (
 		Request *gorequest.SuperAgent
 	}
 
+	// ChatMemberResponse struct to handle request and response telegram api
+	ChatMemberResponse struct {
+		Client  *Client
+		Request *gorequest.SuperAgent
+	}
+
 	// ArrayChatMemberResponse struct to handle request and response telegram api
 	ArrayChatMemberResponse struct {
 		Client  *Client
@@ -92,6 +98,49 @@ func (void *ArrayChatMemberResponse) Commit() ([]ChatMember, *http.Response, err
 	model := struct {
 		ErrorResponse
 		Result []ChatMember `json:"result,omitempty"`
+	}{}
+
+	operation := func() error {
+		res, body, errs = void.Request.EndStruct(&model)
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, void.Client.expBackOff); err != nil {
+		return nil, MakeHTTPResponse(void.Request), err
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
+	}
+
+	return model.Result, res, nil
+}
+
+/*
+GetChatMember Use this method to get information about a member of a chat. Returns a ChatMember object on success.
+*/
+func (client *Client) GetChatMember(chatId interface{}, userId int64) *ChatMemberResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointGetChatMember, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v&user_id=%v", chatId, userId))
+
+	return &ChatMemberResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// Commit execute request to telegram
+func (void *ChatMemberResponse) Commit() (*ChatMember, *http.Response, error) {
+	var body []byte
+	var errs []error
+
+	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+		Result *ChatMember `json:"result,omitempty"`
 	}{}
 
 	operation := func() error {
