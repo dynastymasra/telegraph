@@ -874,3 +874,46 @@ func TestGetChatMembersCount_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestSetChatStickerSet_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSetChatStickerSet, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.SetChatStickerSet(32423423, "name").Commit()
+
+	assert.NotNil(t, body)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSetChatStickerSet_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointSetChatStickerSet, "token")).Reply(http.StatusOK).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.SetChatStickerSet(32423423, "name").Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.NotNil(t, err)
+}
+
+func TestSetChatStickerSet_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSetChatStickerSet, "token")).Reply(http.StatusBadRequest).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: invalid file id"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.SetChatStickerSet(32423423, "name").Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.NotNil(t, err)
+}
