@@ -563,6 +563,20 @@ func (client *Client) UnpinChatMessage(chatId interface{}) *VoidResponse {
 	}
 }
 
+/*
+LeaveChat Use this method for your bot to leave a group, supergroup or channel. Returns True on success.
+*/
+func (client *Client) LeaveChat(chatId interface{}) *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointLeaveChat, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v", chatId))
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // Commit execute request to telegram
 func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
 	var body []byte
