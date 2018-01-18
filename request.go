@@ -15,6 +15,12 @@ type (
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
+
+	// StringResponse struct to handle request and response telegram api
+	StringResponse struct {
+		Client  *Client
+		Request *gorequest.SuperAgent
+	}
 )
 
 /*
@@ -437,7 +443,6 @@ func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
 	res := &http.Response{}
 	model := struct {
 		ErrorResponse
-		Result *bool `json:"result,omitempty"`
 	}{}
 
 	operation := func() error {
@@ -456,4 +461,53 @@ func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
 	}
 
 	return body, res, nil
+}
+
+/*
+ExportChatInviteLink Use this method to export an invite link to a supergroup or a channel.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Returns exported invite link as String on success.
+*/
+func (client *Client) ExportChatInviteLink(chatId interface{}) *StringResponse {
+	body := JSON{
+		"chat_id": chatId,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointExportChatInviteLink, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &StringResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// Commit execute request to telegram
+func (void *StringResponse) Commit() (string, *http.Response, error) {
+	var body []byte
+	var errs []error
+
+	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+		Result string `json:"result,omitempty"`
+	}{}
+
+	operation := func() error {
+		res, body, errs = void.Request.EndStruct(&model)
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, void.Client.expBackOff); err != nil {
+		return "", MakeHTTPResponse(void.Request), err
+	}
+	if res.StatusCode != http.StatusOK {
+		return "", res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
+	}
+
+	return model.Result, res, nil
 }
