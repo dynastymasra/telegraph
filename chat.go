@@ -15,6 +15,12 @@ type (
 		Client  *Client
 		Request *gorequest.SuperAgent
 	}
+
+	// ArrayChatMemberResponse struct to handle request and response telegram api
+	ArrayChatMemberResponse struct {
+		Client  *Client
+		Request *gorequest.SuperAgent
+	}
 )
 
 /*
@@ -41,6 +47,51 @@ func (void *ChatResponse) Commit() (*Chat, *http.Response, error) {
 	model := struct {
 		ErrorResponse
 		Result *Chat `json:"result,omitempty"`
+	}{}
+
+	operation := func() error {
+		res, body, errs = void.Request.EndStruct(&model)
+		if len(errs) > 0 {
+			return errs[0]
+		}
+		return nil
+	}
+
+	if err := backoff.Retry(operation, void.Client.expBackOff); err != nil {
+		return nil, MakeHTTPResponse(void.Request), err
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, res, fmt.Errorf("%v %v", model.ErrorCode, model.Description)
+	}
+
+	return model.Result, res, nil
+}
+
+/*
+GetChatAdministrator Use this method to get a list of administrators in a chat.
+On success, returns an Array of ChatMember objects that contains information about all chat administrators except other bots.
+If the chat is a group or a supergroup and no administrators were appointed, only the creator will be returned.
+*/
+func (client *Client) GetChatAdministrator(chatId interface{}) *ArrayChatMemberResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointGetChatAdministrators, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v", chatId))
+
+	return &ArrayChatMemberResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// Commit execute request to telegram
+func (void *ArrayChatMemberResponse) Commit() ([]ChatMember, *http.Response, error) {
+	var body []byte
+	var errs []error
+
+	res := &http.Response{}
+	model := struct {
+		ErrorResponse
+		Result []ChatMember `json:"result,omitempty"`
 	}{}
 
 	operation := func() error {

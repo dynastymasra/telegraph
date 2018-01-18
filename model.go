@@ -438,6 +438,26 @@ type (
 		FileSize int    `json:"file_size,omitempty"`
 		FilePath string `json:"file_path,omitempty"`
 	}
+
+	// ChatMember This object contains information about one member of a chat.
+	ChatMember struct {
+		User                 *User      `json:"user"`
+		Status               StatusType `json:"status"`
+		UntilDate            int64      `json:"until_date,omitempty"`
+		CanBeEdited          bool       `json:"can_be_edited,omitempty"`
+		CanChangeInfo        bool       `json:"can_change_info,omitempty"`
+		CanPostMessage       bool       `json:"can_post_messages,omitempty"`
+		CanEditMessage       bool       `json:"can_edit_messages,omitempty"`
+		CanDeleteMessage     bool       `json:"can_delete_messages,omitempty"`
+		CanInviteUser        bool       `json:"can_invite_users,omitempty"`
+		CanRestrictMember    bool       `json:"can_restrict_members,omitempty"`
+		CanPinMessage        bool       `json:"can_pin_messages,omitempty"`
+		CanPromoteMember     bool       `json:"can_promote_members,omitempty"`
+		CanSendMessage       bool       `json:"can_send_messages,omitempty"`
+		CanSendMediaMessage  bool       `json:"can_send_media_messages,omitempty"`
+		CanSendOtherMessage  bool       `json:"can_send_other_messages,omitempty"`
+		CanAddWebPagePreview bool       `json:"can_add_web_page_previews,omitempty"`
+	}
 )
 
 // MakeHTTPResponse create mock http response if request to API is error internal
