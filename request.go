@@ -605,6 +605,23 @@ func (client *Client) SetChatStickerSet(chatId interface{}, name string) *VoidRe
 	}
 }
 
+/*
+DeleteChatStickerSet Use this method to delete a group sticker set from a supergroup.
+The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+Use the field can_set_sticker_set optionally returned in getChat requests to check if the bot can use this method.
+Returns True on success.
+*/
+func (client *Client) DeleteChatStickerSet(chatId interface{}) *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointDeleteChatStickerSet, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v", chatId))
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // Commit execute request to telegram
 func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
 	var body []byte
