@@ -458,6 +458,14 @@ type (
 		CanSendOtherMessage  bool       `json:"can_send_other_messages,omitempty"`
 		CanAddWebPagePreview bool       `json:"can_add_web_page_previews,omitempty"`
 	}
+
+	// StickerSet This object represents a sticker set.
+	StickerSet struct {
+		Name          string    `json:"name"`
+		Title         string    `json:"title"`
+		ContainsMasks bool      `json:"contains_masks"`
+		Stickers      []Sticker `json:"stickers"`
+	}
 )
 
 // MakeHTTPResponse create mock http response if request to API is error internal
