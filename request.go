@@ -171,6 +171,25 @@ func (void *VoidResponse) SetDisableWebPagePreview(disable bool) *VoidResponse {
 	return void
 }
 
+/*
+EditMessageCaption Use this method to edit captions of messages sent by the bot or via the bot (for inline bots).
+On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
+*/
+func (client *Client) EditMessageCaption(caption string) *VoidResponse {
+	body := JSON{
+		"caption": caption,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointEditMessageCaption, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // SetChatID Required if inline_message_id is not specified.
 // Unique identifier for the target chat or username of the target channel (in the format @channelusername)
 func (void *VoidResponse) SetChatID(chatId interface{}) *VoidResponse {
