@@ -109,8 +109,7 @@ func (client *Client) EditMessageLiveLocation(latitude, longitude float64) *Void
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointEditMessageLiveLocation, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -142,8 +141,7 @@ func (client *Client) EditMessageText(text string) *VoidResponse {
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointEditMessageText, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -181,8 +179,7 @@ func (client *Client) EditMessageCaption(caption string) *VoidResponse {
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointEditMessageCaption, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -248,6 +245,26 @@ func (void *VoidResponse) SetReplyMarkup(inline [][]InlineKeyboardButton) *VoidR
 }
 
 /*
+DeleteMessage Use this method to delete a message, including service messages, with the following limitations:
+- A message can only be deleted if it was sent less than 48 hours ago.
+- Bots can delete outgoing messages in groups and supergroups.
+- Bots granted can_post_messages permissions can delete outgoing messages in channels.
+- If the bot is an administrator of a group, it can delete any message there.
+- If the bot has can_delete_messages permission in a supergroup or a channel, it can delete any message there.
+Returns True on success.
+*/
+func (client *Client) DeleteMessage(chatId interface{}, messageId int64) *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointDeleteMessage, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Query(fmt.Sprintf("chat_id=%v&message_id=%v", chatId, messageId))
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+/*
 SendChatAction Use this method when you need to tell the user that something is happening on the bot's side.
 The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status).
 Returns True on success.
@@ -266,10 +283,8 @@ func (client *Client) SendChatAction(chatId interface{}, action string) *VoidRes
 		"chat_id": chatId,
 		"action":  action,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointSendChatAction, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -291,10 +306,8 @@ func (client *Client) KickChatMember(chatId interface{}, userId int64) *VoidResp
 		"chat_id": chatId,
 		"user_id": userId,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointKickChatMember, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -312,10 +325,8 @@ func (client *Client) RestrictChatMember(chatId interface{}, userId int64) *Void
 		"chat_id": chatId,
 		"user_id": userId,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointRestrictChatMember, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -385,10 +396,8 @@ func (client *Client) PromoteChatMember(chatId interface{}, userId int64) *VoidR
 		"chat_id": chatId,
 		"user_id": userId,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointPromoteChatMember, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -501,10 +510,8 @@ func (client *Client) UnbanChatMember(chatId interface{}, userId int64) *VoidRes
 		"chat_id": chatId,
 		"user_id": userId,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointUnbanChatMember, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -522,7 +529,6 @@ func (client *Client) SetChatPhoto(chatId interface{}, photo string) *VoidRespon
 	body := JSON{
 		"chat_id": chatId,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointSetChatPhoto, client.accessToken)
 	request := gorequest.New().Type(gorequest.TypeMultipart).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(body).SendFile(photo, "", "photo")
@@ -561,10 +567,8 @@ func (client *Client) SetChatTitle(chatId interface{}, title string) *VoidRespon
 		"chat_id": chatId,
 		"title":   title,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointSetChatTitle, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -581,10 +585,8 @@ func (client *Client) SetChatDescription(chatId interface{}, description string)
 		"chat_id":     chatId,
 		"description": description,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointSetChatDescription, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -602,10 +604,8 @@ func (client *Client) PinChatMessage(chatId interface{}, messageId int64) *VoidR
 		"chat_id":    chatId,
 		"message_id": messageId,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointPinChatMessage, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -665,10 +665,8 @@ func (client *Client) SetChatStickerSet(chatId interface{}, name string) *VoidRe
 		"chat_id":          chatId,
 		"sticker_set_name": name,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointSetChatStickerSet, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -705,10 +703,8 @@ func (client *Client) AnswerCallbackQuery(queryId string) *VoidResponse {
 	body := JSON{
 		"callback_query_id": queryId,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointAnswerCallbackQuery, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -796,10 +792,8 @@ func (client *Client) ExportChatInviteLink(chatId interface{}) *StringResponse {
 	body := JSON{
 		"chat_id": chatId,
 	}
-
 	url := client.baseURL + fmt.Sprintf(EndpointExportChatInviteLink, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &StringResponse{
 		Client:  client,
