@@ -33,8 +33,7 @@ func (client *Client) SendMessage(chatId interface{}, text string) *MessageRespo
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointSendMessage, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &MessageResponse{
 		Client:  client,
@@ -73,8 +72,7 @@ func (client *Client) ForwardMessage(chatId, fromChatId interface{}, messageId i
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointForwardMessage, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &MessageResponse{
 		Client:  client,
@@ -94,8 +92,7 @@ func (client *Client) SendPhoto(chatId interface{}, photo string, upload bool) *
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointSendPhoto, client.accessToken)
-	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	if upload {
 		request.Type(gorequest.TypeMultipart).SendFile(photo, "", "photo")
@@ -123,8 +120,7 @@ func (client *Client) SendAudio(chatId interface{}, audio string, upload bool) *
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointSendAudio, client.accessToken)
-	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	if upload {
 		request.Type(gorequest.TypeMultipart).SendFile(audio, "", "audio")
@@ -169,8 +165,7 @@ func (client *Client) SendDocument(chatId interface{}, document string, upload b
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointSendDocument, client.accessToken)
-	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	if upload {
 		request.Type(gorequest.TypeMultipart).SendFile(document, "", "document")
@@ -196,8 +191,7 @@ func (client *Client) SendVideo(chatId interface{}, video string, upload bool) *
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointSendVideo, client.accessToken)
-	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	if upload {
 		request.Type(gorequest.TypeMultipart).SendFile(video, "", "video")
@@ -244,8 +238,7 @@ func (client *Client) SendVoice(chatId interface{}, voice string, upload bool) *
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointSendVoice, client.accessToken)
-	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	if upload {
 		request.Type(gorequest.TypeMultipart).SendFile(voice, "", "voice")
@@ -280,8 +273,7 @@ func (client *Client) SendVideoNote(chatId interface{}, videoNote string, upload
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointSendVideoNote, client.accessToken)
-	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	if upload {
 		request.Type(gorequest.TypeMultipart).SendFile(videoNote, "", "video_note")
@@ -324,8 +316,7 @@ func (client *Client) SendLocation(chatId interface{}, latitude, longitude float
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointSendLocation, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &MessageResponse{
 		Client:  client,
@@ -356,8 +347,7 @@ func (client *Client) SendVenue(chatId interface{}, latitude, longitude float64,
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointSendVenue, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &MessageResponse{
 		Client:  client,
@@ -386,8 +376,7 @@ func (client *Client) SendContact(chatId interface{}, phoneNumber, firstName str
 	}
 
 	url := client.baseURL + fmt.Sprintf(EndpointSendContact, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
-		Send(body)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &MessageResponse{
 		Client:  client,
@@ -403,6 +392,32 @@ func (message *MessageResponse) SetLastName(lastName string) *MessageResponse {
 	message.Request = message.Request.Send(body)
 
 	return message
+}
+
+/*
+SendSticker Use this method to send .webp stickers. On success, the sent Message is returned.
+
+- chatId Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+- sticker Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended),
+  pass an HTTP URL as a String for Telegram to get a .webp file from the Internet, or upload a new one using multipart/form-data.
+- upload set true if upload sticker from local
+*/
+func (client *Client) SendSticker(chatId interface{}, sticker string, upload bool) *MessageResponse {
+	body := JSON{
+		"chat_id": chatId,
+		"sticker": sticker,
+	}
+	url := client.baseURL + fmt.Sprintf(EndpointSendSticker, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(sticker, "", "video")
+	}
+
+	return &MessageResponse{
+		Client:  client,
+		Request: request,
+	}
 }
 
 // SetDisableNotification Sends the message silently. Users will receive a notification with no sound.
