@@ -1288,3 +1288,46 @@ func TestAddStickerToSet_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestSetStickerPositionInSet_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSetStickerPositionInSet, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.SetStickerPositionInSet("sticker", 10).Commit()
+
+	assert.NotNil(t, body)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSetStickerPositionInSet_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointSetStickerPositionInSet, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.SetStickerPositionInSet("sticker", 10).Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestSetStickerPositionInSet_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointSetStickerPositionInSet, "token")).Reply(http.StatusBadRequest).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: invalid file id"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.SetStickerPositionInSet("sticker", 10).Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}

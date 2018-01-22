@@ -840,6 +840,26 @@ func (void *VoidResponse) SetMaskPosition(mask MaskPosition) *VoidResponse {
 	return void
 }
 
+/*
+SetStickerPositionInSet Use this method to move a sticker in a set created by the bot to a specific position . Returns True on success.
+
+- sticker File identifier of the sticker
+- position New sticker position in the set, zero-based
+*/
+func (client *Client) SetStickerPositionInSet(sticker string, position int) *VoidResponse {
+	body := JSON{
+		"sticker":  sticker,
+		"position": position,
+	}
+	url := client.baseURL + fmt.Sprintf(EndpointSetStickerPositionInSet, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Type(gorequest.TypeJSON).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // Commit execute request to telegram
 func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
 	var body []byte
