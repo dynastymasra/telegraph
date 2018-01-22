@@ -117,7 +117,7 @@ func TestEditMessageLiveLocation_Success(t *testing.T) {
 	client := telegraph.NewClient("token")
 	body, res, err := client.EditMessageLiveLocation(12312312.98, 324234324.67).SetChatID(21342321).
 		SetMessageID(234234234).SetInlineMessageID("test").
-		SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
+		SetReplyMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
 
 	assert.NotNil(t, body)
 	assert.NotNil(t, res)
@@ -132,7 +132,7 @@ func TestEditMessageLiveLocation_Error(t *testing.T) {
 	client := telegraph.NewClient("token")
 	body, res, err := client.EditMessageLiveLocation(12312312.98, 324234324.67).SetChatID(21342321).
 		SetMessageID(234234234).SetInlineMessageID("test").
-		SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
+		SetReplyMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
 
 	assert.Nil(t, body)
 	assert.NotNil(t, res)
@@ -151,7 +151,7 @@ func TestEditMessageLiveLocation_Failed(t *testing.T) {
 	client := telegraph.NewClient("token")
 	body, res, err := client.EditMessageLiveLocation(12312312.98, 324234324.67).SetChatID(21342321).
 		SetMessageID(234234234).SetInlineMessageID("test").
-		SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
+		SetReplyMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
 
 	assert.Nil(t, body)
 	assert.NotNil(t, res)
@@ -255,7 +255,7 @@ func TestStopMessageLiveLocation_Success(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 	body, res, err := client.StopMessageLiveLocation().SetChatID(21342321).SetMessageID(234234234).
-		SetInlineMessageID("test").SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
+		SetInlineMessageID("test").SetReplyMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
 
 	assert.NotNil(t, body)
 	assert.NotNil(t, res)
@@ -269,7 +269,7 @@ func TestStopMessageLiveLocation_Error(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 	body, res, err := client.StopMessageLiveLocation().SetChatID(21342321).SetMessageID(234234234).
-		SetInlineMessageID("test").SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
+		SetInlineMessageID("test").SetReplyMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
 
 	assert.Nil(t, body)
 	assert.NotNil(t, res)
@@ -287,7 +287,7 @@ func TestStopMessageLiveLocation_Failed(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 	body, res, err := client.StopMessageLiveLocation().SetChatID(21342321).SetMessageID(234234234).
-		SetInlineMessageID("test").SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
+		SetInlineMessageID("test").SetReplyMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
 
 	assert.Nil(t, body)
 	assert.NotNil(t, res)
@@ -1004,6 +1004,55 @@ func TestAnswerCallbackQuery_Failed(t *testing.T) {
 	client := telegraph.NewClient("token")
 	body, res, err := client.AnswerCallbackQuery("23434234").SetText("text").SetShowAlert(true).
 		SetURL("https://www.cubesoft.co.id").SetCacheTime(123123123).Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestEditMessageText_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointEditMessageText, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.EditMessageText("text").SetChatID(1312312).SetMessageID(2323423).
+		SetInlineMessageID("inline").SetParseMode("HTML").SetDisableWebPagePreview(true).
+		SetReplyMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
+
+	assert.NotNil(t, body)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestEditMessageText_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointEditMessageText, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.EditMessageText("text").SetChatID(1312312).SetMessageID(2323423).
+		SetInlineMessageID("inline").SetParseMode("HTML").SetDisableWebPagePreview(true).
+		SetReplyMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestEditMessageText_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointEditMessageText, "token")).Reply(http.StatusBadRequest).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: invalid file id"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.EditMessageText("text").SetChatID(1312312).SetMessageID(2323423).
+		SetInlineMessageID("inline").SetParseMode("HTML").SetDisableWebPagePreview(true).
+		SetReplyMarkup([][]telegraph.InlineKeyboardButton{}).Commit()
 
 	assert.Nil(t, body)
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)

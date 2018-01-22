@@ -132,6 +132,45 @@ func (client *Client) StopMessageLiveLocation() *VoidResponse {
 	}
 }
 
+/*
+EditMessageText Use this method to edit text and game messages sent by the bot or via the bot (for inline bots).
+On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
+*/
+func (client *Client) EditMessageText(text string) *VoidResponse {
+	body := JSON{
+		"text": text,
+	}
+
+	url := client.baseURL + fmt.Sprintf(EndpointEditMessageText, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+		Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetParseMode Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
+func (void *VoidResponse) SetParseMode(mode string) *VoidResponse {
+	body := JSON{
+		"parse_mode": mode,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetDisableWebPagePreview Disables link previews for links in this message
+func (void *VoidResponse) SetDisableWebPagePreview(disable bool) *VoidResponse {
+	body := JSON{
+		"disable_web_page_preview": disable,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
 // SetChatID Required if inline_message_id is not specified.
 // Unique identifier for the target chat or username of the target channel (in the format @channelusername)
 func (void *VoidResponse) SetChatID(chatId interface{}) *VoidResponse {
@@ -163,9 +202,8 @@ func (void *VoidResponse) SetInlineMessageID(inlineMessage string) *VoidResponse
 	return void
 }
 
-// SetInlineKeyboardMarkup Additional interface options. A JSON-serialized object for an inline keyboard,
-// custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
-func (void *VoidResponse) SetInlineKeyboardMarkup(inline [][]InlineKeyboardButton) *VoidResponse {
+// SetReplyMarkup A JSON-serialized object for a new inline keyboard.
+func (void *VoidResponse) SetReplyMarkup(inline [][]InlineKeyboardButton) *VoidResponse {
 	body := JSON{
 		"reply_markup": JSON{
 			"inline_keyboard": inline,
