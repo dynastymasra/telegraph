@@ -1197,7 +1197,7 @@ func TestDeleteMessage_Failed(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestSetMaskPosition_Success(t *testing.T) {
+func TestCreateNewStickerSet_Success(t *testing.T) {
 	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointCreateNewStickerSet, "token")).Reply(http.StatusOK).JSON(`{
 		"ok": true,
 		"result": true
@@ -1213,7 +1213,7 @@ func TestSetMaskPosition_Success(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestSetMaskPosition_Error(t *testing.T) {
+func TestCreateNewStickerSet_Error(t *testing.T) {
 	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointCreateNewStickerSet, "token")).Reply(http.StatusInternalServerError).JSON("")
 	defer gock.Off()
 
@@ -1226,10 +1226,11 @@ func TestSetMaskPosition_Error(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestSetMaskPosition_Failed(t *testing.T) {
+func TestCreateNewStickerSet_Failed(t *testing.T) {
 	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointCreateNewStickerSet, "token")).Reply(http.StatusBadRequest).JSON(`{
-		"ok": true,
-		"result": true
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: invalid file id"
 	}`)
 	defer gock.Off()
 
