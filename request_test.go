@@ -1196,3 +1196,48 @@ func TestDeleteMessage_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestSetMaskPosition_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointCreateNewStickerSet, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.CreateNewStickerSet(234234234, "name", "title", "./LICENSE", ":)", true).
+		SetContainsMask(true).SetMaskPosition(telegraph.MaskPosition{}).Commit()
+
+	assert.NotNil(t, body)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestSetMaskPosition_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointCreateNewStickerSet, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.CreateNewStickerSet(234234234, "name", "title", "./LICENSE", ":)", true).
+		SetContainsMask(true).SetMaskPosition(telegraph.MaskPosition{}).Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestSetMaskPosition_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointCreateNewStickerSet, "token")).Reply(http.StatusBadRequest).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.CreateNewStickerSet(234234234, "name", "title", "./LICENSE", ":)", true).
+		SetContainsMask(true).SetMaskPosition(telegraph.MaskPosition{}).Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}

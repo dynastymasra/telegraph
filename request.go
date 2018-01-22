@@ -755,6 +755,61 @@ func (void *VoidResponse) SetCacheTime(time int64) *VoidResponse {
 	return void
 }
 
+/*
+CreateNewStickerSet Use this method to create new sticker set owned by a user.
+The bot will be able to edit the created sticker set. Returns True on success.
+
+- userId User identifier of created sticker set owner
+- name Short name of sticker set, to be used in t.me/addstickers/ URLs (e.g., animals).
+  Can contain only english letters, digits and underscores. Must begin with a letter, can't contain consecutive underscores and must end in “_by_<bot username>”.
+  <bot_username> is case insensitive. 1-64 characters
+- title Sticker set title, 1-64 characters
+- pngSticker Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px.
+  Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
+- emojis One or more emoji corresponding to the sticker
+- upload set true if upload file to telegram from local
+*/
+func (client *Client) CreateNewStickerSet(userId int64, name, title, pngSticker, emojis string, upload bool) *VoidResponse {
+	body := JSON{
+		"user_id":     userId,
+		"name":        name,
+		"title":       title,
+		"png_sticker": pngSticker,
+		"emojis":      emojis,
+	}
+	url := client.baseURL + fmt.Sprintf(EndpointCreateNewStickerSet, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(pngSticker, "", "png_sticker")
+	}
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetContainsMask Pass True, if a set of mask stickers should be created
+func (void *VoidResponse) SetContainsMask(mask bool) *VoidResponse {
+	body := JSON{
+		"contains_masks": mask,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetMaskPosition A JSON-serialized object for position where the mask should be placed on faces
+func (void *VoidResponse) SetMaskPosition(mask MaskPosition) *VoidResponse {
+	body := JSON{
+		"mask_position": mask,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
 // Commit execute request to telegram
 func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
 	var body []byte
