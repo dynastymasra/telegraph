@@ -36,6 +36,27 @@ func (client *Client) GetFile(fileId string) *FileResponse {
 	}
 }
 
+/*
+UploadStickerFile Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet methods (can be used multiple times).
+Returns the uploaded File on success.
+
+- userId User identifier of sticker file owner
+- pngSticker Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px.
+*/
+func (client *Client) UploadStickerFile(userId int64, pngSticker string) *FileResponse {
+	body := JSON{
+		"user_id": userId,
+	}
+	url := client.baseURL + fmt.Sprintf(EndpointUploadStickerFile, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body).Type(gorequest.TypeMultipart).
+		SendFile(pngSticker, "", "png_sticker")
+
+	return &FileResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // Commit execute request to telegram
 func (user *FileResponse) Commit() (*File, *http.Response, error) {
 	var errs []error
