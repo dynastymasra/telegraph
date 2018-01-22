@@ -800,6 +800,36 @@ func (void *VoidResponse) SetContainsMask(mask bool) *VoidResponse {
 	return void
 }
 
+/*
+AddStickerToSet Use this method to add a new sticker to a set created by the bot. Returns True on success.
+
+- userId User identifier of sticker set owner
+- name Sticker set name
+- pngSticker Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px.
+  Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
+- emojis One or more emoji corresponding to the sticker
+- upload set true if upload file to telegram from local
+*/
+func (client *Client) AddStickerToSet(userId int64, name, pngSticker, emojis string, upload bool) *VoidResponse {
+	body := JSON{
+		"user_id":     userId,
+		"name":        name,
+		"png_sticker": pngSticker,
+		"emojis":      emojis,
+	}
+	url := client.baseURL + fmt.Sprintf(EndpointAddStickerToSet, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+
+	if upload {
+		request.Type(gorequest.TypeMultipart).SendFile(pngSticker, "", "png_sticker")
+	}
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // SetMaskPosition A JSON-serialized object for position where the mask should be placed on faces
 func (void *VoidResponse) SetMaskPosition(mask MaskPosition) *VoidResponse {
 	body := JSON{
