@@ -860,6 +860,22 @@ func (client *Client) SetStickerPositionInSet(sticker string, position int) *Voi
 	}
 }
 
+/*
+DeleteStickerFromSet Use this method to delete a sticker from a set created by the bot. Returns True on success.
+
+- sticker File identifier of the sticker
+*/
+func (client *Client) DeleteStickerFromSet(sticker string) *VoidResponse {
+	url := client.baseURL + fmt.Sprintf(EndpointDeleteStickerFromSet, client.accessToken)
+	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).Type(gorequest.TypeJSON).
+		Query(fmt.Sprintf("sticker=%v", sticker))
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
 // Commit execute request to telegram
 func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
 	var body []byte
