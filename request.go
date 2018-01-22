@@ -744,17 +744,6 @@ func (void *VoidResponse) SetURL(url string) *VoidResponse {
 	return void
 }
 
-// SetCacheTime The maximum amount of time in seconds that the result of the callback query may be cached client-side.
-// Telegram apps will support caching starting in version 3.14. Defaults to 0.
-func (void *VoidResponse) SetCacheTime(time int64) *VoidResponse {
-	body := JSON{
-		"cache_time": time,
-	}
-	void.Request = void.Request.Send(body)
-
-	return void
-}
-
 /*
 CreateNewStickerSet Use this method to create new sticker set owned by a user.
 The bot will be able to edit the created sticker set. Returns True on success.
@@ -874,6 +863,87 @@ func (client *Client) DeleteStickerFromSet(sticker string) *VoidResponse {
 		Client:  client,
 		Request: request,
 	}
+}
+
+/*
+AnswerInlineQuery Use this method to send answers to an inline query. On success, True is returned.
+No more than 50 results per query are allowed.
+
+- inlineQueryId Unique identifier for the answered query
+- result A JSON-serialized array of results for the inline query
+*/
+func (client *Client) AnswerInlineQuery(inlineQueryId string, result ...JSON) *VoidResponse {
+	body := JSON{
+		"inline_query_id": inlineQueryId,
+		"results":         result,
+	}
+	url := client.baseURL + fmt.Sprintf(EndpointAnswerInlineQuery, client.accessToken)
+	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Type(gorequest.TypeJSON).Send(body)
+
+	return &VoidResponse{
+		Client:  client,
+		Request: request,
+	}
+}
+
+// SetCacheTime The maximum amount of time in seconds that the result of the callback query may be cached client-side.
+// Telegram apps will support caching starting in version 3.14. Defaults to 0.
+//
+// The maximum amount of time in seconds that the result of the inline query may be cached on the server. Defaults to 300.
+func (void *VoidResponse) SetCacheTime(time int64) *VoidResponse {
+	body := JSON{
+		"cache_time": time,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetIsPersonal Pass True, if results may be cached on the server side only for the user that sent the query.
+// By default, results may be returned to any user who sends the same query
+func (void *VoidResponse) SetIsPersonal(personal bool) *VoidResponse {
+	body := JSON{
+		"is_personal": personal,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetNextOffset Pass the offset that a client should send in the next query with the same text to receive more results.
+// Pass an empty string if there are no more results or if you don‘t support pagination. Offset length can’t exceed 64 bytes.
+func (void *VoidResponse) SetNextOffset(offset string) *VoidResponse {
+	body := JSON{
+		"next_offset": offset,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetSwitchPMText If passed, clients will display a button with specified text that switches the user to a private chat with the bot and sends the bot a start message with the parameter switch_pm_parameter
+func (void *VoidResponse) SetSwitchPMText(text string) *VoidResponse {
+	body := JSON{
+		"switch_pm_text": text,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
+}
+
+// SetSwitchPMParameter Deep-linking parameter for the /start message sent to the bot when user presses the switch button.
+// 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed.
+// Example: An inline bot that sends YouTube videos can ask the user to connect the bot to their YouTube account to adapt search results accordingly.
+// To do this, it displays a ‘Connect your YouTube account’ button above the results, or even before showing any.
+// The user presses the button, switches to a private chat with the bot and, in doing so, passes a start parameter that instructs the bot to return an oauth link.
+// Once done, the bot can offer a switch_inline button so that the user can easily return to the chat where they wanted to use the bot's inline capabilities.
+func (void *VoidResponse) SetSwitchPMParameter(param string) *VoidResponse {
+	body := JSON{
+		"switch_pm_parameter": param,
+	}
+	void.Request = void.Request.Send(body)
+
+	return void
 }
 
 // Commit execute request to telegram

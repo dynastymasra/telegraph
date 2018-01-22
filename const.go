@@ -62,4 +62,5 @@ const (
 	EndpointAddStickerToSet         = "/bot%v/addStickerToSet"
 	EndpointSetStickerPositionInSet = "/bot%v/setStickerPositionInSet"
 	EndpointDeleteStickerFromSet    = "/bot%v/deleteStickerFromSet"
+	EndpointAnswerInlineQuery       = "/bot%v/answerInlineQuery"
 )

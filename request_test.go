@@ -1374,3 +1374,49 @@ func TestDeleteStickerFromSet_Failed(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
+
+func TestAnswerInlineQuery_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointAnswerInlineQuery, "token")).Reply(http.StatusOK).JSON(`{
+		"ok": true,
+		"result": true
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.AnswerInlineQuery("123123123", telegraph.JSON{}, telegraph.JSON{}).SetCacheTime(10000).
+		SetIsPersonal(true).SetNextOffset("offset").SetSwitchPMText("text").SetSwitchPMParameter("param").Commit()
+
+	assert.NotNil(t, body)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.NoError(t, err)
+}
+
+func TestAnswerInlineQuery_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointAnswerInlineQuery, "token")).Reply(http.StatusInternalServerError).JSON("")
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.AnswerInlineQuery("123123123", telegraph.JSON{}, telegraph.JSON{}).SetCacheTime(10000).
+		SetIsPersonal(true).SetNextOffset("offset").SetSwitchPMText("text").SetSwitchPMParameter("param").Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Error(t, err)
+}
+
+func TestAnswerInlineQuery_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointAnswerInlineQuery, "token")).Reply(http.StatusBadRequest).JSON(`{
+		"ok": false,
+		"error_code": 400,
+		"description": "Bad Request: invalid file id"
+	}`)
+	defer gock.Off()
+
+	client := telegraph.NewClient("token")
+	body, res, err := client.AnswerInlineQuery("123123123", telegraph.JSON{}, telegraph.JSON{}).SetCacheTime(10000).
+		SetIsPersonal(true).SetNextOffset("offset").SetSwitchPMText("text").SetSwitchPMParameter("param").Commit()
+
+	assert.Nil(t, body)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
+	assert.Error(t, err)
+}
