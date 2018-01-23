@@ -59,7 +59,6 @@ func (client *Client) UploadStickerFile(userId int64, pngSticker string) *FileRe
 // Commit execute request to telegram
 func (user *FileResponse) Commit() (*File, *http.Response, error) {
 	var errs []error
-	var body []byte
 	res := &http.Response{}
 	model := struct {
 		ErrorResponse
@@ -67,7 +66,7 @@ func (user *FileResponse) Commit() (*File, *http.Response, error) {
 	}{}
 
 	operation := func() error {
-		res, body, errs = user.Request.EndStruct(&model)
+		res, _, errs = user.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}

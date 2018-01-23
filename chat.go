@@ -47,7 +47,6 @@ func (client *Client) GetChat(chatId interface{}) *ChatResponse {
 
 // Commit execute request to telegram
 func (void *ChatResponse) Commit() (*Chat, *http.Response, error) {
-	var body []byte
 	var errs []error
 
 	res := &http.Response{}
@@ -57,7 +56,7 @@ func (void *ChatResponse) Commit() (*Chat, *http.Response, error) {
 	}{}
 
 	operation := func() error {
-		res, body, errs = void.Request.EndStruct(&model)
+		res, _, errs = void.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}
@@ -93,7 +92,6 @@ func (client *Client) GetChatAdministrator(chatId interface{}) *ArrayChatMemberR
 
 // Commit execute request to telegram
 func (void *ArrayChatMemberResponse) Commit() ([]ChatMember, *http.Response, error) {
-	var body []byte
 	var errs []error
 
 	res := &http.Response{}
@@ -103,7 +101,7 @@ func (void *ArrayChatMemberResponse) Commit() ([]ChatMember, *http.Response, err
 	}{}
 
 	operation := func() error {
-		res, body, errs = void.Request.EndStruct(&model)
+		res, _, errs = void.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}
@@ -138,7 +136,6 @@ func (client *Client) GetChatMember(chatId interface{}, userId int64) *ChatMembe
 
 // Commit execute request to telegram
 func (void *ChatMemberResponse) Commit() (*ChatMember, *http.Response, error) {
-	var body []byte
 	var errs []error
 
 	res := &http.Response{}
@@ -148,7 +145,7 @@ func (void *ChatMemberResponse) Commit() (*ChatMember, *http.Response, error) {
 	}{}
 
 	operation := func() error {
-		res, body, errs = void.Request.EndStruct(&model)
+		res, _, errs = void.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}

@@ -33,7 +33,6 @@ func (client *Client) GetWebHookInfo() *WebHookInfoResponse {
 // Commit execute request to telegram
 func (info *WebHookInfoResponse) Commit() (*WebhookInfo, *http.Response, error) {
 	var errs []error
-	var body []byte
 	res := &http.Response{}
 	model := struct {
 		ErrorResponse
@@ -41,7 +40,7 @@ func (info *WebHookInfoResponse) Commit() (*WebhookInfo, *http.Response, error) 
 	}{}
 
 	operation := func() error {
-		res, body, errs = info.Request.EndStruct(&model)
+		res, _, errs = info.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}

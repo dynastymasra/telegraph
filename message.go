@@ -609,7 +609,6 @@ func (message *MessageResponse) SetReplyKeyboardRemove(remove ReplyKeyboardRemov
 // Commit execute request to telegram
 func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
 	var errs []error
-	var body []byte
 	res := &http.Response{}
 	model := struct {
 		ErrorResponse
@@ -617,7 +616,7 @@ func (message *MessageResponse) Commit() (*Message, *http.Response, error) {
 	}{}
 
 	operation := func() error {
-		res, body, errs = message.Request.EndStruct(&model)
+		res, _, errs = message.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}
@@ -681,7 +680,7 @@ func (message *ArrayMessageResponse) SetReplyToMessageID(id int64) *ArrayMessage
 // Commit execute request to telegram
 func (message *ArrayMessageResponse) Commit() ([]Message, *http.Response, error) {
 	var errs []error
-	var body []byte
+
 	res := &http.Response{}
 	model := struct {
 		ErrorResponse
@@ -689,7 +688,7 @@ func (message *ArrayMessageResponse) Commit() ([]Message, *http.Response, error)
 	}{}
 
 	operation := func() error {
-		res, body, errs = message.Request.EndStruct(&model)
+		res, _, errs = message.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}

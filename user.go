@@ -40,7 +40,6 @@ func (client *Client) GetMe() *UserResponse {
 // Commit execute request to telegram
 func (user *UserResponse) Commit() (*User, *http.Response, error) {
 	var errs []error
-	var body []byte
 	res := &http.Response{}
 	model := struct {
 		ErrorResponse
@@ -48,7 +47,7 @@ func (user *UserResponse) Commit() (*User, *http.Response, error) {
 	}{}
 
 	operation := func() error {
-		res, body, errs = user.Request.EndStruct(&model)
+		res, _, errs = user.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}
@@ -98,7 +97,6 @@ func (user *UserProfilePhotosResponse) SetLimit(limit int) *UserProfilePhotosRes
 // Commit execute request to telegram
 func (user *UserProfilePhotosResponse) Commit() (*UserProfilePhotos, *http.Response, error) {
 	var errs []error
-	var body []byte
 	res := &http.Response{}
 	model := struct {
 		ErrorResponse
@@ -106,7 +104,7 @@ func (user *UserProfilePhotosResponse) Commit() (*UserProfilePhotos, *http.Respo
 	}{}
 
 	operation := func() error {
-		res, body, errs = user.Request.EndStruct(&model)
+		res, _, errs = user.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}

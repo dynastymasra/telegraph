@@ -1113,7 +1113,6 @@ func (client *Client) ExportChatInviteLink(chatId interface{}) *StringResponse {
 
 // Commit execute request to telegram
 func (void *StringResponse) Commit() (string, *http.Response, error) {
-	var body []byte
 	var errs []error
 
 	res := &http.Response{}
@@ -1123,7 +1122,7 @@ func (void *StringResponse) Commit() (string, *http.Response, error) {
 	}{}
 
 	operation := func() error {
-		res, body, errs = void.Request.EndStruct(&model)
+		res, _, errs = void.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}
@@ -1157,7 +1156,6 @@ func (client *Client) GetChatMembersCount(chatId interface{}) *IntegerResponse {
 
 // Commit execute request to telegram
 func (void *IntegerResponse) Commit() (*int64, *http.Response, error) {
-	var body []byte
 	var errs []error
 
 	res := &http.Response{}
@@ -1167,7 +1165,7 @@ func (void *IntegerResponse) Commit() (*int64, *http.Response, error) {
 	}{}
 
 	operation := func() error {
-		res, body, errs = void.Request.EndStruct(&model)
+		res, _, errs = void.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}

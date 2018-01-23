@@ -95,7 +95,6 @@ func (update *ArrayUpdateResponse) SetAllowedUpdates(updates ...string) *ArrayUp
 // Commit request to telegram api
 func (update *ArrayUpdateResponse) Commit() ([]Update, *http.Response, error) {
 	var errs []error
-	var body []byte
 	res := &http.Response{}
 	model := struct {
 		ErrorResponse
@@ -103,7 +102,7 @@ func (update *ArrayUpdateResponse) Commit() ([]Update, *http.Response, error) {
 	}{}
 
 	operation := func() error {
-		res, body, errs = update.Request.EndStruct(&model)
+		res, _, errs = update.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}

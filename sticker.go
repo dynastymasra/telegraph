@@ -35,7 +35,7 @@ func (client *Client) GetStickerSet(name string) *StickerSetResponse {
 // Commit execute request to telegram
 func (sticker *StickerSetResponse) Commit() (*StickerSet, *http.Response, error) {
 	var errs []error
-	var body []byte
+
 	res := &http.Response{}
 	model := struct {
 		ErrorResponse
@@ -43,7 +43,7 @@ func (sticker *StickerSetResponse) Commit() (*StickerSet, *http.Response, error)
 	}{}
 
 	operation := func() error {
-		res, body, errs = sticker.Request.EndStruct(&model)
+		res, _, errs = sticker.Request.EndStruct(&model)
 		if len(errs) > 0 {
 			return errs[0]
 		}
