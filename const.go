@@ -2,7 +2,7 @@ package telegraph
 
 const (
 	// Version of telegraph
-	Version         = "1.2.0"
+	Version         = "2.0.0"
 	UserAgentHeader = "User-Agent"
 	BaseURL         = "https://api.telegram.org"
 
@@ -22,6 +22,7 @@ const (
 	EndpointSendVideo               = "/bot%v/sendVideo"
 	EndpointSendVoice               = "/bot%v/sendVoice"
 	EndpointSendVideoNote           = "/bot%v/sendVideoNote"
+	EndpointSendMediaGroup          = "/bot%v/sendMediaGroup"
 	EndpointSendLocation            = "/bot%v/sendLocation"
 	EndpointEditMessageLiveLocation = "/bot%v/editMessageLiveLocation"
 	EndpointStopMessageLiveLocation = "/bot%v/stopMessageLiveLocation"
@@ -61,4 +62,5 @@ const (
 	EndpointAddStickerToSet         = "/bot%v/addStickerToSet"
 	EndpointSetStickerPositionInSet = "/bot%v/setStickerPositionInSet"
 	EndpointDeleteStickerFromSet    = "/bot%v/deleteStickerFromSet"
+	EndpointAnswerInlineQuery       = "/bot%v/answerInlineQuery"
 )

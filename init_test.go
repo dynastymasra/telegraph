@@ -1,4 +1,4 @@
-package telegraph
+package telegraph_test
 
 import (
 	"os"

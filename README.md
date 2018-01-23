@@ -4,7 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/dynastymasra/telegraph/badge.svg?branch=master)](https://coveralls.io/github/dynastymasra/telegraph?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dynastymasra/telegraph)](https://goreportcard.com/report/github.com/dynastymasra/telegraph)
 [![GoDoc](https://godoc.org/github.com/dynastymasra/telegraph?status.svg)](https://godoc.org/github.com/dynastymasra/telegraph)
-[![Version](https://img.shields.io/badge/version-1.2.0-orange.svg)](https://github.com/dynastymasra/telegraph/tree/1.2.0)
+[![Version](https://img.shields.io/badge/version-2.0.0-orange.svg)](https://github.com/dynastymasra/telegraph/tree/2.0.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
@@ -21,28 +21,32 @@ $ go get github.com/dynastymasra/telegraph
 
 ## How to use
 
-import library `github.com/dynastymasra/telegraph`, This library support telegram available method in 
-[Documentation](https://core.telegram.org/bots/api#available-methods), Direct use sdk without back off retry
+import library `github.com/dynastymasra/telegraph`, 
+See Telegram API [Documentation](https://core.telegram.org/bots/api#available-methods) to know available method can used, 
+and what params can use in a method.
 
+Create new client with no use back off retry, use params `access token` obtain from telegram bot father.
 ```go
-payload := telegraph.NewTextMessage(<chat_id>, <text>)
-	
 client := telegraph.NewClient(<access_token>)
-message, res, err := client.SendMessage(payload).Commit()
+
+res, err := client.SetWebHook("https://www.cubesoft.co.id").SetCertificate("./LICENSE").SetMaxConnection(100).SetAllowedUpdates("1", "2", "3").Commit()
 if err != nil {
-	// Do something if error
+	// Do something when error
+}
+
+info, res, err := client.GetWebHookInfo().Commit()
+if err != nil {
+	// Do something when error
 }
 ```
 
-or use back off retry
-
+Create new client with use back off retry, with params `access token` obtain from telegram bot father and `max interval` and `max elapsed time`
 ```go
-payload := telegraph.NewTextMessage(<chat_id>, <text>)
-	
 client := telegraph.NewClientWithBackOff(<access_token>, telegraph.NewBackOff(<max_interval>, <max_elapsed_time>))
-message, res, err := client.SendMessage(payload).Commit()
+
+res, err := client.DeleteWebHook().Commit()
 if err != nil {
-    // Do something if error	
+	// Do something when error
 }
 ```
 
@@ -50,6 +54,24 @@ Parse telegram web hook request, reference to telegram [Documentation](https://c
 
 ```go
 message, err := telegraph.WebHookParseRequest(<request_in_[]byte>)
+if err != nil {
+	// Do something when error
+}
+```
+
+Send message to telegram use Telegraph SDK
+
+```go
+client := telegraph.NewClientWithBackOff(<access_token>, telegraph.NewBackOff(<max_interval>, <max_elapsed_time>))
+
+// Use upload false if file from url
+message, res, err := client.SendPhoto(<chat_id>, "http://www.images.com/images/jpg", false).SetCaption("test image").Commit()
+if err != nil {
+	// Do something when error
+}
+// Use upload true if from path file
+
+message, res, err := client.SendAudio(<chat_id>, "/home/audio/audio.mp3", true).SetCaption("test audio").SetDuration(1000).Commit()
 if err != nil {
 	// Do something when error
 }

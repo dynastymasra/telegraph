@@ -10,7 +10,7 @@ import (
 	"gopkg.in/h2non/gock.v1"
 )
 
-func TestGetFileSuccess(t *testing.T) {
+func TestGetFile_Success(t *testing.T) {
 	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetFile, "token")).Reply(http.StatusOK).JSON(`{
 		"ok": true,
 		"result": {
@@ -30,7 +30,7 @@ func TestGetFileSuccess(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestGetFileError(t *testing.T) {
+func TestGetFile_Error(t *testing.T) {
 	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointGetFile, "token")).Reply(http.StatusInternalServerError).JSON("")
 	defer gock.Off()
 
@@ -43,7 +43,7 @@ func TestGetFileError(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestGetFileFailed(t *testing.T) {
+func TestGetFile_Failed(t *testing.T) {
 	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetFile, "token")).Reply(http.StatusBadRequest).JSON(`{
 		"ok": false,
 		"error_code": 400,
@@ -60,80 +60,41 @@ func TestGetFileFailed(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestGetFileDownloadSuccess(t *testing.T) {
-	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetFile, "token")).Reply(http.StatusOK).JSON(`{
+func TestUploadStickerFile_Success(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointUploadStickerFile, "token")).Reply(http.StatusOK).JSON(`{
 		"ok": true,
 		"result": {
 			"file_id": "AgADBQALBqgxG_jQeQRAHAUL7cXIIy4QvjIABIJ0vp2ffevPZ-UAAgI",
 			"file_size": 39421,
-			"file_path": "path"
+			"file_path": "photos/file_65.jpg"
 		}
 	}`)
-	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetContent, "token", "path")).Reply(http.StatusOK).JSON(`{
-		"ok": true,
-		"result": true
-	}`)
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
 
-	res, body, err := client.GetFile("33242342").Download()
+	model, res, err := client.UploadStickerFile(33242342, "./LICENSE").Commit()
 
-	assert.NotNil(t, res)
+	assert.NotNil(t, model)
 	assert.Equal(t, http.StatusOK, res.StatusCode)
-	assert.NotNil(t, body)
 	assert.NoError(t, err)
 }
 
-func TestGetFileDownloadFailed(t *testing.T) {
-	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetFile, "token")).Reply(http.StatusBadRequest).JSON(`{
-		"ok": false,
-    	"error_code": 400,
-    	"description": "Bad Request: invalid file id"
-	}`)
+func TestUploadStickerFile_Error(t *testing.T) {
+	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointUploadStickerFile, "token")).Reply(http.StatusInternalServerError).JSON("")
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
 
-	res, body, err := client.GetFile("33242342").Download()
+	model, res, err := client.UploadStickerFile(33242342, "./LICENSE").Commit()
 
-	assert.Nil(t, res)
-	assert.Nil(t, body)
+	assert.Nil(t, model)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
 	assert.Error(t, err)
 }
 
-func TestGetContentSuccess(t *testing.T) {
-	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetContent, "token", "path")).Reply(http.StatusOK).JSON(`{
-		"ok": true,
-		"result": true
-	}`)
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-
-	res, body, err := client.GetContent("path").Download()
-
-	assert.NotNil(t, res)
-	assert.Equal(t, http.StatusOK, res.StatusCode)
-	assert.NotNil(t, body)
-	assert.NoError(t, err)
-}
-
-func TestGetContentError(t *testing.T) {
-	gock.New(telegraph.BaseURL).Head(fmt.Sprintf(telegraph.EndpointGetContent, "token", "path")).Reply(http.StatusOK).JSON("")
-	defer gock.Off()
-
-	client := telegraph.NewClient("token")
-
-	res, body, err := client.GetContent("path").Download()
-
-	assert.Nil(t, res)
-	assert.Nil(t, body)
-	assert.Error(t, err)
-}
-
-func TestGetContentFailed(t *testing.T) {
-	gock.New(telegraph.BaseURL).Get(fmt.Sprintf(telegraph.EndpointGetContent, "token", "path")).Reply(http.StatusBadRequest).JSON(`{
+func TestUploadStickerFile_Failed(t *testing.T) {
+	gock.New(telegraph.BaseURL).Post(fmt.Sprintf(telegraph.EndpointUploadStickerFile, "token")).Reply(http.StatusBadRequest).JSON(`{
 		"ok": false,
 		"error_code": 400,
 		"description": "Bad Request: invalid file id"
@@ -142,9 +103,9 @@ func TestGetContentFailed(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	res, body, err := client.GetContent("path").Download()
+	model, res, err := client.UploadStickerFile(33242342, "./LICENSE").Commit()
 
-	assert.Nil(t, res)
-	assert.Nil(t, body)
+	assert.Nil(t, model)
+	assert.Equal(t, http.StatusBadRequest, res.StatusCode)
 	assert.Error(t, err)
 }
