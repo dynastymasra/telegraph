@@ -23,8 +23,8 @@ For the moment, bots can download files of up to 20MB in size. On success, a Fil
 The file can then be downloaded via the link https://api.telegram.org/file/bot<token>/<file_path>,
 where <file_path> is taken from the response. It is guaranteed that the link will be valid for at least 1 hour.
 When the link expires, a new one can be requested by calling getFile again.
-
 This function only return json value not file, download file use function GetContent()
++ fileId - File identifier to get info about
 */
 func (client *Client) GetFile(fileId string) *FileResponse {
 	url := client.baseURL + fmt.Sprintf(EndpointGetFile, client.accessToken)
@@ -39,9 +39,8 @@ func (client *Client) GetFile(fileId string) *FileResponse {
 /*
 UploadStickerFile Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet methods (can be used multiple times).
 Returns the uploaded File on success.
-
-- userId User identifier of sticker file owner
-- pngSticker Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px.
++ userId - User identifier of sticker file owner
++ pngSticker - Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px.
 */
 func (client *Client) UploadStickerFile(userId int64, pngSticker string) *FileResponse {
 	body := JSON{

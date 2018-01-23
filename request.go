@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"net/http"
+	"net/url"
 
 	"github.com/cenkalti/backoff"
 	"github.com/parnurzeal/gorequest"
@@ -34,14 +35,19 @@ SetWebHook Use this method to specify a url and receive incoming updates via an 
 Whenever there is an update for the bot, we will send an HTTPS POST request to the specified url,
 containing a JSON-serialized Update. In case of an unsuccessful request,
 we will give up after a reasonable amount of attempts. Returns true.
++ webHook - HTTPS url to send updates to. Use an empty string to remove webhook integration
+
+Available method can used with this method
++ SetCertificate()
++ SetMaxConnection()
++ SetAllowedUpdates()
 */
 func (client *Client) SetWebHook(webHook string) *VoidResponse {
 	body := JSON{
 		"url": webHook,
 	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointSetWebHook, client.accessToken)
-	request := gorequest.New().Post(url).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSetWebHook, client.accessToken)
+	request := gorequest.New().Post(endpoint).Type(gorequest.TypeJSON).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -85,11 +91,13 @@ func (void *VoidResponse) SetAllowedUpdates(allowed ...string) *VoidResponse {
 	return void
 }
 
-// DeleteWebHook Use this method to remove webhook integration if you decide to switch back to getUpdates.
-// Returns True on success. Requires no parameters.
+/*
+DeleteWebHook Use this method to remove webhook integration if you decide to switch back to getUpdates.
+Returns True on success. Requires no parameters.
+*/
 func (client *Client) DeleteWebHook() *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointDeleteWebHook, client.accessToken)
-	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointDeleteWebHook, client.accessToken)
+	request := gorequest.New().Get(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &VoidResponse{
 		Client:  client,
@@ -101,15 +109,22 @@ func (client *Client) DeleteWebHook() *VoidResponse {
 EditMessageLiveLocation Use this method to edit live location messages sent by the bot or via the bot (for inline bots).
 A location can be edited until its live_period expires or editing is explicitly disabled by a call to stopMessageLiveLocation.
 On success, if the edited message was sent by the bot, the edited Message is returned, otherwise True is returned.
++ latitude - Latitude of new location
++ longitude - Longitude of new location
+
+Available method can used with this method
++ SetChatID()
++ SetMessageID()
++ SetInlineMessageID()
++ SetReplyMarkup()
 */
 func (client *Client) EditMessageLiveLocation(latitude, longitude float64) *VoidResponse {
 	body := JSON{
 		"latitude":  latitude,
 		"longitude": longitude,
 	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointEditMessageLiveLocation, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointEditMessageLiveLocation, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -120,10 +135,16 @@ func (client *Client) EditMessageLiveLocation(latitude, longitude float64) *Void
 /*
 StopMessageLiveLocation Use this method to stop updating a live location message sent by the bot or via the bot (for inline bots) before live_period expires.
 On success, if the message was sent by the bot, the sent Message is returned, otherwise True is returned.
+
+Available method can used with this method
++ SetChatID()
++ SetMessageID()
++ SetInlineMessageID()
++ SetReplyMarkup()
 */
 func (client *Client) StopMessageLiveLocation() *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointStopMessageLiveLocation, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointStopMessageLiveLocation, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &VoidResponse{
 		Client:  client,
@@ -134,14 +155,22 @@ func (client *Client) StopMessageLiveLocation() *VoidResponse {
 /*
 EditMessageText Use this method to edit text and game messages sent by the bot or via the bot (for inline bots).
 On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
++ text - New text of the message
+
+Available method can used with this method
++ SetChatID()
++ SetMessageID()
++ SetInlineMessageID()
++ SetParseMode()
++ SetDisableWebPagePreview()
++ SetReplyMarkup()
 */
 func (client *Client) EditMessageText(text string) *VoidResponse {
 	body := JSON{
 		"text": text,
 	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointEditMessageText, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointEditMessageText, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -172,14 +201,20 @@ func (void *VoidResponse) SetDisableWebPagePreview(disable bool) *VoidResponse {
 /*
 EditMessageCaption Use this method to edit captions of messages sent by the bot or via the bot (for inline bots).
 On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
++ caption - New caption of the message
+
+Available method can used with this method
++ SetChatID()
++ SetMessageID()
++ SetInlineMessageID()
++ SetReplyMarkup()
 */
 func (client *Client) EditMessageCaption(caption string) *VoidResponse {
 	body := JSON{
 		"caption": caption,
 	}
-
-	url := client.baseURL + fmt.Sprintf(EndpointEditMessageCaption, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointEditMessageCaption, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -190,10 +225,16 @@ func (client *Client) EditMessageCaption(caption string) *VoidResponse {
 /*
 EditMessageReplyMarkup Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots).
 On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
+
+Available method can used with this method
++ SetChatID()
++ SetMessageID()
++ SetInlineMessageID()
++ SetReplyMarkup()
 */
 func (client *Client) EditMessageReplyMarkup() *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointEditMessageReplyMarkup, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointEditMessageReplyMarkup, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &VoidResponse{
 		Client:  client,
@@ -252,10 +293,12 @@ DeleteMessage Use this method to delete a message, including service messages, w
 - If the bot is an administrator of a group, it can delete any message there.
 - If the bot has can_delete_messages permission in a supergroup or a channel, it can delete any message there.
 Returns True on success.
++ chatId - Unique identifier for the target chat or username of the target channel (in the format @channelusername)
++ messageId - Identifier of the message to delete
 */
 func (client *Client) DeleteMessage(chatId interface{}, messageId int64) *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointDeleteMessage, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+	endpoint := client.baseURL + fmt.Sprintf(EndpointDeleteMessage, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Query(fmt.Sprintf("chat_id=%v&message_id=%v", chatId, messageId))
 
 	return &VoidResponse{
@@ -272,19 +315,18 @@ Returns True on success.
 Example: The ImageBot needs some time to process a request and upload the image.
 Instead of sending a text message along the lines of “Retrieving image, please wait…”,
 the bot may use sendChatAction with action = upload_photo. The user will see a “sending photo” status for the bot.
-
-Type of action to broadcast.
-Choose one, depending on what the user is about to receive: typing for text messages, upload_photo for photos,
-record_video or upload_video for videos, record_audio or upload_audio for audio files, upload_document for general files,
-find_location for location data, record_video_note or upload_video_note for video notes.
++ chatId - Unique identifier for the target chat or username of the target channel (in the format @channelusername)
++ action - Type of action to broadcast. Choose one, depending on what the user is about to receive: typing for text messages,
+  upload_photo for photos, record_video or upload_video for videos, record_audio or upload_audio for audio files,
+  upload_document for general files, find_location for location data, record_video_note or upload_video_note for video notes.
 */
 func (client *Client) SendChatAction(chatId interface{}, action string) *VoidResponse {
 	body := JSON{
 		"chat_id": chatId,
 		"action":  action,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointSendChatAction, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSendChatAction, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -300,14 +342,19 @@ Returns True on success.
 
 Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
 Otherwise members may only be removed by the group's creator or by the member that added them.
++ chatId - Unique identifier for the target group or username of the target supergroup or channel (in the format @channelusername)
++ userId - Unique identifier of the target user
+
+Available method can used with this method
++ SetUntilDate()
 */
 func (client *Client) KickChatMember(chatId interface{}, userId int64) *VoidResponse {
 	body := JSON{
 		"chat_id": chatId,
 		"user_id": userId,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointKickChatMember, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointKickChatMember, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -319,14 +366,23 @@ func (client *Client) KickChatMember(chatId interface{}, userId int64) *VoidResp
 RestrictChatMember Use this method to restrict a user in a supergroup.
 The bot must be an administrator in the supergroup for this to work and must have the appropriate admin rights.
 Pass True for all boolean parameters to lift restrictions from a user. Returns True on success.
++ chatId - Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
++ userId - Unique identifier of the target user
+
+Available method can used with this method
++ SetUntilDate()
++ SetCanSendMessage()
++ SetCanSendMediaMessage()
++ SetCanSendOtherMessage()
++ SetCanAddWebPagePreview()
 */
 func (client *Client) RestrictChatMember(chatId interface{}, userId int64) *VoidResponse {
 	body := JSON{
 		"chat_id": chatId,
 		"user_id": userId,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointRestrictChatMember, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointRestrictChatMember, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -390,14 +446,26 @@ func (void *VoidResponse) SetCanAddWebPagePreview(can bool) *VoidResponse {
 PromoteChatMember Use this method to promote or demote a user in a supergroup or a channel.
 The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
 Pass False for all boolean parameters to demote a user. Returns True on success.
++ chatId - Unique identifier for the target chat or username of the target channel (in the format @channelusername)
++ userId - Unique identifier of the target user
+
+Available method can used with this method
++ SetCanChangeInfo()
++ SetCanPostMessage()
++ SetCanEditMessage()
++ SetCanDeleteMessage()
++ SetCanInviteUser()
++ SetCanRestrictMember()
++ SetCanPinMessage()
++ SetCanPromoteMember()
 */
 func (client *Client) PromoteChatMember(chatId interface{}, userId int64) *VoidResponse {
 	body := JSON{
 		"chat_id": chatId,
 		"user_id": userId,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointPromoteChatMember, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointPromoteChatMember, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -491,8 +559,8 @@ GetContent function for download file from telegram server, file path obtained f
 Exp https://api.telegram.org/file/bot<token>/<file_path>
 */
 func (client *Client) GetContent(path string) *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointGetContent, client.accessToken, path)
-	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointGetContent, client.accessToken, path)
+	request := gorequest.New().Get(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version)
 
 	return &VoidResponse{
 		Client:  client,
@@ -504,14 +572,16 @@ func (client *Client) GetContent(path string) *VoidResponse {
 UnbanChatMember Use this method to unban a previously kicked user in a supergroup or channel.
 The user will not return to the group or channel automatically, but will be able to join via link, etc.
 The bot must be an administrator for this to work. Returns True on success.
++ chatId - Unique identifier for the target group or username of the target supergroup or channel (in the format @username)
++ userId - Unique identifier of the target user
 */
 func (client *Client) UnbanChatMember(chatId interface{}, userId int64) *VoidResponse {
 	body := JSON{
 		"chat_id": chatId,
 		"user_id": userId,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointUnbanChatMember, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointUnbanChatMember, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -522,15 +592,16 @@ func (client *Client) UnbanChatMember(chatId interface{}, userId int64) *VoidRes
 /*
 SetChatPhoto Use this method to set a new profile photo for the chat. Photos can't be changed for private chats.
 The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns True on success.
-
 Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
++ chatId - Unique identifier for the target chat or username of the target channel (in the format @channelusername)
++ photo - New chat photo, uploaded using multipart/form-data
 */
 func (client *Client) SetChatPhoto(chatId interface{}, photo string) *VoidResponse {
 	body := JSON{
 		"chat_id": chatId,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointSetChatPhoto, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeMultipart).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSetChatPhoto, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeMultipart).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Send(body).SendFile(photo, "", "photo")
 
 	return &VoidResponse{
@@ -542,12 +613,12 @@ func (client *Client) SetChatPhoto(chatId interface{}, photo string) *VoidRespon
 /*
 DeleteChatPhoto Use this method to delete a chat photo. Photos can't be changed for private chats.
 The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns True on success.
-
 Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
++ chatId - Unique identifier for the target chat or username of the target channel (in the format @channelusername)
 */
 func (client *Client) DeleteChatPhoto(chatId interface{}) *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointDeleteChatPhoto, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+	endpoint := client.baseURL + fmt.Sprintf(EndpointDeleteChatPhoto, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Query(fmt.Sprintf("chat_id=%v", chatId))
 
 	return &VoidResponse{
@@ -559,16 +630,17 @@ func (client *Client) DeleteChatPhoto(chatId interface{}) *VoidResponse {
 /*
 SetChatTitle Use this method to change the title of a chat. Titles can't be changed for private chats.
 The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns True on success.
-
 Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
++ chatId - Unique identifier for the target chat or username of the target channel (in the format @channelusername)
++ title - New chat title, 1-255 characters
 */
 func (client *Client) SetChatTitle(chatId interface{}, title string) *VoidResponse {
 	body := JSON{
 		"chat_id": chatId,
 		"title":   title,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointSetChatTitle, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSetChatTitle, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -579,14 +651,16 @@ func (client *Client) SetChatTitle(chatId interface{}, title string) *VoidRespon
 /*
 SetChatDescription Use this method to change the description of a supergroup or a channel.
 The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns True on success.
++ chatId - Unique identifier for the target chat or username of the target channel (in the format @channelusername)
++ description - New chat description, 0-255 characters
 */
 func (client *Client) SetChatDescription(chatId interface{}, description string) *VoidResponse {
 	body := JSON{
 		"chat_id":     chatId,
 		"description": description,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointSetChatDescription, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSetChatDescription, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -598,14 +672,19 @@ func (client *Client) SetChatDescription(chatId interface{}, description string)
 PinChatMessage Use this method to pin a message in a supergroup or a channel.
 The bot must be an administrator in the chat for this to work and must have the ‘can_pin_messages’ admin right in the supergroup or ‘can_edit_messages’ admin right in the channel.
 Returns True on success.
++ chatId - Unique identifier for the target chat or username of the target channel (in the format @channelusername)
++ messageId - Identifier of a message to pin
+
+Available method can used with this method
++ SetDisableNotification()
 */
 func (client *Client) PinChatMessage(chatId interface{}, messageId int64) *VoidResponse {
 	body := JSON{
 		"chat_id":    chatId,
 		"message_id": messageId,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointPinChatMessage, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointPinChatMessage, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -628,10 +707,11 @@ func (void *VoidResponse) SetDisableNotification(disable bool) *VoidResponse {
 UnpinChatMessage Use this method to unpin a message in a supergroup or a channel.
 The bot must be an administrator in the chat for this to work and must have the ‘can_pin_messages’ admin right in the supergroup or ‘can_edit_messages’ admin right in the channel.
 Returns True on success.
++ chatId - Unique identifier for the target chat or username of the target channel (in the format @channelusername)
 */
 func (client *Client) UnpinChatMessage(chatId interface{}) *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointUnpinChatMessage, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+	endpoint := client.baseURL + fmt.Sprintf(EndpointUnpinChatMessage, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Query(fmt.Sprintf("chat_id=%v", chatId))
 
 	return &VoidResponse{
@@ -642,10 +722,11 @@ func (client *Client) UnpinChatMessage(chatId interface{}) *VoidResponse {
 
 /*
 LeaveChat Use this method for your bot to leave a group, supergroup or channel. Returns True on success.
++ chatId - Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
 */
 func (client *Client) LeaveChat(chatId interface{}) *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointLeaveChat, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+	endpoint := client.baseURL + fmt.Sprintf(EndpointLeaveChat, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Query(fmt.Sprintf("chat_id=%v", chatId))
 
 	return &VoidResponse{
@@ -659,14 +740,16 @@ SetChatStickerSet Use this method to set a new group sticker set for a supergrou
 The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
 Use the field can_set_sticker_set optionally returned in getChat requests to check if the bot can use this method.
 Returns True on success.
++ chatId - Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
++ name - Name of the sticker set to be set as the group sticker set
 */
 func (client *Client) SetChatStickerSet(chatId interface{}, name string) *VoidResponse {
 	body := JSON{
 		"chat_id":          chatId,
 		"sticker_set_name": name,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointSetChatStickerSet, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSetChatStickerSet, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -679,10 +762,11 @@ DeleteChatStickerSet Use this method to delete a group sticker set from a superg
 The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
 Use the field can_set_sticker_set optionally returned in getChat requests to check if the bot can use this method.
 Returns True on success.
++ chatId - Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
 */
 func (client *Client) DeleteChatStickerSet(chatId interface{}) *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointDeleteChatStickerSet, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+	endpoint := client.baseURL + fmt.Sprintf(EndpointDeleteChatStickerSet, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Query(fmt.Sprintf("chat_id=%v", chatId))
 
 	return &VoidResponse{
@@ -698,13 +782,20 @@ The answer will be displayed to the user as a notification at the top of the cha
 Alternatively, the user can be redirected to the specified Game URL.
 For this option to work, you must first create a game for your bot via @Botfather and accept the terms.
 Otherwise, you may use links like t.me/your_bot?start=XXXX that open your bot with a parameter.
++ queryId - Unique identifier for the query to be answered
+
+Available method can used with this method
++ SetText()
++ SetShowAlert()
++ SetURL()
++ SetCacheTime()
 */
 func (client *Client) AnswerCallbackQuery(queryId string) *VoidResponse {
 	body := JSON{
 		"callback_query_id": queryId,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointAnswerCallbackQuery, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointAnswerCallbackQuery, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -747,7 +838,6 @@ func (void *VoidResponse) SetURL(url string) *VoidResponse {
 /*
 CreateNewStickerSet Use this method to create new sticker set owned by a user.
 The bot will be able to edit the created sticker set. Returns True on success.
-
 - userId User identifier of created sticker set owner
 - name Short name of sticker set, to be used in t.me/addstickers/ URLs (e.g., animals).
   Can contain only english letters, digits and underscores. Must begin with a letter, can't contain consecutive underscores and must end in “_by_<bot username>”.
@@ -757,8 +847,21 @@ The bot will be able to edit the created sticker set. Returns True on success.
   Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
 - emojis One or more emoji corresponding to the sticker
 - upload set true if upload file to telegram from local
+
++ userId - User identifier of created sticker set owner
++ name - Short name of sticker set, to be used in t.me/addstickers/ URLs (e.g., animals). Can contain only english letters, digits and underscores.
+  Must begin with a letter, can't contain consecutive underscores and must end in “_by_<bot username>”.
+  <bot_username> is case insensitive. 1-64 characters.
++ title - Sticker set title, 1-64 characters
++ pngSticker - Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px.
+  Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
++ emojis - One or more emoji corresponding to the sticker
+
+Available method can used with this method
++ SetContainsMask()
++ SetMaskPosition()
 */
-func (client *Client) CreateNewStickerSet(userId int64, name, title, pngSticker, emojis string, upload bool) *VoidResponse {
+func (client *Client) CreateNewStickerSet(userId int64, name, title, pngSticker, emojis string) *VoidResponse {
 	body := JSON{
 		"user_id":     userId,
 		"name":        name,
@@ -766,10 +869,10 @@ func (client *Client) CreateNewStickerSet(userId int64, name, title, pngSticker,
 		"png_sticker": pngSticker,
 		"emojis":      emojis,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointCreateNewStickerSet, client.accessToken)
-	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointCreateNewStickerSet, client.accessToken)
+	request := gorequest.New().Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
-	if upload {
+	if _, err := url.ParseRequestURI(pngSticker); err != nil {
 		request.Type(gorequest.TypeMultipart).SendFile(pngSticker, "", "png_sticker")
 	}
 
@@ -791,25 +894,33 @@ func (void *VoidResponse) SetContainsMask(mask bool) *VoidResponse {
 
 /*
 AddStickerToSet Use this method to add a new sticker to a set created by the bot. Returns True on success.
-
 - userId User identifier of sticker set owner
 - name Sticker set name
 - pngSticker Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px.
   Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
 - emojis One or more emoji corresponding to the sticker
 - upload set true if upload file to telegram from local
+
++ userId - User identifier of sticker set owner
++ name - Sticker set name
++ pngSticker - Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px.
+  Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
++ emojis - One or more emoji corresponding to the sticker
+
+Available method can used with this method
++ SetMaskPosition()
 */
-func (client *Client) AddStickerToSet(userId int64, name, pngSticker, emojis string, upload bool) *VoidResponse {
+func (client *Client) AddStickerToSet(userId int64, name, pngSticker, emojis string) *VoidResponse {
 	body := JSON{
 		"user_id":     userId,
 		"name":        name,
 		"png_sticker": pngSticker,
 		"emojis":      emojis,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointAddStickerToSet, client.accessToken)
-	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointAddStickerToSet, client.accessToken)
+	request := gorequest.New().Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
-	if upload {
+	if _, err := url.ParseRequestURI(pngSticker); err != nil {
 		request.Type(gorequest.TypeMultipart).SendFile(pngSticker, "", "png_sticker")
 	}
 
@@ -831,17 +942,19 @@ func (void *VoidResponse) SetMaskPosition(mask MaskPosition) *VoidResponse {
 
 /*
 SetStickerPositionInSet Use this method to move a sticker in a set created by the bot to a specific position . Returns True on success.
-
 - sticker File identifier of the sticker
 - position New sticker position in the set, zero-based
+
++ sticker - File identifier of the sticker
++ position - New sticker position in the set, zero-based
 */
 func (client *Client) SetStickerPositionInSet(sticker string, position int) *VoidResponse {
 	body := JSON{
 		"sticker":  sticker,
 		"position": position,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointSetStickerPositionInSet, client.accessToken)
-	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Type(gorequest.TypeJSON).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointSetStickerPositionInSet, client.accessToken)
+	request := gorequest.New().Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Type(gorequest.TypeJSON).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -851,12 +964,11 @@ func (client *Client) SetStickerPositionInSet(sticker string, position int) *Voi
 
 /*
 DeleteStickerFromSet Use this method to delete a sticker from a set created by the bot. Returns True on success.
-
-- sticker File identifier of the sticker
++ sticker - File identifier of the sticker
 */
 func (client *Client) DeleteStickerFromSet(sticker string) *VoidResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointDeleteStickerFromSet, client.accessToken)
-	request := gorequest.New().Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).Type(gorequest.TypeJSON).
+	endpoint := client.baseURL + fmt.Sprintf(EndpointDeleteStickerFromSet, client.accessToken)
+	request := gorequest.New().Get(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Type(gorequest.TypeJSON).
 		Query(fmt.Sprintf("sticker=%v", sticker))
 
 	return &VoidResponse{
@@ -868,17 +980,23 @@ func (client *Client) DeleteStickerFromSet(sticker string) *VoidResponse {
 /*
 AnswerInlineQuery Use this method to send answers to an inline query. On success, True is returned.
 No more than 50 results per query are allowed.
++ inlineQueryId - Unique identifier for the answered query
++ result - A JSON-serialized array of results for the inline query
 
-- inlineQueryId Unique identifier for the answered query
-- result A JSON-serialized array of results for the inline query
+Available method can used with this method
++ SetCacheTime()
++ SetIsPersonal()
++ SetNextOffset()
++ SetSwitchPMText()
++ SetSwitchPMParameter()
 */
 func (client *Client) AnswerInlineQuery(inlineQueryId string, result ...JSON) *VoidResponse {
 	body := JSON{
 		"inline_query_id": inlineQueryId,
 		"results":         result,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointAnswerInlineQuery, client.accessToken)
-	request := gorequest.New().Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Type(gorequest.TypeJSON).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointAnswerInlineQuery, client.accessToken)
+	request := gorequest.New().Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Type(gorequest.TypeJSON).Send(body)
 
 	return &VoidResponse{
 		Client:  client,
@@ -978,13 +1096,14 @@ func (void *VoidResponse) Commit() ([]byte, *http.Response, error) {
 ExportChatInviteLink Use this method to export an invite link to a supergroup or a channel.
 The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
 Returns exported invite link as String on success.
++ chatId - Unique identifier for the target chat or username of the target channel (in the format @channelusername)
 */
 func (client *Client) ExportChatInviteLink(chatId interface{}) *StringResponse {
 	body := JSON{
 		"chat_id": chatId,
 	}
-	url := client.baseURL + fmt.Sprintf(EndpointExportChatInviteLink, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Post(url).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
+	endpoint := client.baseURL + fmt.Sprintf(EndpointExportChatInviteLink, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Post(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).Send(body)
 
 	return &StringResponse{
 		Client:  client,
@@ -1023,10 +1142,11 @@ func (void *StringResponse) Commit() (string, *http.Response, error) {
 
 /*
 GetChatMembersCount Use this method to get the number of members in a chat. Returns Int on success.
++ chatId - Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
 */
 func (client *Client) GetChatMembersCount(chatId interface{}) *IntegerResponse {
-	url := client.baseURL + fmt.Sprintf(EndpointGetChatMembersCount, client.accessToken)
-	request := gorequest.New().Type(gorequest.TypeJSON).Get(url).Set(UserAgentHeader, UserAgent+"/"+Version).
+	endpoint := client.baseURL + fmt.Sprintf(EndpointGetChatMembersCount, client.accessToken)
+	request := gorequest.New().Type(gorequest.TypeJSON).Get(endpoint).Set(UserAgentHeader, UserAgent+"/"+Version).
 		Query(fmt.Sprintf("chat_id=%v", chatId))
 
 	return &IntegerResponse{

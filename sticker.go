@@ -19,8 +19,7 @@ type (
 
 /*
 GetStickerSet Use this method to get a sticker set. On success, a StickerSet object is returned.
-
-- name Use this method to get a sticker set. On success, a StickerSet object is returned.
++ name - Use this method to get a sticker set. On success, a StickerSet object is returned.
 */
 func (client *Client) GetStickerSet(name string) *StickerSetResponse {
 	url := client.baseURL + fmt.Sprintf(EndpointGetStickerSet, client.accessToken)

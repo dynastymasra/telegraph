@@ -120,7 +120,7 @@ func TestSendPhoto_Success(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendPhoto(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendPhoto(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").Commit()
@@ -136,7 +136,7 @@ func TestSendPhoto_Error(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	message, res, err := client.SendPhoto(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendPhoto(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").Commit()
@@ -156,7 +156,7 @@ func TestSendPhoto_Failed(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	message, res, err := client.SendPhoto(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendPhoto(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").Commit()
@@ -263,7 +263,7 @@ func TestSendAudio_Success(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendAudio(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendAudio(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).
@@ -279,7 +279,7 @@ func TestSendAudio_Error(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendAudio(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendAudio(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).
@@ -300,7 +300,7 @@ func TestSendAudio_Failed(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	message, res, err := client.SendAudio(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendAudio(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).
@@ -341,7 +341,7 @@ func TestSendDocument_Success(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendDocument(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendDocument(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").Commit()
@@ -356,7 +356,7 @@ func TestSendDocument_Error(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendDocument(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendDocument(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").Commit()
@@ -376,7 +376,7 @@ func TestSendDocument_Failed(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	message, res, err := client.SendDocument(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendDocument(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").Commit()
@@ -424,7 +424,7 @@ func TestSendVideo_Success(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendVideo(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendVideo(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).SetWidth(1000).
@@ -440,7 +440,7 @@ func TestSendVideo_Error(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendVideo(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendVideo(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).SetWidth(1000).
@@ -461,7 +461,7 @@ func TestSendVideo_Failed(t *testing.T) {
 
 	client := telegraph.NewClient("token")
 
-	message, res, err := client.SendVideo(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendVideo(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).SetWidth(1000).
@@ -502,7 +502,7 @@ func TestSendVoice_Success(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendVoice(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendVoice(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).Commit()
@@ -517,7 +517,7 @@ func TestSendVoice_Error(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendVoice(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendVoice(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).Commit()
@@ -536,7 +536,7 @@ func TestSendVoice_Failed(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendVoice(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendVoice(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetCaption("caption").SetDuration(1000).Commit()
@@ -582,7 +582,7 @@ func TestSendVideoNote_Success(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendVideoNote(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendVideoNote(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetLength(1000).SetDuration(1000).Commit()
@@ -597,7 +597,7 @@ func TestSendVideoNote_Error(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendVideoNote(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendVideoNote(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetLength(1000).SetDuration(1000).Commit()
@@ -616,7 +616,7 @@ func TestSendVideoNote_Failed(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendVideoNote(2434234, "./LICENSE", true).SetDisableNotification(false).
+	message, res, err := client.SendVideoNote(2434234, "./LICENSE").SetDisableNotification(false).
 		SetForceReply(telegraph.ForceReply{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).
 		SetReplyToMessageID(234324234).SetLength(1000).SetDuration(1000).Commit()
@@ -985,7 +985,7 @@ func TestSendSticker_Success(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendSticker(123131231, "./LICENSE", true).
+	message, res, err := client.SendSticker(123131231, "./LICENSE").
 		SetDisableNotification(true).SetReplyToMessageID(324234234).SetForceReply(telegraph.ForceReply{}).
 		SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).Commit()
@@ -1000,7 +1000,7 @@ func TestSendSticker_Error(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendSticker(123131231, "./LICENSE", true).
+	message, res, err := client.SendSticker(123131231, "./LICENSE").
 		SetDisableNotification(true).SetReplyToMessageID(324234234).SetForceReply(telegraph.ForceReply{}).
 		SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).Commit()
@@ -1019,7 +1019,7 @@ func TestSendSticker_Failed(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	message, res, err := client.SendSticker(123131231, "./LICENSE", true).
+	message, res, err := client.SendSticker(123131231, "./LICENSE").
 		SetDisableNotification(true).SetReplyToMessageID(324234234).SetForceReply(telegraph.ForceReply{}).
 		SetInlineKeyboardMarkup([][]telegraph.InlineKeyboardButton{}).SetReplyKeyboardMarkup(telegraph.ReplyKeyboardMarkup{}).
 		SetReplyKeyboardRemove(telegraph.ReplyKeyboardRemove{}).Commit()

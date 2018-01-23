@@ -1205,7 +1205,7 @@ func TestCreateNewStickerSet_Success(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	body, res, err := client.CreateNewStickerSet(234234234, "name", "title", "./LICENSE", ":)", true).
+	body, res, err := client.CreateNewStickerSet(234234234, "name", "title", "./LICENSE", ":)").
 		SetContainsMask(true).SetMaskPosition(telegraph.MaskPosition{}).Commit()
 
 	assert.NotNil(t, body)
@@ -1218,7 +1218,7 @@ func TestCreateNewStickerSet_Error(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	body, res, err := client.CreateNewStickerSet(234234234, "name", "title", "./LICENSE", ":)", true).
+	body, res, err := client.CreateNewStickerSet(234234234, "name", "title", "./LICENSE", ":)").
 		SetContainsMask(true).SetMaskPosition(telegraph.MaskPosition{}).Commit()
 
 	assert.Nil(t, body)
@@ -1235,7 +1235,7 @@ func TestCreateNewStickerSet_Failed(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	body, res, err := client.CreateNewStickerSet(234234234, "name", "title", "./LICENSE", ":)", true).
+	body, res, err := client.CreateNewStickerSet(234234234, "name", "title", "./LICENSE", ":)").
 		SetContainsMask(true).SetMaskPosition(telegraph.MaskPosition{}).Commit()
 
 	assert.Nil(t, body)
@@ -1251,7 +1251,7 @@ func TestAddStickerToSet_Success(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	body, res, err := client.AddStickerToSet(13123123, "name", "./LICENSE", "emojis", true).
+	body, res, err := client.AddStickerToSet(13123123, "name", "./LICENSE", "emojis").
 		SetMaskPosition(telegraph.MaskPosition{}).Commit()
 
 	assert.NotNil(t, body)
@@ -1264,7 +1264,7 @@ func TestAddStickerToSet_Error(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	body, res, err := client.AddStickerToSet(13123123, "name", "./LICENSE", "emojis", true).
+	body, res, err := client.AddStickerToSet(13123123, "name", "./LICENSE", "emojis").
 		SetMaskPosition(telegraph.MaskPosition{}).Commit()
 
 	assert.Nil(t, body)
@@ -1281,7 +1281,7 @@ func TestAddStickerToSet_Failed(t *testing.T) {
 	defer gock.Off()
 
 	client := telegraph.NewClient("token")
-	body, res, err := client.AddStickerToSet(13123123, "name", "./LICENSE", "emojis", true).
+	body, res, err := client.AddStickerToSet(13123123, "name", "./LICENSE", "emojis").
 		SetMaskPosition(telegraph.MaskPosition{}).Commit()
 
 	assert.Nil(t, body)

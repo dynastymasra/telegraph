@@ -67,6 +67,11 @@ func (user *UserResponse) Commit() (*User, *http.Response, error) {
 
 /*
 GetUserProfilePhotos Use this method to get a list of profile pictures for a user. Returns a UserProfilePhotos object.
++ userId - Unique identifier of the target user
+
+Available method can used with this method
++ SetOffset()
++ SetLimit()
 */
 func (client *Client) GetUserProfilePhotos(userId int) *UserProfilePhotosResponse {
 	url := client.baseURL + fmt.Sprintf(EndpointGetUserProfilePhoto, client.accessToken)

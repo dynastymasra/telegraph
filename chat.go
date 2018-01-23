@@ -32,6 +32,7 @@ type (
 /*
 GetChat Use this method to get up to date information about the chat (current name of the user for one-on-one conversations,
 current username of a user, group or channel, etc.). Returns a Chat object on success.
++ chatId - Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
 */
 func (client *Client) GetChat(chatId interface{}) *ChatResponse {
 	url := client.baseURL + fmt.Sprintf(EndpointGetChat, client.accessToken)
@@ -77,6 +78,7 @@ func (void *ChatResponse) Commit() (*Chat, *http.Response, error) {
 GetChatAdministrator Use this method to get a list of administrators in a chat.
 On success, returns an Array of ChatMember objects that contains information about all chat administrators except other bots.
 If the chat is a group or a supergroup and no administrators were appointed, only the creator will be returned.
++ chatId - Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
 */
 func (client *Client) GetChatAdministrator(chatId interface{}) *ArrayChatMemberResponse {
 	url := client.baseURL + fmt.Sprintf(EndpointGetChatAdministrators, client.accessToken)
@@ -120,6 +122,8 @@ func (void *ArrayChatMemberResponse) Commit() ([]ChatMember, *http.Response, err
 
 /*
 GetChatMember Use this method to get information about a member of a chat. Returns a ChatMember object on success.
++ chatId - Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
++ userId - Unique identifier of the target user
 */
 func (client *Client) GetChatMember(chatId interface{}, userId int64) *ChatMemberResponse {
 	url := client.baseURL + fmt.Sprintf(EndpointGetChatMember, client.accessToken)
