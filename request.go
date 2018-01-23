@@ -401,7 +401,7 @@ func (void *VoidResponse) SetUntilDate(date int64) *VoidResponse {
 	return void
 }
 
-// SetCanSendMessages Pass True, if the user can send text messages, contacts, locations and venues
+// SetCanSendMessage Pass True, if the user can send text messages, contacts, locations and venues
 func (void *VoidResponse) SetCanSendMessage(can bool) *VoidResponse {
 	body := JSON{
 		"can_send_messages": can,
@@ -411,7 +411,7 @@ func (void *VoidResponse) SetCanSendMessage(can bool) *VoidResponse {
 	return void
 }
 
-// SetCanSendMediaMessages Pass True, if the user can send audios, documents, photos, videos, video notes and voice notes,
+// SetCanSendMediaMessage Pass True, if the user can send audios, documents, photos, videos, video notes and voice notes,
 // implies can_send_messages
 func (void *VoidResponse) SetCanSendMediaMessage(can bool) *VoidResponse {
 	body := JSON{
@@ -422,7 +422,7 @@ func (void *VoidResponse) SetCanSendMediaMessage(can bool) *VoidResponse {
 	return void
 }
 
-// SetCanOtherMessages Pass True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages
+// SetCanSendOtherMessage Pass True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages
 func (void *VoidResponse) SetCanSendOtherMessage(can bool) *VoidResponse {
 	body := JSON{
 		"can_send_other_messages": can,
